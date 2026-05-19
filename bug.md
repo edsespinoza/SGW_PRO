@@ -314,7 +314,7 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 - Acessar `http://localhost:8081` — senha mestra deve aparecer primeiro
 - Login com `admin`/`admin123`
 - Confirmar que notificação de vencimento aparece no boot
-- Verificar gráficos no módulo Financeiro
+- Verificar gráficos no módulo Financeiro (agora com filtro de período + export PNG/PDF)
 - Testar export/import de backup .enc criptografado
 - Verificar que `anthropicKey` antiga foi removida do IDB
 
@@ -326,9 +326,9 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 - Testar HTTPS + File System Access API
 
 **3. Melhorias adicionais**
-- Badge de licenças expirando no header global
-- Filtro de data no módulo Financeiro
-- Exportar gráficos como PNG/PDF
+- ~~Badge de licenças expirando no header global~~ ✅ Feito
+- ~~Filtro de data no módulo Financeiro~~ ✅ Feito  
+- ~~Exportar gráficos como PNG/PDF~~ ✅ Feito
 
 ---
 

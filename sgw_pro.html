@@ -7102,6 +7102,17 @@ const Clients = ({
 const Financial = ({
   lics
 }) => {
+  const [filterY, setFilterY] = useState(new Date().getFullYear());
+  const [filterM, setFilterM] = useState('all');
+  const filtered = useMemo(() => {
+    return lics.filter(l => {
+      if (!l.createdAt) return false;
+      const d = new Date(l.createdAt);
+      if (d.getFullYear() !== filterY) return false;
+      if (filterM !== 'all' && d.getMonth() !== parseInt(filterM)) return false;
+      return true;
+    });
+  }, [lics, filterY, filterM]);
   const st = useMemo(() => {
     const active = lics.filter(l => l.status === 'active').length;
     return {
@@ -7119,9 +7130,31 @@ const Financial = ({
     const d = L.days(l.validUntil);
     return d !== null && d >= 0 && d <= 60;
   }).sort((a, b) => L.days(a.validUntil) - L.days(b.validUntil));
+  const years = useMemo(() => {
+    const s = new Set();
+    lics.forEach(l => { if (l.createdAt) s.add(new Date(l.createdAt).getFullYear()); });
+    return [...s].sort();
+  }, [lics]);
   return React.createElement("div", {
     className: "space-y-6 af"
   }, React.createElement("div", {
+    className: "flex items-center gap-3 flex-wrap"
+  }, React.createElement("span", {
+    className: "text-xs text-slate-500 font-bold uppercase tracking-wider"
+  }, "Filtrar per\u00EDodo:"), React.createElement("select", {
+    value: filterY,
+    onChange: e => { setFilterY(parseInt(e.target.value)); setFilterM('all'); },
+    className: "fi text-xs py-1.5 px-3 text-white min-w-[80px]"
+  }, years.map(y => React.createElement("option", {key: y, value: y}, y))), React.createElement("select", {
+    value: filterM,
+    onChange: e => setFilterM(e.target.value),
+    className: "fi text-xs py-1.5 px-3 text-white min-w-[100px]"
+  }, React.createElement("option", {value: 'all'}, "Todos os meses"),
+    Array.from({length:12}, (_,i) => React.createElement("option", {key: i, value: i},
+      new Date(2000, i, 1).toLocaleDateString('pt-BR', {month:'long'}))
+    )), React.createElement("span", {
+    className: "text-xs text-slate-600 ml-auto"
+  }, filtered.length, " licen\xE7a", filtered.length !== 1 ? 's' : '', " no per\xEDodo")), React.createElement("div", {
     className: "grid grid-cols-2 md:grid-cols-4 gap-4"
   }, [{
     l: 'Licenças Ativas',
@@ -7235,7 +7268,36 @@ const Financial = ({
     className: "glass-card rounded-2xl p-6"
   }, React.createElement("h3", {
     className: "font-heading font-black text-white mb-5 flex items-center gap-2"
-  }, React.createElement("span", null, "\uD83D\uDCCA"), "Receita Mensal (estimada)"), function() {
+  }, React.createElement("span", null, "\uD83D\uDCCA"), "Receita Mensal (estimada)"),
+    React.createElement("span", {className: "ml-auto flex gap-2"},
+      React.createElement("button", {
+        onClick: () => {
+          const el = document.getElementById('sgw-chart-revenue');
+          if (!el) return;
+          html2canvas(el, {scale:2, backgroundColor:'#0f172a'}).then(c => {
+            const a = document.createElement('a');
+            a.href = c.toDataURL('image/png');
+            a.download = 'SGW_receita_mensal.png';
+            a.click();
+          });
+        },
+        className: "px-2.5 py-1 rounded-lg bg-sgw-800 hover:bg-sgw-700 text-slate-400 hover:text-white text-[10px] font-bold transition-all border border-sgw-700",
+        title: "Exportar como PNG"
+      }, "\uD83D\uDDBC\uFE0F PNG"),
+      React.createElement("button", {
+        onClick: () => {
+          const el = document.getElementById('sgw-chart-revenue');
+          if (!el || typeof window.jspdf === 'undefined') return;
+          html2canvas(el, {scale:2, backgroundColor:'#0f172a'}).then(c => {
+            const {jsPDF} = window.jspdf;
+            const pdf = new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+            pdf.addImage(c.toDataURL('image/jpeg',.93), 'JPEG', 10, 10, 277, 80);
+            pdf.save('SGW_receita_mensal.pdf');
+          });
+        },
+        className: "px-2.5 py-1 rounded-lg bg-sgw-800 hover:bg-sgw-700 text-slate-400 hover:text-white text-[10px] font-bold transition-all border border-sgw-700",
+        title: "Exportar como PDF"
+      }, "\uD83D\uDCC4 PDF")), function() {
     const m = {};
     lics.forEach(l => {
       if (l.createdAt && l.status === 'active') {
@@ -7247,7 +7309,7 @@ const Financial = ({
     const items = Object.entries(m).sort(function(a, b) { return a[0].localeCompare(b[0]); }).slice(-12);
     if (items.length === 0) return React.createElement("p", {className: "text-slate-500 text-sm text-center py-6"}, "Sem dados");
     const maxV = Math.max.apply(null, items.map(function(i) { return i[1] * (PRICES.annual / 12); }), 1);
-    return React.createElement("div", {className: "flex items-end gap-2 h-40"}, items.map(function(item) {
+    return React.createElement("div", {id: "sgw-chart-revenue", className: "flex items-end gap-2 h-40"}, items.map(function(item) {
       const rev = item[1] * (PRICES.annual / 12);
       const p = rev / maxV * 100;
       const parts = item[0].split('-');
@@ -7263,7 +7325,21 @@ const Financial = ({
     className: "bg-sgw-850 rounded-xl border border-sgw-700 p-5"
   }, React.createElement("h4", {
     className: "font-heading font-black text-white text-sm mb-4 flex items-center gap-2"
-  }, React.createElement("span", null, "\uD83D\uDCC8"), "Distribui\xE7\xE3o por Plano"), function() {
+  }, React.createElement("span", null, "\uD83D\uDCC8"), "Distribui\xE7\xE3o por Plano",
+    React.createElement("span", {className: "ml-auto flex gap-1.5"},
+      React.createElement("button", {
+        onClick: () => {
+          const el = document.getElementById('sgw-chart-plan');
+          if (!el) return;
+          html2canvas(el, {scale:2, backgroundColor:'#0f172a'}).then(c => {
+            const a = document.createElement('a');
+            a.href = c.toDataURL('image/png');
+            a.download = 'SGW_distribuicao_plano.png';
+            a.click();
+          });
+        },
+        className: "px-2 py-0.5 rounded bg-sgw-800 hover:bg-sgw-700 text-slate-400 hover:text-white text-[9px] font-bold transition-all border border-sgw-700"
+      }, "\uD83D\uDDBC\uFE0F")), React.createElement("div", {id: "sgw-chart-plan"}, function() {
     const byPlan = {monthly:0, quarterly:0, annual:0};
     lics.forEach(function(l) {
       if (l.status === 'active') {
@@ -7289,7 +7365,21 @@ const Financial = ({
     className: "bg-sgw-850 rounded-xl border border-sgw-700 p-5"
   }, React.createElement("h4", {
     className: "font-heading font-black text-white text-sm mb-4 flex items-center gap-2"
-  }, React.createElement("span", null, "\uD83D\uDEE0\uFE0F"), "Por Equipamento"), function() {
+  }, React.createElement("span", null, "\uD83D\uDEE0\uFE0F"), "Por Equipamento",
+    React.createElement("span", {className: "ml-auto flex gap-1.5"},
+      React.createElement("button", {
+        onClick: () => {
+          const el = document.getElementById('sgw-chart-equip');
+          if (!el) return;
+          html2canvas(el, {scale:2, backgroundColor:'#0f172a'}).then(c => {
+            const a = document.createElement('a');
+            a.href = c.toDataURL('image/png');
+            a.download = 'SGW_equipamentos.png';
+            a.click();
+          });
+        },
+        className: "px-2 py-0.5 rounded bg-sgw-800 hover:bg-sgw-700 text-slate-400 hover:text-white text-[9px] font-bold transition-all border border-sgw-700"
+      }, "\uD83D\uDDBC\uFE0F")), React.createElement("div", {id: "sgw-chart-equip"}, function() {
     const m = {};
     lics.forEach(function(l) {
       if (l.equipment && l.status === 'active') m[l.equipment] = (m[l.equipment] || 0) + 1;
@@ -9842,7 +9932,10 @@ const System = ({
     "aria-label": "Abrir menu"
   }, Icon.menu()), React.createElement("h1", {
     className: "font-heading font-black text-white text-base flex-shrink-0"
-  }, NAV.find(n => n.id === nav)?.lb), isOnline && React.createElement("span", {
+  }, NAV.find(n => n.id === nav)?.lb), expCount > 0 && nav !== 'financial' && React.createElement("span", {
+    className: "ml-1.5 px-1.5 py-0.5 bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-black rounded leading-none",
+    title: expCount + " licença" + (expCount>1?'s':'') + " vence" + (expCount>1?'m':'') + " em até 30 dias"
+  }, expCount), isOnline && React.createElement("span", {
     className: "px-2 py-1 bg-cy-500/15 border border-cy-500/30 text-cy-400 text-xs font-black rounded-lg flex-shrink-0 hide-mobile",
     role: "status",
     "aria-label": "Online"
