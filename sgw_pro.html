@@ -195,6 +195,11 @@ textarea.fi{resize:vertical;min-height:80px;}
 .serial{font-family:'JetBrains Mono',monospace;letter-spacing:.1em;}
 .dot-live{animation:blink 1.8s ease-in-out infinite;}
 kbd{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:rgba(26,37,64,.8);border:1px solid rgba(255,255,255,.1);border-radius:.4rem;padding:.2rem .5rem;color:#94a3b8;}
+.grid-bg{background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:48px 48px;}
+.text-gradient{background:linear-gradient(135deg,#22d3ee,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.section-tag{display:inline-flex;padding:2px 10px;border-radius:999px;border:1px solid rgba(6,182,212,.2);background:rgba(6,182,212,.08);color:#22d3ee;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;}
+.glow-btn{box-shadow:0 0 30px rgba(6,182,212,.15);}
+.glow-btn:hover{box-shadow:0 0 45px rgba(6,182,212,.25);}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
@@ -204,7 +209,7 @@ kbd{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:rgba(26,3
 </head>
 <body>
 <a href="#root" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-cy-500 focus:text-white focus:text-sm focus:font-bold">Pular para conteudo</a>
-<div id="root"><div id="splash" style="min-height:100vh;background:#030712;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem"><div style="width:24px;height:24px;border:2px solid rgba(6,182,212,.15);border-top-color:#06b6d4;border-radius:50%;animation:spinner .7s linear infinite"></div><p style="color:#475569;font-size:13px">SGW Pro</p></div></div>
+<div id="root"><div id="splash" style="min-height:100vh;background:#030712;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem"><div class="splash-dots" style="display:flex;flex-wrap:wrap;width:36px;justify-content:center;gap:3px"><div style="width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:blink .3s ease-in-out infinite alternate"></div><div style="width:7px;height:7px;border-radius:50%;background:#4455DD;animation:blink .4s ease-in-out infinite alternate-reverse"></div><div style="width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:blink .5s ease-in-out infinite alternate"></div><div style="width:7px;height:7px;border-radius:50%;background:#4455DD;animation:blink .6s ease-in-out infinite alternate-reverse"></div><div style="width:7px;height:7px;border-radius:50%;background:#4455DD;animation:blink .7s ease-in-out infinite alternate"></div><div style="width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:blink .8s ease-in-out infinite alternate-reverse"></div><div style="width:7px;height:7px;border-radius:50%;background:#4455DD;animation:blink .5s ease-in-out infinite alternate"></div><div style="width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:blink .4s ease-in-out infinite alternate-reverse"></div><div style="width:7px;height:7px;border-radius:50%;background:#4455DD;animation:blink .3s ease-in-out infinite alternate"></div></div><p style="color:#475569;font-size:13px;font-family:Inter,system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;font-weight:700">SGW Pro</p></div></div>
 <script>
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 const {
@@ -10243,17 +10248,36 @@ const LoginPage = ({
     }
   };
   return React.createElement("div", {
-    className: "min-h-screen bg-sgw-900 flex items-center justify-center p-4"
+    className: "min-h-screen bg-sgw-950 grid-bg flex items-center justify-center p-4 relative"
   }, React.createElement("div", {
+    className: "absolute inset-0 pointer-events-none",
+    style: {background: 'radial-gradient(ellipse 50% 40% at 50% 40%, rgba(6,182,212,.06), transparent)'}
+  }), React.createElement("div", {
+    className: "w-full max-w-sm relative"
+  }, React.createElement("div", {
+    className: "mb-6 text-center"
+  }, React.createElement("div", {
+    className: "flex flex-wrap w-10 mx-auto justify-center mb-4"
+  }, Array.from({length:9}).map((_,i) => React.createElement("div", {key:i, className: "dot", style: {
+    width:'7px', height:'7px', borderRadius:'50%', margin:'2px',
+    background: i % 2 === 0 ? '#22d3ee' : '#4455DD',
+    animation: `blink ${.3 + i * .06}s ease-in-out infinite alternate`
+  }}))), React.createElement("h1", {
+    className: "font-heading text-3xl font-black text-white"
+  }, "SGW Pro"), React.createElement("span", {
+    className: "section-tag mt-1"
+  }, "API PostgreSQL"))), React.createElement("div", {
     className: "glass-card w-full max-w-sm p-8",
     style: {
       animation: 'fadeUp .3s ease-out'
     }
+  }, React.createElement("div", {
+    className: "text-center mb-6"
   }, React.createElement("h1", {
-    className: "font-heading text-2xl font-black text-white mb-6 text-center"
-  }, "SGW Pro"), React.createElement("p", {
-    className: "text-slate-500 text-xs text-center mb-6"
-  }, "API PostgreSQL \u2014 Fase 2"), React.createElement("form", {
+    className: "font-heading text-2xl font-black text-white mb-1"
+  }, reg ? "Criar Acesso" : "Entrar"), React.createElement("p", {
+    className: "text-slate-500 text-xs"
+  }, reg ? "Crie sua conta para acessar o sistema" : "Faça login no SGW Pro")), React.createElement("form", {
     onSubmit: h,
     className: "space-y-4"
   }, React.createElement("div", null, React.createElement("label", {
@@ -10319,7 +10343,7 @@ class ErrorBoundary extends React.Component {
   }
   render() {
     if (this.state.err) return React.createElement("div", {
-      className: "min-h-screen bg-sgw-950 flex items-center justify-center p-4"
+      className: "min-h-screen bg-sgw-950 grid-bg flex items-center justify-center p-4"
     }, React.createElement("div", {
       className: "text-center max-w-md"
     }, React.createElement("div", {
@@ -10393,32 +10417,42 @@ const App = () => {
   }, []);
   if (!mUnlocked) {
     const mp = LS.get('sgw_master_pw');
-    if (!mp) return React.createElement("div", {className: "min-h-screen bg-sgw-950 flex items-center justify-center p-4"},
-      React.createElement("div", {className: "text-center max-w-sm"},
-        React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
-        React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-2"}, "SGW Pro"),
-        React.createElement("p", {className: "text-slate-500 text-sm mb-6"}, "Defina uma senha mestra de acesso ao sistema"),
-        React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
-          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (v.length >= 4) { LS.set('sgw_master_pw', S.sha(v)); e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } } }
-        }),
-        React.createElement("p", {className: "text-xs text-slate-600"}, "M\xEDnimo 4 caracteres \xB7 armazenada localmente")))
+    if (!mp) return React.createElement("div", {className: "min-h-screen bg-sgw-950 grid-bg flex items-center justify-center p-4 relative"},
+      React.createElement("div", {className: "absolute inset-0 pointer-events-none", style: {background: 'radial-gradient(ellipse 50% 40% at 50% 40%, rgba(6,182,212,.06), transparent)'}}),
+      React.createElement("div", {className: "w-full max-w-sm relative"},
+        React.createElement("div", {className: "mb-6 text-center"},
+          React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
+          React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-1"}, "SGW Pro"),
+          React.createElement("span", {className: "section-tag"}, "Primeiro acesso")),
+        React.createElement("div", {className: "glass-card p-8"},
+          React.createElement("p", {className: "text-slate-400 text-sm mb-5 text-center"}, "Defina uma senha mestra para proteger o sistema"),
+          React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Criar senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
+            onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (v.length >= 4) { LS.set('sgw_master_pw', S.sha(v)); e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } } }
+          }),
+          React.createElement("p", {className: "text-xs text-slate-600 text-center"}, "M\xEDnimo 4 caracteres \xB7 armazenada localmente"))))
     );
     const [mpErr, setMpErr] = useState('');
-    return React.createElement("div", {className: "min-h-screen bg-sgw-950 flex items-center justify-center p-4"},
-      React.createElement("div", {className: "text-center max-w-sm"},
-        React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
-        React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-2"}, "SGW Pro"),
-        React.createElement("p", {className: "text-slate-500 text-sm mb-6"}, "Digite a senha mestra para acessar o sistema"),
-        mpErr && React.createElement("p", {className: "text-red-400 text-xs mb-3"}, mpErr),
-        React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
-          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (S.sha(v) === mp) { e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } else { setMpErr('Senha incorreta'); setTimeout(() => setMpErr(''), 2000); } } }
-        }))
+    return React.createElement("div", {className: "min-h-screen bg-sgw-950 grid-bg flex items-center justify-center p-4 relative"},
+      React.createElement("div", {className: "absolute inset-0 pointer-events-none", style: {background: 'radial-gradient(ellipse 50% 40% at 50% 40%, rgba(6,182,212,.06), transparent)'}}),
+      React.createElement("div", {className: "w-full max-w-sm relative"},
+        React.createElement("div", {className: "mb-6 text-center"},
+          React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
+          React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-1"}, "SGW Pro"),
+          React.createElement("span", {className: "section-tag"}, "Senha mestra")),
+        React.createElement("div", {className: "glass-card p-8"},
+          mpErr && React.createElement("p", {className: "text-red-400 text-xs mb-3 text-center"}, mpErr),
+          React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Digite a senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
+            onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (S.sha(v) === mp) { e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } else { setMpErr('Senha incorreta'); setTimeout(() => setMpErr(''), 2000); } } }
+          })))
     );
   }
   if (!authLoaded) return React.createElement("div", {
-    className: "min-h-screen bg-sgw-900 flex items-center justify-center"
+    className: "min-h-screen bg-sgw-950 grid-bg flex items-center justify-center relative"
   }, React.createElement("div", {
-    className: "text-center"
+    className: "absolute inset-0 pointer-events-none",
+    style: {background: 'radial-gradient(ellipse 50% 40% at 50% 40%, rgba(6,182,212,.06), transparent)'}
+  }), React.createElement("div", {
+    className: "text-center relative"
   }, React.createElement("div", {
     className: "w-8 h-8 border-2 border-cy-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"
   }), React.createElement("p", {
