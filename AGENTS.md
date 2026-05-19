@@ -102,6 +102,10 @@ python -m http.server 8080           # só frontend offline (sem API, sem DB)
 - **Request ID**: header `X-Request-Id` em toda resposta da API.
 - **`.dockerignore`/`.vercelignore`**: excluem `Backup_BD/`, `pdf_extracted_imgs/`, `.img/`, `*.md`, `*.py`, etc.
 - **IEM tracking**: convenção do projeto. Calcular ao final de tarefas e salvar em `memory/iem_tracker.md`.
+- **Master password**: `App` verifica `sgw_master_pw` no localStorage. Se não existir, pede criação (≥4 chars, SHA-256). Se existir, pede unlock. Sessão trackeada via `sessionStorage` `sgw_mp_unlocked`.
+- **Backup .enc**: export criptografado com senha via CryptoJS AES-256. Import detecta `.enc` e pede senha.
+- **Cache expiração**: `sgw8_eq` (equipamentos custom) expira em 7 dias via timestamp `sgw8_eq_ts`.
+- **sessionStorage**: `S._cryptKey()` usa `sessionStorage` (não `localStorage`) — chave cripto não persiste entre sessões.
 
 ## Deploy
 
