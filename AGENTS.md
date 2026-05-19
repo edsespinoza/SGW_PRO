@@ -75,6 +75,7 @@ python -m http.server 8080           # só frontend offline (sem API, sem DB)
 | `POST /api/v1/backup/export` | Yes | Exporta tudo (licenses+images+logs+config) criptografado. |
 | `POST /api/v1/backup/import` | Yes | Importa com checksum validation. |
 | `GET /api/v1/stats` | Yes | MRR, ARR, totais, expiring30d, recentLogs7d, totalImages. |
+| `POST /api/v1/ai/proxy` | No | Proxy Claude API seguro — chave server-side via `ANTHROPIC_API_KEY`. Acessado via nginx `/api/ai-proxy`. |
 | `GET /api/v1/health` | No | `{"status":"ok"}`. |
 
 ## Editing rules

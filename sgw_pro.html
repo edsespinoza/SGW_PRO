@@ -527,11 +527,11 @@ const S = {
     return (h >>> 0).toString(16).padStart(8, '0').repeat(8).slice(0, 64);
   },
   _cryptKey() {
-    let s = LS.get('sgw_crypt_s');
+    let s = sessionStorage.getItem('sgw_crypt_s');
     if (!s) {
       s = '';
       for (let i = 32; i--;) s += Math.random().toString(36)[2];
-      LS.set('sgw_crypt_s', s);
+      sessionStorage.setItem('sgw_crypt_s', s);
     }
     return s + '::' + S.fp();
   },
@@ -1688,7 +1688,14 @@ const EquipModal = ({
   sel
 }) => {
   const [q, setQ] = useState('');
-  const [customs, setCust] = useState(() => LS.json('sgw8_eq') || []);
+  const [customs, setCust] = useState(() => {
+    if (Date.now() - parseInt(LS.get('sgw8_eq_ts') || '0') > 7 * 86400000) {
+      LS.del('sgw8_eq');
+      LS.del('sgw8_eq_ts');
+      return [];
+    }
+    return LS.json('sgw8_eq') || [];
+  });
   const [add, setAdd] = useState(false);
   const [nw, setNw] = useState({
     brand: '',
@@ -1708,6 +1715,7 @@ const EquipModal = ({
     const u = [...customs, eq];
     setCust(u);
     LS.set('sgw8_eq', JSON.stringify(u));
+    LS.set('sgw8_eq_ts', String(Date.now()));
     setNw({
       brand: '',
       model: '',
@@ -7213,7 +7221,82 @@ const Financial = ({
     }, d, "d"), React.createElement("span", {
       className: "text-xs text-slate-500 truncate ml-2 max-w-[140px]"
     }, l.email || l.phone || '---')));
-  }))));
+  })))), React.createElement("div", {
+    className: "glass-card rounded-2xl p-6"
+  }, React.createElement("h3", {
+    className: "font-heading font-black text-white mb-5 flex items-center gap-2"
+  }, React.createElement("span", null, "\uD83D\uDCCA"), "Receita Mensal (estimada)"), function() {
+    const m = {};
+    lics.forEach(l => {
+      if (l.createdAt && l.status === 'active') {
+        const d = new Date(l.createdAt);
+        const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        m[k] = (m[k] || 0) + 1;
+      }
+    });
+    const items = Object.entries(m).sort(function(a, b) { return a[0].localeCompare(b[0]); }).slice(-12);
+    if (items.length === 0) return React.createElement("p", {className: "text-slate-500 text-sm text-center py-6"}, "Sem dados");
+    const maxV = Math.max.apply(null, items.map(function(i) { return i[1] * (PRICES.annual / 12); }), 1);
+    return React.createElement("div", {className: "flex items-end gap-2 h-40"}, items.map(function(item) {
+      const rev = item[1] * (PRICES.annual / 12);
+      const p = rev / maxV * 100;
+      const parts = item[0].split('-');
+      const lb = new Date(+parts[0], +parts[1] - 1).toLocaleDateString('pt-BR', {month:'short'});
+      return React.createElement("div", {key: item[0], className: "flex flex-col items-center gap-1.5 flex-1"},
+        React.createElement("span", {className: "text-[9px] text-cy-400 font-bold"}, "R$" + Math.round(rev)),
+        React.createElement("div", {className: "w-full rounded-t bg-cy-500/60 hover:bg-cy-400 transition-colors cursor-default", style: {height: Math.max(p, 3) + '%'}}),
+        React.createElement("span", {className: "text-[8px] text-slate-600 uppercase"}, lb));
+    }));
+  }(), React.createElement("div", {
+    className: "grid grid-cols-1 md:grid-cols-2 gap-5 mt-5"
+  }, React.createElement("div", {
+    className: "bg-sgw-850 rounded-xl border border-sgw-700 p-5"
+  }, React.createElement("h4", {
+    className: "font-heading font-black text-white text-sm mb-4 flex items-center gap-2"
+  }, React.createElement("span", null, "\uD83D\uDCC8"), "Distribui\xE7\xE3o por Plano"), function() {
+    const byPlan = {monthly:0, quarterly:0, annual:0};
+    lics.forEach(function(l) {
+      if (l.status === 'active') {
+        if (l.plan === 'monthly') byPlan.monthly++;
+        else if (l.plan === 'quarterly') byPlan.quarterly++;
+        else if (l.plan === 'annual') byPlan.annual++;
+        else byPlan.monthly++;
+      }
+    });
+    const total = byPlan.monthly + byPlan.quarterly + byPlan.annual;
+    if (total === 0) return React.createElement("p", {className: "text-slate-500 text-sm text-center py-4"}, "Nenhuma licen\xE7a ativa");
+    const cols = [{k:'monthly',l:'Mensal',c:'bg-cy-500',v:byPlan.monthly},{k:'quarterly',l:'Trimestral',c:'bg-violet-500',v:byPlan.quarterly},{k:'annual',l:'Anual',c:'bg-amber-500',v:byPlan.annual}];
+    return React.createElement("div", {className: "space-y-3"}, cols.map(function(col) {
+      const p = total > 0 ? Math.round(col.v / total * 100) : 0;
+      return React.createElement("div", {key: col.k},
+        React.createElement("div", {className: "flex justify-between text-xs mb-1"},
+          React.createElement("span", {className: "text-slate-400"}, col.l),
+          React.createElement("span", {className: "text-white font-bold"}, col.v, " (", p, "%)")),
+        React.createElement("div", {className: "w-full h-2 bg-sgw-800 rounded-full overflow-hidden"},
+          React.createElement("div", {className: col.c + " h-full rounded-full transition-all duration-500", style: {width: p + '%'}})));
+    }));
+  }()), React.createElement("div", {
+    className: "bg-sgw-850 rounded-xl border border-sgw-700 p-5"
+  }, React.createElement("h4", {
+    className: "font-heading font-black text-white text-sm mb-4 flex items-center gap-2"
+  }, React.createElement("span", null, "\uD83D\uDEE0\uFE0F"), "Por Equipamento"), function() {
+    const m = {};
+    lics.forEach(function(l) {
+      if (l.equipment && l.status === 'active') m[l.equipment] = (m[l.equipment] || 0) + 1;
+    });
+    const items = Object.entries(m).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 6);
+    if (items.length === 0) return React.createElement("p", {className: "text-slate-500 text-sm text-center py-4"}, "Sem dados");
+    const maxV = Math.max.apply(null, items.map(function(i) { return i[1]; }), 1);
+    return React.createElement("div", {className: "space-y-2"}, items.map(function(item) {
+      const p = item[1] / maxV * 100;
+      return React.createElement("div", {key: item[0]},
+        React.createElement("div", {className: "flex justify-between text-xs mb-1"},
+          React.createElement("span", {className: "text-slate-400 truncate max-w-[120px]"}, item[0]),
+          React.createElement("span", {className: "text-white font-bold"}, item[1])),
+        React.createElement("div", {className: "w-full h-1.5 bg-sgw-800 rounded-full overflow-hidden"},
+          React.createElement("div", {className: "bg-emerald-400 h-full rounded-full", style: {width: p + '%'}})));
+    }));
+  }()))));
 };
 const Reports = ({
   lics
@@ -8935,6 +9018,8 @@ const System = ({
       if (rest > 0) await new Promise(r => setTimeout(r, rest));
       setBootPhase('Pronto!');
       setLoading(false);
+      const expCount = ls.filter(l => { const d = L.days(l.validUntil); return d !== null && d >= 0 && d <= 30; }).length;
+      if (expCount > 0) queueMicrotask(() => toast(`⏰ ${expCount} licença${expCount>1?'s':''} vence${expCount>1?'m':''} em até 30 dias`, 'warning'));
     }
   };
   useEffect(() => {
@@ -9183,37 +9268,26 @@ const System = ({
   }, [toast]);
   const doExport = useCallback(async (encrypted = false) => {
     try {
-      if (isOnline && encrypted) {
-        try {
-          const r = await api.exportBak(true);
-          const bl = new Blob([JSON.stringify(r)], {
-            type: 'application/json'
-          });
-          const url = URL.createObjectURL(bl);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `SGWPro_${new Date().toISOString().slice(0, 10)}_enc.json`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(url), 200);
-          toast(`Backup criptografado exportado: ${lics.length} licenças`, 'success');
-          return;
-        } catch (e) {
-          console.warn('[API] export failed, local fallback', e.message);
-        }
-      }
       const data = {
         version: APP.VER,
         exported: new Date().toISOString(),
         count: lics.length,
         licenses: lics
       };
-      const content = JSON.stringify(data, null, 2);
-      const filename = `SGWPro11_${new Date().toISOString().slice(0, 10)}.json`;
-      const bl = new Blob([content], {
-        type: 'application/json'
-      });
+      let content, filename, type;
+      if (encrypted && typeof CryptoJS !== 'undefined') {
+        const pw = prompt('🔐 Digite uma senha para criptografar o backup:');
+        if (!pw) { toast('Exportação cancelada', 'info'); return; }
+        const enc = CryptoJS.AES.encrypt(JSON.stringify(data), pw).toString();
+        content = JSON.stringify({format:'aes-256', data:enc});
+        filename = `SGWPro_${new Date().toISOString().slice(0, 10)}.enc`;
+        type = 'application/octet-stream';
+      } else {
+        content = JSON.stringify(data, null, 2);
+        filename = `SGWPro11_${new Date().toISOString().slice(0, 10)}.json`;
+        type = 'application/json';
+      }
+      const bl = new Blob([content], {type});
       const url = URL.createObjectURL(bl);
       const a = document.createElement('a');
       a.href = url;
@@ -9222,20 +9296,33 @@ const System = ({
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 200);
-      toast(`Backup exportado: ${lics.length} licenças`, 'success');
+      toast(`Backup ${encrypted?'criptografado ':''}exportado: ${lics.length} licenças`, 'success');
     } catch (e) {
       toast('Erro ao exportar: ' + e.message, 'error');
     }
-  }, [lics, toast, isOnline]);
+  }, [lics, toast]);
   const doImport = useCallback(async file => {
     try {
       let content = await file.text();
       let data;
-      try {
-        data = JSON.parse(content);
-      } catch {
-        toast('Arquivo inválido', 'error');
-        return;
+      // Detecta formato .enc (criptografado)
+      if (file.name.endsWith('.enc')) {
+        if (typeof CryptoJS === 'undefined') { toast('CryptoJS indisponível para descriptografar', 'error'); return; }
+        const pw = prompt('🔐 Digite a senha do backup criptografado:');
+        if (!pw) { toast('Importação cancelada', 'info'); return; }
+        let parsed;
+        try { parsed = JSON.parse(content); } catch { toast('Arquivo .enc inválido', 'error'); return; }
+        if (parsed.format !== 'aes-256' || !parsed.data) { toast('Formato .enc desconhecido', 'error'); return; }
+        const dec = CryptoJS.AES.decrypt(parsed.data, pw).toString(CryptoJS.enc.Utf8);
+        if (!dec) { toast('Senha incorreta ou arquivo corrompido', 'error'); return; }
+        try { data = JSON.parse(dec); } catch { toast('Arquivo descriptografado inválido', 'error'); return; }
+      } else {
+        try {
+          data = JSON.parse(content);
+        } catch {
+          toast('Arquivo inválido', 'error');
+          return;
+        }
       }
       if (!data.licenses || !Array.isArray(data.licenses)) {
         toast('Arquivo inválido', 'error');
@@ -10166,6 +10253,7 @@ const App = () => {
   const [view, setView] = useState('landing');
   const [auth, setAuth] = useState(false);
   const [authLoaded, setAuthLoaded] = useState(false);
+  const [mUnlocked, setMUnlocked] = useState(!!sessionStorage.getItem('sgw_mp_unlocked'));
   useEffect(() => {
     let ok = false;
     (async () => {
@@ -10189,6 +10277,30 @@ const App = () => {
       }
     }, 15000);
   }, []);
+  if (!mUnlocked) {
+    const mp = LS.get('sgw_master_pw');
+    if (!mp) return React.createElement("div", {className: "min-h-screen bg-sgw-950 flex items-center justify-center p-4"},
+      React.createElement("div", {className: "text-center max-w-sm"},
+        React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
+        React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-2"}, "SGW Pro"),
+        React.createElement("p", {className: "text-slate-500 text-sm mb-6"}, "Defina uma senha mestra de acesso ao sistema"),
+        React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
+          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (v.length >= 4) { LS.set('sgw_master_pw', S.sha(v)); e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } } }
+        }),
+        React.createElement("p", {className: "text-xs text-slate-600"}, "M\xEDnimo 4 caracteres \xB7 armazenada localmente")))
+    );
+    const [mpErr, setMpErr] = useState('');
+    return React.createElement("div", {className: "min-h-screen bg-sgw-950 flex items-center justify-center p-4"},
+      React.createElement("div", {className: "text-center max-w-sm"},
+        React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
+        React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-2"}, "SGW Pro"),
+        React.createElement("p", {className: "text-slate-500 text-sm mb-6"}, "Digite a senha mestra para acessar o sistema"),
+        mpErr && React.createElement("p", {className: "text-red-400 text-xs mb-3"}, mpErr),
+        React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
+          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (S.sha(v) === mp) { e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } else { setMpErr('Senha incorreta'); setTimeout(() => setMpErr(''), 2000); } } }
+        }))
+    );
+  }
   if (!authLoaded) return React.createElement("div", {
     className: "min-h-screen bg-sgw-900 flex items-center justify-center"
   }, React.createElement("div", {
