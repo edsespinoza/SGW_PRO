@@ -10392,6 +10392,7 @@ const App = () => {
   const [auth, setAuth] = useState(false);
   const [authLoaded, setAuthLoaded] = useState(false);
   const [mUnlocked, setMUnlocked] = useState(!!sessionStorage.getItem('sgw_mp_unlocked'));
+  const [mpErr, setMpErr] = useState('');
   useEffect(() => {
     let ok = false;
     (async () => {
@@ -10426,12 +10427,11 @@ const App = () => {
           React.createElement("span", {className: "section-tag"}, "Primeiro acesso")),
         React.createElement("div", {className: "glass-card p-8"},
           React.createElement("p", {className: "text-slate-400 text-sm mb-5 text-center"}, "Defina uma senha mestra para proteger o sistema"),
-          React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Criar senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
+          React.createElement("input", {ref: r => { if (r && !r.hasAttribute('data-focused')) { r.setAttribute('data-focused',''); setTimeout(() => r.focus(), 100); } }, type: "password", placeholder: "Criar senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
             onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (v.length >= 4) { LS.set('sgw_master_pw', S.sha(v)); e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } } }
           }),
           React.createElement("p", {className: "text-xs text-slate-600 text-center"}, "M\xEDnimo 4 caracteres \xB7 armazenada localmente"))))
     );
-    const [mpErr, setMpErr] = useState('');
     return React.createElement("div", {className: "min-h-screen bg-sgw-950 grid-bg flex items-center justify-center p-4 relative"},
       React.createElement("div", {className: "absolute inset-0 pointer-events-none", style: {background: 'radial-gradient(ellipse 50% 40% at 50% 40%, rgba(6,182,212,.06), transparent)'}}),
       React.createElement("div", {className: "w-full max-w-sm relative"},
@@ -10441,7 +10441,7 @@ const App = () => {
           React.createElement("span", {className: "section-tag"}, "Senha mestra")),
         React.createElement("div", {className: "glass-card p-8"},
           mpErr && React.createElement("p", {className: "text-red-400 text-xs mb-3 text-center"}, mpErr),
-          React.createElement("input", {ref: r => { if (r) setTimeout(() => r.focus(), 100); }, type: "password", placeholder: "Digite a senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
+          React.createElement("input", {ref: r => { if (r && !r.hasAttribute('data-focused')) { r.setAttribute('data-focused',''); setTimeout(() => r.focus(), 100); } }, type: "password", placeholder: "Digite a senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
             onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (S.sha(v) === mp) { e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } else { setMpErr('Senha incorreta'); setTimeout(() => setMpErr(''), 2000); } } }
           })))
     );
