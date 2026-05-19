@@ -1,0 +1,57 @@
+================================================================================
+  ABERAMA BRASIL - SECURITY GATEWAY CERTIFICATE ANALYSIS
+================================================================================
+  Data da analise: 16/05/2026
+  Total de certificados: 4
+================================================================================
+
+CERTIFICADO #1
+----------------------------------------
+  Cliente         : ARLET CARVALHO COMERCIO LTDA
+  Serial Number   : VX2GS9C01263
+  Scanner         : AUTEL
+  Regiao          : AMÉRICA DO NORTE
+  Login           : sgwaberama
+  Expiracao       : 03/02/2027
+  Dias Restantes  : 263 dias
+  Status          : ATIVA
+
+CERTIFICADO #2
+----------------------------------------
+  Cliente         : ALEX JUNIOR DA SILVA PAIM
+  Serial Number   : DR8GR5C04299
+  Scanner         : AUTEL
+  Regiao          : AMÉRICA DO NORTE
+  Login           : sgwaberama
+  Expiracao       : 04/12/2026
+  Dias Restantes  : 202 dias
+  Status          : ATIVA
+
+CERTIFICADO #3
+----------------------------------------
+  Cliente         : ALEXIS FELIPE CONSTANTINO COELHO
+  Serial Number   : DR8GS5C05287
+  Scanner         : AUTEL
+  Regiao          : AMÉRICA DO NORTE
+  Login           : sgwaberama
+  Expiracao       : N/A
+  Dias Restantes  : N/A
+  Status          : INCOMPLETA
+
+CERTIFICADO #4
+----------------------------------------
+  Cliente         : ALFIA ROSANGELA COSTA MANITTA
+  Serial Number   : VA9GS5C01403
+  Scanner         : AUTEL
+  Regiao          : AMÉRICA DO NORTE
+  Login           : sgwaberama
+  Expiracao       : 25/11/2026
+  Dias Restantes  : 193 dias
+  Status          : ATIVA
+
+================================================================================
+  RESUMO
+================================================================================
+  Ativos     : 3
+  Incompletos: 1
+================================================================================

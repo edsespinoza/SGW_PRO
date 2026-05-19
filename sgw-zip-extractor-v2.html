@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGW Pro — Extrator de Lote v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg:     #070b14;
+      --bg8:    #0d1425;
+      --gb:     rgba(255,255,255,0.04);
+      --gbb:    rgba(255,255,255,0.08);
+      --blue:   #60a5fa;
+      --purple: #a78bfa;
+      --green:  #4ade80;
+      --amber:  #fbbf24;
+      --red:    #f87171;
+      --cyan:   #22d3ee;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: #e2e8f0; min-height: 100vh; }
+    .hd  { font-family: 'Chivo', sans-serif; }
+    .mono{ font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Cards ── */
+    .card { background: var(--gb); border: 1px solid var(--gbb); border-radius: 16px; }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: 7px; border: none; cursor: pointer;
+           font-family: 'Inter', sans-serif; font-weight: 600; border-radius: 10px; transition: all .18s; }
+    .btn:disabled { opacity: .35 !important; cursor: not-allowed !important; transform: none !important; }
+    .btn-primary  { background: linear-gradient(135deg,#2563eb,#7c3aed); color: white; padding: 11px 20px; font-size: 14px; }
+    .btn-primary:not(:disabled):hover  { opacity: .9; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,.28); }
+    .btn-ghost    { background: var(--gb); border: 1px solid var(--gbb); color: #94a3b8; padding: 9px 16px; font-size: 13px; }
+    .btn-ghost:not(:disabled):hover    { background: rgba(255,255,255,.07); color: white; }
+    .btn-green    { background: rgba(74,222,128,.12); border: 1px solid rgba(74,222,128,.22); color: var(--green); padding: 9px 16px; font-size: 13px; }
+    .btn-green:not(:disabled):hover    { background: rgba(74,222,128,.22); }
+    .btn-amber    { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.22); color: var(--amber); padding: 9px 16px; font-size: 13px; }
+    .btn-amber:not(:disabled):hover    { background: rgba(251,191,36,.22); }
+    .btn-red      { background: rgba(241,114,114,.12); border: 1px solid rgba(241,114,114,.22); color: var(--red); padding: 9px 16px; font-size: 13px; }
+    .btn-red:not(:disabled):hover      { background: rgba(241,114,114,.22); }
+    .btn-sm   { padding: 6px 12px !important; font-size: 12px !important; border-radius: 8px !important; }
+    .btn-icon { padding: 7px !important; border-radius: 8px !important; }
+
+    /* ── Badges ── */
+    .bdg { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .b-blue  { background: rgba(96,165,250,.12); color: var(--blue); }
+    .b-green { background: rgba(74,222,128,.12);  color: var(--green); }
+    .b-amber { background: rgba(251,191,36,.12);  color: var(--amber); }
+    .b-red   { background: rgba(241,114,114,.12); color: var(--red); }
+    .b-purple{ background: rgba(167,139,250,.12); color: var(--purple); }
+    .b-gray  { background: rgba(255,255,255,.06); color: #64748b; }
+    .b-cyan  { background: rgba(34,211,238,.12);  color: var(--cyan); }
+
+    /* ── Drop zone ── */
+    .drop { border: 2px dashed rgba(255,255,255,.12); border-radius: 16px; padding: 44px 20px;
+            text-align: center; cursor: pointer; transition: all .22s; background: rgba(255,255,255,.015); }
+    .drop:hover, .drop.over { border-color: #3b82f6; background: rgba(59,130,246,.06); }
+    .drop input { display: none; }
+
+    /* ── Big progress ring ── */
+    .ring-wrap { position: relative; width: 120px; height: 120px; margin: 0 auto; flex-shrink: 0; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg   { fill: none; stroke: rgba(255,255,255,.06); stroke-width: 8; }
+    .ring-fill { fill: none; stroke: url(#ringGrad); stroke-width: 8; stroke-linecap: round;
+                 stroke-dasharray: 326.56; stroke-dashoffset: 326.56; transition: stroke-dashoffset .5s ease; }
+    .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column;
+                  align-items: center; justify-content: center; gap: 2px; }
+    .ring-pct  { font-size: 22px; font-weight: 700; color: white; font-family: 'Chivo', sans-serif; }
+    .ring-sub  { font-size: 10px; color: #475569; }
+
+    /* ── Item list ── */
+    .item-list { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto;
+                 padding-right: 4px; }
+    .item-list::-webkit-scrollbar { width: 4px; }
+    .item-list::-webkit-scrollbar-track { background: transparent; }
+    .item-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+    .item { display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+            border-radius: 10px; border: 1px solid var(--gbb); background: var(--gb);
+            transition: border-color .15s; }
+    .item.running { border-color: rgba(96,165,250,.3); background: rgba(59,130,246,.04); }
+    .item.ok      { border-color: rgba(74,222,128,.2); }
+    .item.err     { border-color: rgba(241,114,114,.2); background: rgba(239,68,68,.03); }
+
+    /* ── Status dot ── */
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .d-idle    { background: rgba(255,255,255,.15); }
+    .d-queue   { background: var(--amber); }
+    .d-running { background: var(--blue); animation: blink .7s infinite; }
+    .d-ok      { background: var(--green); }
+    .d-err     { background: var(--red); }
+    .d-retry   { background: var(--amber); animation: blink .4s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+    /* ── Mini progress bar ── */
+    .minibar { height: 2px; border-radius: 1px; background: rgba(255,255,255,.07); overflow: hidden; margin-top: 3px; }
+    .minifill { height: 100%; border-radius: 1px; background: linear-gradient(90deg,#2563eb,#7c3aed); transition: width .3s; }
+
+    /* ── Table ── */
+    .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--gbb); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead tr { background: rgba(255,255,255,.04); }
+    th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase;
+         letter-spacing: .07em; color: #475569; border-bottom: 1px solid var(--gbb); white-space: nowrap; }
+    td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: #cbd5e1;
+         white-space: nowrap; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+    td.empty { color: #334155; font-style: italic; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* ── Toasts ── */
+    .toast-wrap { position: fixed; top: 18px; right: 18px; z-index: 400;
+                  display: flex; flex-direction: column; gap: 9px; pointer-events: none; }
+    .toast { display: flex; align-items: center; gap: 10px; padding: 11px 15px;
+             border-radius: 11px; border: 1px solid; min-width: 290px; max-width: 380px;
+             backdrop-filter: blur(14px); animation: fi .28s ease; pointer-events: all;
+             font-size: 13px; color: white; }
+    .ts { background: rgba(6,78,59,.93);   border-color: rgba(34,197,94,.3);  }
+    .te { background: rgba(127,29,29,.93); border-color: rgba(239,68,68,.3);  }
+    .ti { background: rgba(23,37,84,.93);  border-color: rgba(59,130,246,.3); }
+    .tw { background: rgba(120,53,15,.93); border-color: rgba(245,158,11,.3); }
+
+    /* ── Animations ── */
+    .fadein { animation: fi .3s ease; }
+    @keyframes fi { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+    /* ── Stat box ── */
+    .stat { display: flex; flex-direction: column; align-items: center; padding: 14px;
+            border-radius: 12px; background: var(--gb); border: 1px solid var(--gbb); gap: 4px; }
+    .stat-val { font-family: 'Chivo', sans-serif; font-size: 26px; font-weight: 900; color: white; line-height: 1; }
+    .stat-lbl { font-size: 10px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--gbb); margin: 16px 0; }
+
+    @media(max-width:700px) {
+      .side { display: none !important; }
+      .layout { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toasts" class="toast-wrap"></div>
+
+<!-- SVG gradient defs (hidden) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div style="max-width:1100px;margin:0 auto;padding:28px 16px">
+
+  <!-- ── Header ── -->
+  <header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center">
+        <svg width="22" height="22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5z"/>
+          <polyline points="17 2 17 8 23 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <line x1="9"  y1="15" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <div>
+        <div class="hd" style="font-size:21px;font-weight:900;color:white;line-height:1">
+          SGW Pro <span style="color:var(--blue)">— Extrator de Lote</span>
+          <span class="bdg b-cyan" style="font-size:10px;margin-left:8px;vertical-align:middle">v2</span>
+        </div>
+        <div style="font-size:11px;color:#475569;margin-top:3px">ZIP de PDFs → Planilha Excel · Paralelo · Retry automático · 50–200 arquivos</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--gbb)">
+        <span style="font-size:11px;color:#475569">Workers simultâneos:</span>
+        <select id="concurrency-sel" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;outline:none">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="8">8</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <span class="bdg b-purple">Claude AI</span>
+    </div>
+  </header>
+
+  <div class="layout" style="display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start">
+
+    <!-- ══ LEFT ══ -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+
+      <!-- Upload zone -->
+      <div class="card" style="padding:24px" id="upload-card">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px">
+          <svg width="16" height="16" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span class="hd" style="font-weight:700;color:white;font-size:15px">Enviar arquivo ZIP</span>
+        </div>
+
+        <label class="drop" id="dropzone" for="zip-input">
+          <input type="file" id="zip-input" accept=".zip,application/zip">
+          <svg width="44" height="44" fill="none" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="margin:0 auto 14px;display:block">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5z"/>
+            <polyline points="17 2 17 8 23 8"/>
+          </svg>
+          <div id="dz-label" style="font-size:14px;font-weight:600;color:#64748b">Clique ou arraste o arquivo .zip aqui</div>
+          <div style="font-size:11px;color:#334155;margin-top:6px">Suporta 50–200 PDFs · Máx. 200 MB</div>
+        </label>
+
+        <!-- File attached -->
+        <div id="zip-preview" style="display:none;margin-top:14px;padding:11px 14px;border-radius:10px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.18);display:none;align-items:center;gap:12px">
+          <div style="width:32px;height:38px;border-radius:6px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span style="font-size:9px;font-weight:700;color:var(--purple)">ZIP</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div id="zip-name" style="font-size:13px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="zip-meta" style="font-size:11px;color:#64748b;margin-top:2px"></div>
+          </div>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="clearAll()" title="Remover">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Control bar -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btn-run" onclick="startQueue()" disabled style="flex:1;justify-content:center;padding:13px">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Iniciar extração
+        </button>
+        <button class="btn btn-amber" id="btn-pause" onclick="togglePause()" disabled style="min-width:110px;justify-content:center">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="pause-icon"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          <span id="pause-label">Pausar</span>
+        </button>
+        <button class="btn btn-red" id="btn-stop" onclick="stopQueue()" disabled style="min-width:90px;justify-content:center">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          Parar
+        </button>
+        <button class="btn btn-green" id="btn-export" onclick="downloadXLSX()" disabled style="min-width:130px;justify-content:center">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar .xlsx
+        </button>
+      </div>
+
+      <!-- Progress panel -->
+      <div class="card" id="progress-card" style="display:none;padding:24px">
+        <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+
+          <!-- Ring -->
+          <div class="ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="ring-bg"   cx="60" cy="60" r="52"/>
+              <circle class="ring-fill" cx="60" cy="60" r="52" id="ring-fill"/>
+            </svg>
+            <div class="ring-label">
+              <div class="ring-pct" id="ring-pct">0%</div>
+              <div class="ring-sub" id="ring-sub">0 / 0</div>
+            </div>
+          </div>
+
+          <!-- Stats grid -->
+          <div style="flex:1;min-width:200px">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+              <div class="stat"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total</div></div>
+              <div class="stat"><div class="stat-val" style="color:var(--green)" id="s-ok">0</div><div class="stat-lbl">OK</div></div>
+              <div class="stat"><div class="stat-val" style="color:var(--amber)" id="s-retry">0</div><div class="stat-lbl">Retry</div></div>
+              <div class="stat"><div class="stat-val" style="color:var(--red)" id="s-err">0</div><div class="stat-lbl">Erro</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span id="status-msg" style="font-size:12px;color:#475569">Aguardando...</span>
+              <span class="bdg b-blue" id="speed-badge" style="display:none"></span>
+              <span class="bdg b-amber" id="eta-badge" style="display:none"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item list -->
+      <div class="card" id="list-card" style="display:none;padding:24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span class="hd" style="font-weight:700;color:white;font-size:14px">Fila de processamento</span>
+            <span class="bdg b-blue" id="list-count">0</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="filter-input" placeholder="Filtrar por nome..." style="background:rgba(255,255,255,.04);border:1px solid var(--gbb);border-radius:8px;padding:6px 10px;color:#e2e8f0;font-size:12px;outline:none;width:160px" oninput="filterList()">
+            <button class="btn btn-ghost btn-sm" onclick="filterList('err')" id="filter-err-btn">Só erros</button>
+          </div>
+        </div>
+        <div class="item-list" id="item-list"></div>
+      </div>
+
+      <!-- Results table -->
+      <div class="card fadein" id="results-card" style="display:none;padding:24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:9px">
+            <svg width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="hd" style="font-weight:700;color:white;font-size:15px">Prévia da planilha</span>
+            <span class="bdg b-green" id="preview-count"></span>
+          </div>
+          <span style="font-size:11px;color:#334155">Mostrando os 20 primeiros registros</span>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table>
+        </div>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- ══ SIDEBAR ══ -->
+    <div class="side" style="display:flex;flex-direction:column;gap:14px;position:sticky;top:20px">
+
+      <!-- Live counters -->
+      <div class="card" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#334155;margin-bottom:12px">Progresso em tempo real</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">PDFs no ZIP</span>
+            <span class="bdg b-blue" id="sb-total">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Concluídos</span>
+            <span class="bdg b-green" id="sb-ok">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Em andamento</span>
+            <span class="bdg b-blue" id="sb-running">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Na fila</span>
+            <span class="bdg b-gray" id="sb-queue">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Erros</span>
+            <span class="bdg b-red" id="sb-err">0</span>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Velocidade</span>
+            <span class="bdg b-cyan" id="sb-speed">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Tempo restante</span>
+            <span class="bdg b-amber" id="sb-eta">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export partial -->
+      <div class="card" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#334155;margin-bottom:10px">Exportação</div>
+        <div style="font-size:12px;color:#475569;line-height:1.6;margin-bottom:12px">
+          Você pode baixar a planilha a qualquer momento — mesmo com a extração em andamento.
+        </div>
+        <button class="btn btn-green" id="btn-export-2" onclick="downloadXLSX()" disabled style="width:100%;justify-content:center">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar parcial / final
+        </button>
+        <div style="font-size:11px;color:#334155;margin-top:8px;text-align:center" id="export-count">Nenhum registro ainda</div>
+      </div>
+
+      <!-- Config info -->
+      <div class="card" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#334155;margin-bottom:12px">Configuração de fila</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#475569">
+          <div style="display:flex;justify-content:space-between"><span>Workers paralelos</span><span id="cfg-workers" class="bdg b-blue">5</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Tentativas por PDF</span><span class="bdg b-amber">3×</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Delay entre retries</span><span class="bdg b-gray">2s · 5s · 10s</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Pausa rate-limit</span><span class="bdg b-red">30s auto</span></div>
+        </div>
+      </div>
+
+      <!-- Columns -->
+      <div class="card" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#334155;margin-bottom:10px">Colunas da planilha</div>
+        <div style="font-size:11px;color:#475569;line-height:1.9">
+          Nome / Razão Social<br>
+          Tipo Doc · CPF/CNPJ<br>
+          Telefone · E-mail<br>
+          Estado (UF)<br>
+          VIN/Chassi · Placa<br>
+          Modelo · Ano<br>
+          Serial Equip. · Obs.<br>
+          <span style="color:#334155">+ Arquivo Origem · Status</span>
+        </div>
+      </div>
+
+    </div><!-- /sidebar -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────
+// COLUMNS
+// ─────────────────────────────────────────────
+const COLS = [
+  { key:'arquivo',          label:'Arquivo PDF'       },
+  { key:'status',           label:'Status'            },
+  { key:'customerName',     label:'Nome / Razão Social'},
+  { key:'documentType',     label:'Tipo Doc'          },
+  { key:'customerDocument', label:'CPF / CNPJ'        },
+  { key:'customerPhone',    label:'Telefone'          },
+  { key:'customerEmail',    label:'E-mail'            },
+  { key:'region',           label:'Estado (UF)'       },
+  { key:'vehicleVin',       label:'VIN / Chassi'      },
+  { key:'vehiclePlate',     label:'Placa'             },
+  { key:'vehicleModel',     label:'Modelo'            },
+  { key:'vehicleYear',      label:'Ano'               },
+  { key:'equipmentSerial',  label:'Serial Equip.'     },
+  { key:'observations',     label:'Observações'       },
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let pdfFiles   = [];    // [{name, base64}]
+let queue      = [];    // [{index, name, base64, state, retries, result, error}]
+let results    = [];    // completed rows
+let running    = 0;
+let paused     = false;
+let stopped    = false;
+let startTime  = null;
+let doneCount  = 0;
+let errCount   = 0;
+let filterMode = 'all';
+let zipFileName = '';
+
+const MAX_RETRIES  = 3;
+const RETRY_DELAYS = [2000, 5000, 10000]; // ms
+let   CONCURRENCY  = 5;
+
+// ─────────────────────────────────────────────
+// DROP / FILE INPUT
+// ─────────────────────────────────────────────
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()=> dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); if(e.dataTransfer.files[0]) loadZip(e.dataTransfer.files[0]); });
+document.getElementById('zip-input').addEventListener('change', e => { if(e.target.files[0]) loadZip(e.target.files[0]); });
+document.getElementById('concurrency-sel').addEventListener('change', e => {
+  CONCURRENCY = +e.target.value;
+  document.getElementById('cfg-workers').textContent = CONCURRENCY;
+});
+
+// ─────────────────────────────────────────────
+// LOAD ZIP
+// ─────────────────────────────────────────────
+async function loadZip(file) {
+  if (!file.name.toLowerCase().endsWith('.zip')) { toast('e', 'Somente arquivos .zip são aceitos'); return; }
+  if (file.size > 200*1024*1024) { toast('e', 'Arquivo muito grande. Máximo 200 MB'); return; }
+
+  zipFileName = file.name;
+  const sz = file.size < 1024*1024 ? `${(file.size/1024).toFixed(1)} KB` : `${(file.size/(1024*1024)).toFixed(1)} MB`;
+  document.getElementById('zip-name').textContent = file.name;
+  document.getElementById('zip-meta').textContent = sz;
+  const zp = document.getElementById('zip-preview');
+  zp.style.display = 'flex';
+  document.getElementById('dz-label').textContent = 'Trocar arquivo';
+
+  toast('i', 'Abrindo ZIP...');
+  try {
+    const buf  = await file.arrayBuffer();
+    const zip  = await JSZip.loadAsync(buf);
+    const pdfs = Object.values(zip.files).filter(f => !f.dir && f.name.toLowerCase().endsWith('.pdf'));
+
+    if (!pdfs.length) { toast('e', 'Nenhum PDF encontrado dentro do ZIP'); return; }
+    if (pdfs.length > 200) { toast('w', `Encontrados ${pdfs.length} PDFs — processando os primeiros 200`); }
+
+    toast('i', `Carregando ${Math.min(pdfs.length,200)} PDFs em memória...`);
+
+    pdfFiles = [];
+    for (const pf of pdfs.slice(0, 200)) {
+      const b64  = await pf.async('base64');
+      const name = pf.name.split('/').pop();
+      pdfFiles.push({ name, base64: b64 });
+    }
+
+    buildQueue();
+    renderItemList();
+    document.getElementById('list-card').style.display = 'block';
+    document.getElementById('progress-card').style.display = 'block';
+    document.getElementById('btn-run').disabled = false;
+    document.getElementById('sb-total').textContent = pdfFiles.length;
+    updateStats();
+    toast('s', `${pdfFiles.length} PDF${pdfFiles.length>1?'s':''} prontos para extração`);
+  } catch(err) {
+    toast('e', 'Erro ao abrir ZIP: ' + err.message);
+  }
+}
+
+function buildQueue() {
+  queue = pdfFiles.map((f, i) => ({
+    index: i,
+    name: f.name,
+    base64: f.base64,
+    state: 'idle',   // idle | queue | running | ok | err | retry
+    retries: 0,
+    result: null,
+    error: null,
+  }));
+  results = [];
+  doneCount = 0; errCount = 0;
+}
+
+// ─────────────────────────────────────────────
+// QUEUE ENGINE
+// ─────────────────────────────────────────────
+async function startQueue() {
+  CONCURRENCY = +document.getElementById('concurrency-sel').value;
+  paused = false; stopped = false;
+  startTime = Date.now();
+  results = [];
+  doneCount = 0; errCount = 0;
+
+  // Reset all to queue state
+  queue.forEach(item => { item.state = 'idle'; item.result = null; item.error = null; item.retries = 0; });
+
+  document.getElementById('btn-run').disabled   = true;
+  document.getElementById('btn-pause').disabled = false;
+  document.getElementById('btn-stop').disabled  = false;
+  document.getElementById('btn-export').disabled   = true;
+  document.getElementById('btn-export-2').disabled = true;
+  document.getElementById('results-card').style.display = 'none';
+  setStatusMsg('Iniciando...');
+
+  // Enqueue all
+  queue.forEach(item => { item.state = 'queue'; });
+  updateItemList();
+  updateStats();
+
+  // Start workers
+  const workers = Array.from({ length: CONCURRENCY }, () => worker());
+  await Promise.all(workers);
+
+  // Done
+  document.getElementById('btn-run').disabled   = false;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled  = true;
+  document.getElementById('btn-export').disabled   = false;
+  document.getElementById('btn-export-2').disabled = false;
+
+  if (!stopped) {
+    const msg = errCount
+      ? `Concluído! ${doneCount} OK · ${errCount} erro${errCount>1?'s':''}. Baixe a planilha →`
+      : `Tudo pronto! ${doneCount} PDFs extraídos com sucesso.`;
+    setStatusMsg(msg);
+    toast(errCount ? 'w' : 's', msg);
+    renderResultsTable();
+  }
+}
+
+async function worker() {
+  while (true) {
+    if (stopped) break;
+    if (paused) { await sleep(500); continue; }
+
+    const item = queue.find(i => i.state === 'queue');
+    if (!item) break;
+
+    item.state = 'running';
+    running++;
+    updateItem(item);
+    updateStats();
+
+    let success = false;
+    while (item.retries <= MAX_RETRIES && !stopped) {
+      try {
+        const data = await extractPDF(item.base64, item.name);
+        data.arquivo = item.name;
+        data.status  = 'OK';
+        item.result  = data;
+        item.state   = 'ok';
+        results.push(data);
+        doneCount++;
+        success = true;
+        break;
+      } catch(err) {
+        item.retries++;
+        const isRateLimit = /529|rate.limit|overloaded/i.test(err.message);
+        const delay = isRateLimit ? 30000 : (RETRY_DELAYS[item.retries - 1] || 10000);
+
+        if (item.retries > MAX_RETRIES) {
+          item.state  = 'err';
+          item.error  = err.message;
+          const row   = { arquivo: item.name, status: 'ERRO', _error: err.message };
+          COLS.forEach(c => { if(c.key !== 'arquivo' && c.key !== 'status') row[c.key] = ''; });
+          results.push(row);
+          errCount++;
+          break;
+        }
+
+        if (isRateLimit) {
+          setStatusMsg(`Rate limit atingido — aguardando 30s...`);
+          toast('w', 'Rate limit da API — pausando 30s automaticamente');
+        }
+
+        item.state = 'retry';
+        updateItem(item);
+        await sleep(delay);
+        if (stopped) break;
+        item.state = 'running';
+        updateItem(item);
+      }
+    }
+
+    running--;
+    updateItem(item);
+    updateStats();
+    updateExportCount();
+  }
+}
+
+// ─────────────────────────────────────────────
+// CONTROLS
+// ─────────────────────────────────────────────
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pause-label').textContent = paused ? 'Retomar' : 'Pausar';
+  document.getElementById('pause-icon').innerHTML = paused
+    ? `<polygon points="5 3 19 12 5 21 5 3"/>`
+    : `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
+  setStatusMsg(paused ? 'Pausado — clique em Retomar para continuar' : 'Retomando...');
+}
+
+function stopQueue() {
+  stopped = true; paused = false;
+  queue.forEach(i => { if(i.state === 'queue') i.state = 'idle'; });
+  updateItemList();
+  setStatusMsg('Interrompido pelo usuário');
+  document.getElementById('btn-run').disabled   = false;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled  = true;
+  if (results.length) {
+    document.getElementById('btn-export').disabled   = false;
+    document.getElementById('btn-export-2').disabled = false;
+    renderResultsTable();
+  }
+  toast('w', 'Extração interrompida');
+}
+
+function clearAll() {
+  stopped = true;
+  pdfFiles = []; queue = []; results = [];
+  doneCount = 0; errCount = 0; running = 0;
+  document.getElementById('zip-preview').style.display = 'none';
+  document.getElementById('list-card').style.display = 'none';
+  document.getElementById('progress-card').style.display = 'none';
+  document.getElementById('results-card').style.display = 'none';
+  document.getElementById('btn-run').disabled   = true;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled  = true;
+  document.getElementById('btn-export').disabled   = true;
+  document.getElementById('btn-export-2').disabled = true;
+  document.getElementById('zip-input').value = '';
+  document.getElementById('dz-label').textContent = 'Clique ou arraste o arquivo .zip aqui';
+  document.getElementById('export-count').textContent = 'Nenhum registro ainda';
+  toast('i', 'Fila limpa');
+}
+
+// ─────────────────────────────────────────────
+// AI CALL
+// ─────────────────────────────────────────────
+const PROMPT = `Você é um extrator de dados de documentos brasileiros para o sistema SGW Pro (licenciamento automotivo).
+Analise este PDF e extraia os campos abaixo. Retorne APENAS um JSON válido, sem markdown, sem nenhum texto antes ou depois.
+
+Campos (use null se não encontrado):
+- customerName: Nome completo ou razão social
+- documentType: "cpf" ou "cnpj"
+- customerDocument: CPF no formato 000.000.000-00 ou CNPJ no formato 00.000.000/0000-00
+- customerPhone: Telefone com DDD, formato (00) 00000-0000
+- customerEmail: E-mail
+- region: Sigla do estado (ex: SP, PE, RJ, BA)
+- vehicleVin: VIN/Chassi 17 caracteres maiúsculos sem espaços
+- vehiclePlate: Placa do veículo
+- vehicleModel: Marca e modelo (ex: Jeep Compass, Fiat Strada Adventure)
+- vehicleYear: Ano do veículo
+- equipmentSerial: Número serial de qualquer equipamento mencionado
+- observations: Informações adicionais relevantes
+
+Retorne somente o objeto JSON, nada mais.`;
+
+async function extractPDF(base64, name) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } },
+          { type: 'text', text: PROMPT }
+        ]
+      }]
+    })
+  });
+
+  if (res.status === 529) throw new Error('529 overloaded — rate limit');
+  if (res.status === 429) throw new Error('429 rate limit');
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e?.error?.message || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  const raw  = (data.content || []).map(b => b.text || '').join('');
+  try {
+    return JSON.parse(raw.replace(/```json|```/g, '').trim());
+  } catch {
+    throw new Error('Formato inesperado da IA');
+  }
+}
+
+// ─────────────────────────────────────────────
+// STATS & UI
+// ─────────────────────────────────────────────
+function updateStats() {
+  const total  = queue.length;
+  const ok     = queue.filter(i => i.state === 'ok').length;
+  const err    = queue.filter(i => i.state === 'err').length;
+  const retry  = queue.filter(i => i.state === 'retry').length;
+  const runN   = queue.filter(i => i.state === 'running').length;
+  const qN     = queue.filter(i => i.state === 'queue').length;
+  const done   = ok + err;
+  const pct    = total ? Math.round((done / total) * 100) : 0;
+
+  // Ring
+  const circ = 2 * Math.PI * 52; // 326.56
+  const offset = circ * (1 - pct / 100);
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-pct').textContent  = pct + '%';
+  document.getElementById('ring-sub').textContent  = `${done} / ${total}`;
+
+  // Stat boxes
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-ok').textContent    = ok;
+  document.getElementById('s-retry').textContent = retry;
+  document.getElementById('s-err').textContent   = err;
+
+  // Sidebar
+  document.getElementById('sb-ok').textContent      = ok;
+  document.getElementById('sb-err').textContent     = err;
+  document.getElementById('sb-running').textContent = runN;
+  document.getElementById('sb-queue').textContent   = qN;
+
+  // Speed & ETA
+  if (startTime && done > 0) {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const rate    = done / elapsed;           // docs/s
+    const rateMin = (rate * 60).toFixed(1);   // docs/min
+    const remain  = total - done;
+    const etaSec  = remain / rate;
+    const etaStr  = etaSec < 60
+      ? `~${Math.ceil(etaSec)}s`
+      : `~${Math.ceil(etaSec/60)}min`;
+
+    document.getElementById('sb-speed').textContent = `${rateMin}/min`;
+    document.getElementById('sb-eta').textContent   = done < total ? etaStr : 'Concluído';
+    const sb = document.getElementById('speed-badge');
+    const eb = document.getElementById('eta-badge');
+    sb.style.display = 'inline-flex'; sb.textContent = `${rateMin} docs/min`;
+    eb.style.display = 'inline-flex'; eb.textContent = done < total ? `ETA ${etaStr}` : 'Pronto!';
+  }
+}
+
+function updateExportCount() {
+  const n = results.length;
+  document.getElementById('export-count').textContent =
+    n > 0 ? `${n} registro${n>1?'s':''} disponíve${n>1?'is':'l'}` : 'Nenhum registro ainda';
+  if (n > 0) {
+    document.getElementById('btn-export').disabled   = false;
+    document.getElementById('btn-export-2').disabled = false;
+  }
+}
+
+function setStatusMsg(msg) {
+  document.getElementById('status-msg').textContent = msg;
+}
+
+// ─────────────────────────────────────────────
+// ITEM LIST (virtual — only show visible range)
+// ─────────────────────────────────────────────
+function renderItemList() {
+  const container = document.getElementById('item-list');
+  container.innerHTML = '';
+  document.getElementById('list-count').textContent = queue.length;
+
+  queue.forEach(item => {
+    const el = document.createElement('div');
+    el.id = `item-${item.index}`;
+    el.className = `item`;
+    el.innerHTML = itemHTML(item);
+    container.appendChild(el);
+  });
+}
+
+function itemHTML(item) {
+  const dotCls = {
+    idle:'d-idle', queue:'d-queue', running:'d-running',
+    ok:'d-ok', err:'d-err', retry:'d-retry'
+  }[item.state] || 'd-idle';
+
+  const pdfLabel = `<div style="width:28px;height:33px;border-radius:5px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:8px;font-weight:700;color:var(--red)">PDF</span></div>`;
+
+  const stateLabel = {
+    idle:'Aguardando',
+    queue:'Na fila',
+    running:'Analisando...',
+    ok: item.result?.customerName ? `✓ ${item.result.customerName.slice(0,30)}` : '✓ Extraído',
+    err:`✗ ${(item.error||'erro').slice(0,50)}`,
+    retry:`Retry ${item.retries}/${MAX_RETRIES}...`,
+  }[item.state] || '';
+
+  const stateColor = {
+    ok:'var(--green)', err:'var(--red)', running:'var(--blue)',
+    retry:'var(--amber)', queue:'#475569', idle:'#334155'
+  }[item.state] || '#334155';
+
+  const progress = item.state === 'running'
+    ? `<div class="minibar"><div class="minifill" style="width:60%;animation:blink 1s infinite"></div></div>`
+    : '';
+
+  return `
+    <div class="dot ${dotCls}"></div>
+    ${pdfLabel}
+    <div style="flex:1;min-width:0">
+      <div style="font-size:12px;font-weight:500;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(item.name)}</div>
+      <div style="font-size:11px;color:${stateColor};margin-top:2px">${stateLabel}</div>
+      ${progress}
+    </div>
+    ${item.retries > 0 ? `<span class="bdg b-amber" style="font-size:10px">${item.retries}×</span>` : ''}
+  `;
+}
+
+function updateItem(item) {
+  const el = document.getElementById(`item-${item.index}`);
+  if (!el) return;
+  el.className = 'item ' + (item.state === 'running' ? 'running' : item.state === 'ok' ? 'ok' : item.state === 'err' ? 'err' : '');
+  el.innerHTML = itemHTML(item);
+}
+
+function updateItemList() {
+  queue.forEach(item => updateItem(item));
+  updateStats();
+}
+
+// Filter
+let filterText = '';
+let filterErr  = false;
+function filterList(mode) {
+  if (mode === 'err') {
+    filterErr = !filterErr;
+    document.getElementById('filter-err-btn').className = filterErr ? 'btn btn-red btn-sm' : 'btn btn-ghost btn-sm';
+  } else {
+    filterText = document.getElementById('filter-input').value.toLowerCase();
+  }
+  queue.forEach(item => {
+    const el = document.getElementById(`item-${item.index}`);
+    if (!el) return;
+    const nameMatch = !filterText || item.name.toLowerCase().includes(filterText);
+    const errMatch  = !filterErr  || item.state === 'err';
+    el.style.display = (nameMatch && errMatch) ? 'flex' : 'none';
+  });
+}
+
+// ─────────────────────────────────────────────
+// RESULTS TABLE PREVIEW
+// ─────────────────────────────────────────────
+function renderResultsTable() {
+  if (!results.length) return;
+  const preview = results.slice(0, 20);
+
+  document.getElementById('tbl-head').innerHTML =
+    '<tr>' + COLS.map(c => `<th>${c.label}</th>`).join('') + '</tr>';
+
+  document.getElementById('tbl-body').innerHTML = preview.map(r =>
+    '<tr>' + COLS.map(c => {
+      const v = r[c.key];
+      if (!v) return `<td class="empty">—</td>`;
+      if (c.key === 'status') {
+        const cls = v === 'OK' ? 'b-green' : 'b-red';
+        return `<td><span class="bdg ${cls}">${escH(v)}</span></td>`;
+      }
+      if (c.key === 'vehicleVin') return `<td class="mono" style="font-size:11px" title="${escH(v)}">${escH(v)}</td>`;
+      return `<td title="${escH(v)}">${escH(v)}</td>`;
+    }).join('') + '</tr>'
+  ).join('');
+
+  document.getElementById('preview-count').textContent =
+    `${results.length} registro${results.length>1?'s':''} · mostrando ${Math.min(20,results.length)}`;
+  document.getElementById('results-card').style.display = 'block';
+}
+
+// ─────────────────────────────────────────────
+// XLSX EXPORT
+// ─────────────────────────────────────────────
+function downloadXLSX() {
+  if (!results.length) { toast('w', 'Nenhum dado para exportar ainda'); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  // ── Sheet 1: Cadastros ──
+  const header = COLS.map(c => c.label);
+  const rows   = results.map(r => COLS.map(c => r[c.key] ?? ''));
+  const ws     = XLSX.utils.aoa_to_sheet([header, ...rows]);
+
+  // Column widths
+  ws['!cols'] = COLS.map(c => {
+    const maxLen = Math.max(c.label.length, ...results.map(r => String(r[c.key] ?? '').length));
+    return { wch: Math.min(Math.max(maxLen + 2, 12), 42) };
+  });
+
+  // Header style (requires xlsx-style or just use themes — SheetJS CE)
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const addr = XLSX.utils.encode_cell({ r: 0, c: C });
+    if (ws[addr]) ws[addr].s = {
+      font:      { bold: true, color: { rgb: 'FFFFFF' }, name: 'Arial', sz: 10 },
+      fill:      { fgColor: { rgb: '1E3A8A' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
+      border: { bottom: { style: 'thin', color: { rgb: '3B82F6' } } }
+    };
+  }
+
+  // VIN column mono
+  const vinC = COLS.findIndex(c => c.key === 'vehicleVin');
+  if (vinC >= 0) {
+    for (let R = 1; R <= results.length; R++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: vinC });
+      if (ws[addr] && ws[addr].v) ws[addr].s = { font: { name: 'Courier New', sz: 9 } };
+    }
+  }
+
+  // Status column color
+  const stC = COLS.findIndex(c => c.key === 'status');
+  if (stC >= 0) {
+    results.forEach((r, i) => {
+      const addr = XLSX.utils.encode_cell({ r: i+1, c: stC });
+      if (ws[addr]) ws[addr].s = {
+        font: { bold: true, color: { rgb: r.status === 'OK' ? '166534' : '991B1B' } },
+        fill: { fgColor: { rgb: r.status === 'OK' ? 'DCFCE7' : 'FEE2E2' } }
+      };
+    });
+  }
+
+  // Freeze header
+  ws['!freeze'] = { xSplit: 0, ySplit: 1, topLeftCell: 'A2', activePane: 'bottomLeft', state: 'frozen' };
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Cadastros SGW');
+
+  // ── Sheet 2: Resumo ──
+  const total  = queue.length;
+  const ok     = results.filter(r => r.status === 'OK').length;
+  const err    = results.filter(r => r.status === 'ERRO').length;
+  const avgF   = results.length
+    ? (results.reduce((s,r) => s + COLS.filter(c => c.key !== 'arquivo' && c.key !== 'status' && r[c.key]).length, 0) / results.length).toFixed(1)
+    : 0;
+  const elapsed = startTime ? Math.round((Date.now() - startTime)/1000) : 0;
+
+  const wsR = XLSX.utils.aoa_to_sheet([
+    ['RELATÓRIO DE EXTRAÇÃO — SGW PRO'],
+    [],
+    ['Gerado em',             new Date().toLocaleString('pt-BR')],
+    ['Arquivo ZIP',           zipFileName],
+    ['Workers paralelos',     CONCURRENCY],
+    [],
+    ['Total de PDFs no lote', total],
+    ['Processados com sucesso', ok],
+    ['Com erro',              err],
+    ['Tempo total (segundos)', elapsed],
+    [],
+    ['Campos por documento (média)', avgF],
+    ['Campos possíveis por doc',     COLS.length - 2],
+  ]);
+  wsR['!cols'] = [{ wch: 36 }, { wch: 24 }];
+  wsR['A1'].s  = { font: { bold: true, sz: 13, color: { rgb: '1E3A8A' } } };
+
+  XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
+
+  const date = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `sgw-lote-${date}.xlsx`);
+  toast('s', `Planilha com ${results.length} registros baixada!`);
+}
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function escH(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(type, msg) {
+  const w   = document.getElementById('toasts');
+  const t   = document.createElement('div');
+  const map = { s:'ts', e:'te', w:'tw', i:'ti' };
+  const ico = {
+    s:`<svg width="14" height="14" fill="none" stroke="#4ade80" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`,
+    e:`<svg width="14" height="14" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    w:`<svg width="14" height="14" fill="none" stroke="#fbbf24" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>`,
+    i:`<svg width="14" height="14" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  };
+  t.className = `toast ${map[type]||'ti'}`;
+  t.innerHTML = `${ico[type]||ico.i}<span style="flex:1">${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(() => t.remove(), 5000);
+}
+</script>
+</body>
+</html>

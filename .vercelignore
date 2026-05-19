@@ -1,0 +1,11 @@
+.env.local
+Backup_BD/
+pdf_extracted_imgs/
+.img/
+*.py
+bug.md
+hub-strategy.md
+teste.html
+sgw-zip-extractor.html
+sgw-zip-extractor-v2.html
+sgw-zip-extractor-unified.html

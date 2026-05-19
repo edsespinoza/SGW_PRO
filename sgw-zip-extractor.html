@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGW Pro — Extrator de Lote</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- JSZip -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --bg:    #070b14;
+      --bg800: #0d1425;
+      --gb:    rgba(255,255,255,0.04);
+      --gb-b:  rgba(255,255,255,0.08);
+      --blue:  #60a5fa;
+      --cyan:  #22d3ee;
+      --purple:#a78bfa;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --red:   #f87171;
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{ font-family:'Inter',sans-serif; background:var(--bg); color:#e2e8f0; min-height:100vh; }
+    .hd{ font-family:'Chivo',sans-serif; }
+    .mono{ font-family:'JetBrains Mono',monospace; }
+
+    /* Cards */
+    .card{ background:var(--gb); border:1px solid var(--gb-b); border-radius:16px; }
+    .card-sm{ background:var(--gb); border:1px solid var(--gb-b); border-radius:10px; }
+
+    /* Buttons */
+    .btn{ display:inline-flex; align-items:center; gap:7px; border:none; cursor:pointer;
+          font-family:'Inter',sans-serif; font-weight:600; border-radius:10px; transition:all .18s; }
+    .btn-primary{ background:linear-gradient(135deg,#2563eb,#7c3aed); color:white; padding:12px 22px; font-size:14px; }
+    .btn-primary:hover{ opacity:.9; transform:translateY(-1px); box-shadow:0 8px 24px rgba(59,130,246,.3); }
+    .btn-primary:disabled{ opacity:.35; cursor:not-allowed; transform:none; }
+    .btn-ghost{ background:var(--gb); border:1px solid var(--gb-b); color:#94a3b8; padding:9px 16px; font-size:13px; }
+    .btn-ghost:hover{ background:rgba(255,255,255,.07); color:white; }
+    .btn-green{ background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.22); color:var(--green); padding:9px 16px; font-size:13px; }
+    .btn-green:hover{ background:rgba(74,222,128,.22); }
+    .btn-sm{ padding:6px 12px !important; font-size:12px !important; border-radius:8px !important; }
+    .btn-icon{ padding:7px !important; border-radius:8px !important; }
+
+    /* Badges */
+    .bdg{ display:inline-flex; align-items:center; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; }
+    .b-blue  { background:rgba(96,165,250,.12); color:var(--blue); }
+    .b-green { background:rgba(74,222,128,.12);  color:var(--green); }
+    .b-amber { background:rgba(251,191,36,.12);  color:var(--amber); }
+    .b-red   { background:rgba(241,114,114,.12); color:var(--red); }
+    .b-purple{ background:rgba(167,139,250,.12); color:var(--purple); }
+    .b-gray  { background:rgba(255,255,255,.06); color:#64748b; }
+
+    /* Drop zone */
+    .drop{ border:2px dashed rgba(255,255,255,.12); border-radius:16px; padding:44px 20px;
+           text-align:center; cursor:pointer; transition:all .22s; background:rgba(255,255,255,.015); }
+    .drop:hover,.drop.over{ border-color:#3b82f6; background:rgba(59,130,246,.06); }
+    .drop input{ display:none; }
+
+    /* File row */
+    .frow{ display:flex; align-items:center; gap:12px; padding:10px 14px;
+           border-radius:10px; border:1px solid var(--gb-b); background:var(--gb); transition:all .15s; }
+
+    /* Status dot */
+    .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .dot-idle   { background:rgba(255,255,255,.15); }
+    .dot-waiting{ background:var(--amber); animation:pulse 1.2s infinite; }
+    .dot-running{ background:var(--blue);  animation:pulse .8s infinite; }
+    .dot-ok     { background:var(--green); }
+    .dot-err    { background:var(--red); }
+    @keyframes pulse{ 0%,100%{opacity:1}50%{opacity:.3} }
+
+    /* Progress bar */
+    .pgbar{ height:3px; border-radius:2px; background:rgba(255,255,255,.07); overflow:hidden; }
+    .pgfill{ height:100%; border-radius:2px; transition:width .45s ease; }
+
+    /* Table */
+    .tbl-wrap{ overflow-x:auto; border-radius:12px; border:1px solid var(--gb-b); }
+    table{ width:100%; border-collapse:collapse; font-size:12px; }
+    thead tr{ background:rgba(255,255,255,.04); }
+    th{ padding:10px 12px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase;
+        letter-spacing:.07em; color:#475569; border-bottom:1px solid var(--gb-b); white-space:nowrap; }
+    td{ padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.04); color:#cbd5e1;
+        white-space:nowrap; max-width:200px; overflow:hidden; text-overflow:ellipsis; }
+    tr:last-child td{ border-bottom:none; }
+    tr:hover td{ background:rgba(255,255,255,.02); }
+    td.empty{ color:#334155; font-style:italic; }
+
+    /* Animations */
+    .fadein{ animation:fi .3s ease; }
+    @keyframes fi{ from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
+    .spin{ animation:spin 1s linear infinite; }
+    @keyframes spin{ from{transform:rotate(0)}to{transform:rotate(360deg)} }
+
+    /* Toast */
+    .toast-wrap{ position:fixed; top:18px; right:18px; z-index:300;
+                 display:flex; flex-direction:column; gap:9px; pointer-events:none; }
+    .toast{ display:flex; align-items:center; gap:10px; padding:11px 15px; border-radius:11px;
+            border:1px solid; min-width:290px; backdrop-filter:blur(14px);
+            animation:fi .28s ease; pointer-events:all; font-size:13px; color:white; }
+    .ts{ background:rgba(6,78,59,.93);  border-color:rgba(34,197,94,.3);  }
+    .te{ background:rgba(127,29,29,.93);border-color:rgba(239,68,68,.3);  }
+    .ti{ background:rgba(23,37,84,.93); border-color:rgba(59,130,246,.3); }
+    .tw{ background:rgba(120,53,15,.93);border-color:rgba(245,158,11,.3); }
+
+    @media(max-width:680px){
+      .side{ display:none; }
+      .main-col{ grid-template-columns:1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toasts" class="toast-wrap"></div>
+
+<div style="max-width:1080px;margin:0 auto;padding:28px 16px">
+
+  <!-- ── Header ── -->
+  <header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center">
+        <!-- zip icon -->
+        <svg width="22" height="22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5z"/>
+          <polyline points="17 2 17 8 23 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <div>
+        <div class="hd" style="font-size:21px;font-weight:900;color:white;line-height:1">
+          SGW Pro <span style="color:var(--blue)">— Extrator de Lote</span>
+        </div>
+        <div style="font-size:11px;color:#475569;margin-top:3px">ZIP de PDFs → Planilha Excel · IA Anthropic</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="bdg b-purple">Claude AI</span>
+      <span class="bdg b-blue">Lote</span>
+    </div>
+  </header>
+
+  <div class="main-col" style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start">
+
+    <!-- ── LEFT ── -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+
+      <!-- Upload ZIP -->
+      <div class="card" style="padding:24px" id="upload-card">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:18px">
+          <svg width="17" height="17" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span class="hd" style="font-weight:700;color:white;font-size:15px">Enviar arquivo ZIP</span>
+        </div>
+
+        <label class="drop" id="dropzone" for="zip-input">
+          <input type="file" id="zip-input" accept=".zip,application/zip">
+          <svg id="dz-icon" width="42" height="42" fill="none" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="margin:0 auto 14px;display:block">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5z"/>
+            <polyline points="17 2 17 8 23 8"/>
+          </svg>
+          <div id="dz-label" style="font-size:14px;font-weight:600;color:#94a3b8">Clique ou arraste o arquivo .zip aqui</div>
+          <div style="font-size:11px;color:#475569;margin-top:5px">O ZIP deve conter os PDFs dos clientes. Máx. 50 MB.</div>
+        </label>
+
+        <!-- File attached -->
+        <div id="zip-preview" style="display:none;margin-top:14px">
+          <div class="frow">
+            <div style="width:34px;height:40px;border-radius:7px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:10px;font-weight:700;color:var(--purple)">ZIP</span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div id="zip-name" style="font-size:13px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+              <div id="zip-meta" style="font-size:11px;color:#475569;margin-top:2px"></div>
+            </div>
+            <button class="btn btn-ghost btn-sm btn-icon" onclick="clearZip()" title="Remover">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF list -->
+      <div class="card" id="pdf-list-card" style="padding:24px;display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:9px">
+            <svg width="16" height="16" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="hd" style="font-weight:700;color:white;font-size:14px">PDFs encontrados</span>
+            <span class="bdg b-amber" id="pdf-count-badge">0</span>
+          </div>
+          <span id="progress-label" style="font-size:12px;color:#475569"></span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="pgbar" style="margin-bottom:16px">
+          <div id="pgfill" class="pgfill" style="width:0%;background:linear-gradient(90deg,#2563eb,#7c3aed)"></div>
+        </div>
+
+        <!-- PDF rows -->
+        <div id="pdf-rows" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <!-- Run button -->
+      <button class="btn btn-primary" id="run-btn" onclick="runExtraction()" disabled
+        style="width:100%;justify-content:center;padding:14px;font-size:15px">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Extrair dados e gerar planilha
+      </button>
+
+      <!-- Results table -->
+      <div id="results-card" style="display:none" class="fadein">
+        <div class="card" style="padding:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <svg width="17" height="17" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              <span class="hd" style="font-weight:700;color:white;font-size:15px">Prévia da planilha</span>
+              <span class="bdg b-green" id="rows-badge">0 registros</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-green" id="dl-btn" onclick="downloadXLSX()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Baixar .xlsx
+              </button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table id="preview-table">
+              <thead id="tbl-head"></thead>
+              <tbody id="tbl-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- ── SIDEBAR ── -->
+    <div class="side" style="display:flex;flex-direction:column;gap:16px;position:sticky;top:20px">
+
+      <!-- Stats card -->
+      <div class="card" style="padding:20px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:14px">Resultado</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">PDFs no ZIP</span>
+            <span class="bdg b-blue" id="stat-total">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Processados</span>
+            <span class="bdg b-green" id="stat-ok">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Com erro</span>
+            <span class="bdg b-red" id="stat-err">—</span>
+          </div>
+          <div style="height:1px;background:var(--gb-b)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#64748b">Campos preenchidos</span>
+            <span class="bdg b-purple" id="stat-fields">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columns reference -->
+      <div class="card" style="padding:20px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:12px">Colunas da planilha</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="font-size:10px;font-weight:700;color:#334155;margin-bottom:2px">CLIENTE</div>
+          <div style="font-size:11px;color:#475569;padding-left:6px;line-height:1.7">Nome · Tipo Doc · CPF/CNPJ · Telefone · E-mail · Estado</div>
+          <div style="font-size:10px;font-weight:700;color:#334155;margin:6px 0 2px">VEÍCULO</div>
+          <div style="font-size:11px;color:#475569;padding-left:6px;line-height:1.7">VIN · Placa · Modelo · Ano</div>
+          <div style="font-size:10px;font-weight:700;color:#334155;margin:6px 0 2px">EXTRAS</div>
+          <div style="font-size:11px;color:#475569;padding-left:6px;line-height:1.7">Serial Equip. · Observações · Arquivo Origem</div>
+        </div>
+      </div>
+
+      <!-- How it works -->
+      <div class="card" style="padding:20px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:12px">Como funciona</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;gap:9px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:10px;color:var(--blue);font-weight:700">1</span></div>
+            <span style="font-size:12px;color:#64748b;line-height:1.5">O ZIP é descompactado no browser e cada PDF é lido</span>
+          </div>
+          <div style="display:flex;gap:9px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:rgba(167,139,250,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:10px;color:var(--purple);font-weight:700">2</span></div>
+            <span style="font-size:12px;color:#64748b;line-height:1.5">Cada PDF vai para a IA Claude que extrai os campos do cadastro</span>
+          </div>
+          <div style="display:flex;gap:9px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:10px;color:var(--green);font-weight:700">3</span></div>
+            <span style="font-size:12px;color:#64748b;line-height:1.5">Os dados viram linhas na planilha — uma por PDF</span>
+          </div>
+          <div style="display:flex;gap:9px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:rgba(251,191,36,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:10px;color:var(--amber);font-weight:700">4</span></div>
+            <span style="font-size:12px;color:#64748b;line-height:1.5">Baixe o .xlsx e importe no SGW Pro</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sidebar -->
+
+  </div><!-- /grid -->
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let zipFile   = null;
+let pdfFiles  = [];   // [{name, base64}]
+let rowData   = [];   // extracted rows
+
+// ═══════════════════════════════════════════════
+// COLUMNS
+// ═══════════════════════════════════════════════
+const COLS = [
+  { key:'arquivo',          label:'Arquivo PDF'          },
+  { key:'customerName',     label:'Nome / Razão Social'  },
+  { key:'documentType',     label:'Tipo Doc'             },
+  { key:'customerDocument', label:'CPF / CNPJ'           },
+  { key:'customerPhone',    label:'Telefone'             },
+  { key:'customerEmail',    label:'E-mail'               },
+  { key:'region',           label:'Estado (UF)'          },
+  { key:'vehicleVin',       label:'VIN / Chassi'         },
+  { key:'vehiclePlate',     label:'Placa'                },
+  { key:'vehicleModel',     label:'Modelo'               },
+  { key:'vehicleYear',      label:'Ano'                  },
+  { key:'equipmentSerial',  label:'Serial Equipamento'   },
+  { key:'observations',     label:'Observações'          },
+];
+
+// ═══════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover',  e=>{ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()=> dz.classList.remove('over'));
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('over'); if(e.dataTransfer.files[0]) handleZip(e.dataTransfer.files[0]); });
+document.getElementById('zip-input').addEventListener('change', e=>{ if(e.target.files[0]) handleZip(e.target.files[0]); });
+
+// ═══════════════════════════════════════════════
+// ZIP HANDLING
+// ═══════════════════════════════════════════════
+async function handleZip(file) {
+  if (!file.name.toLowerCase().endsWith('.zip')) { toast('e','Somente arquivos .zip são aceitos'); return; }
+  if (file.size > 50*1024*1024) { toast('e','Arquivo muito grande. Máximo 50 MB'); return; }
+  zipFile = file;
+
+  const fmtSize = file.size < 1024*1024
+    ? `${(file.size/1024).toFixed(1)} KB`
+    : `${(file.size/(1024*1024)).toFixed(1)} MB`;
+
+  document.getElementById('zip-name').textContent = file.name;
+  document.getElementById('zip-meta').textContent = fmtSize;
+  document.getElementById('zip-preview').style.display = 'block';
+  document.getElementById('dz-label').textContent = 'Trocar arquivo';
+
+  toast('i','Abrindo ZIP...');
+
+  try {
+    const buf  = await file.arrayBuffer();
+    const zip  = await JSZip.loadAsync(buf);
+    const pdfs = Object.values(zip.files).filter(f => !f.dir && f.name.toLowerCase().endsWith('.pdf'));
+
+    if (!pdfs.length) { toast('e','Nenhum PDF encontrado no ZIP'); return; }
+
+    pdfFiles = [];
+    const rows = document.getElementById('pdf-rows');
+    rows.innerHTML = '';
+
+    for (const pf of pdfs) {
+      const b64 = await pf.async('base64');
+      const shortName = pf.name.split('/').pop();
+      pdfFiles.push({ name: shortName, base64: b64 });
+
+      const row = document.createElement('div');
+      row.className = 'frow fadein';
+      row.id = `prow-${pdfFiles.length-1}`;
+      row.innerHTML = `
+        <div class="dot dot-idle" id="dot-${pdfFiles.length-1}"></div>
+        <div style="width:30px;height:36px;border-radius:6px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.18);
+             display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="font-size:9px;font-weight:700;color:var(--red)">PDF</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(shortName)}</div>
+          <div id="status-${pdfFiles.length-1}" style="font-size:11px;color:#475569;margin-top:2px">Aguardando...</div>
+        </div>
+        <span id="badge-${pdfFiles.length-1}" class="bdg b-gray" style="flex-shrink:0">—</span>
+      `;
+      rows.appendChild(row);
+    }
+
+    document.getElementById('pdf-count-badge').textContent = pdfs.length;
+    document.getElementById('pdf-list-card').style.display = 'block';
+    document.getElementById('run-btn').disabled = false;
+    setStats(pdfs.length, '—', '—', '—');
+    toast('s', `${pdfs.length} PDF${pdfs.length>1?'s':''} encontrado${pdfs.length>1?'s':''}`);
+  } catch(err) {
+    toast('e','Erro ao abrir ZIP: ' + err.message);
+  }
+}
+
+function clearZip() {
+  zipFile = null; pdfFiles = []; rowData = [];
+  document.getElementById('zip-preview').style.display = 'none';
+  document.getElementById('pdf-list-card').style.display = 'none';
+  document.getElementById('results-card').style.display = 'none';
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('dz-label').textContent = 'Clique ou arraste o arquivo .zip aqui';
+  document.getElementById('zip-input').value = '';
+  document.getElementById('pgfill').style.width = '0%';
+  document.getElementById('progress-label').textContent = '';
+  setStats('—','—','—','—');
+}
+
+// ═══════════════════════════════════════════════
+// EXTRACTION
+// ═══════════════════════════════════════════════
+async function runExtraction() {
+  if (!pdfFiles.length) return;
+  rowData = [];
+  let ok = 0, err = 0;
+  const total = pdfFiles.length;
+
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('results-card').style.display = 'none';
+  setStats(total, 0, 0, '—');
+
+  for (let i = 0; i < pdfFiles.length; i++) {
+    const pdf = pdfFiles[i];
+    setDot(i,'running');
+    setStatus(i,'Analisando com IA...');
+    setBadge(i,'...','b-blue');
+    setProgress(i, total);
+
+    try {
+      const data = await extractPDF(pdf.base64, pdf.name);
+      data.arquivo = pdf.name;
+      rowData.push(data);
+      setDot(i,'ok');
+      const filled = COLS.filter(c=>c.key!=='arquivo' && data[c.key]).length;
+      setStatus(i, data.customerName ? `✓ ${data.customerName}` : '✓ Dados extraídos');
+      setBadge(i, `${filled} campos`, 'b-green');
+      ok++;
+    } catch(e) {
+      rowData.push({ arquivo: pdf.name, _error: e.message });
+      setDot(i,'err');
+      setStatus(i,'Erro: ' + e.message.slice(0,60));
+      setBadge(i,'erro','b-red');
+      err++;
+    }
+
+    setProgress(i+1, total);
+    setStats(total, ok, err, '—');
+  }
+
+  // Totals
+  const totalFields = rowData.reduce((s,r) => s + COLS.filter(c=>c.key!=='arquivo'&&r[c.key]).length, 0);
+  const avg = rowData.length ? Math.round(totalFields/rowData.length) : 0;
+  setStats(total, ok, err, `${avg} média/doc`);
+
+  document.getElementById('run-btn').disabled = false;
+  renderTable();
+  document.getElementById('results-card').style.display = 'block';
+  document.getElementById('results-card').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('s', `Concluído! ${ok} de ${total} PDFs processados.`);
+}
+
+// ═══════════════════════════════════════════════
+// AI CALL
+// ═══════════════════════════════════════════════
+const PROMPT = `Você é um extrator de dados de documentos brasileiros para o sistema SGW Pro (licenciamento automotivo).
+
+Analise este PDF e extraia os campos abaixo. Retorne APENAS um JSON válido, sem markdown, sem texto antes ou depois.
+
+Campos (use null quando não encontrado):
+- customerName: string — Nome completo ou razão social
+- documentType: "cpf" ou "cnpj"
+- customerDocument: string — CPF (000.000.000-00) ou CNPJ (00.000.000/0000-00)
+- customerPhone: string — Telefone com DDD
+- customerEmail: string — E-mail
+- region: string — Sigla UF (ex: SP, PE, RJ)
+- vehicleVin: string — VIN/Chassi 17 caracteres, sem espaços, maiúsculo
+- vehiclePlate: string — Placa do veículo
+- vehicleModel: string — Marca e modelo (ex: Jeep Compass)
+- vehicleYear: string — Ano
+- equipmentSerial: string — Serial de equipamento
+- observations: string — Informações adicionais relevantes
+
+Retorne somente o JSON. Exemplo mínimo:
+{"customerName":"João Silva","documentType":"cpf","customerDocument":"123.456.789-00","customerPhone":null,"customerEmail":null,"region":"SP","vehicleVin":null,"vehiclePlate":null,"vehicleModel":null,"vehicleYear":null,"equipmentSerial":null,"observations":null}`;
+
+async function extractPDF(base64, filename) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      messages: [{
+        role: 'user',
+        content: [
+          { type:'document', source:{ type:'base64', media_type:'application/pdf', data:base64 }},
+          { type:'text', text: PROMPT }
+        ]
+      }]
+    })
+  });
+
+  if (!res.ok) {
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e?.error?.message || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  const raw = (data.content||[]).map(b=>b.text||'').join('');
+  try {
+    return JSON.parse(raw.replace(/```json|```/g,'').trim());
+  } catch {
+    throw new Error('Resposta inesperada da IA');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// TABLE PREVIEW
+// ═══════════════════════════════════════════════
+function renderTable() {
+  const head = document.getElementById('tbl-head');
+  const body = document.getElementById('tbl-body');
+
+  // Header
+  head.innerHTML = '<tr>' + COLS.map(c=>`<th>${c.label}</th>`).join('') + '</tr>';
+
+  // Rows
+  body.innerHTML = rowData.map(r => {
+    const cells = COLS.map(c => {
+      const v = r[c.key];
+      if (!v) return `<td class="empty">—</td>`;
+      return `<td title="${escH(v)}">${escH(v)}</td>`;
+    }).join('');
+    const hasErr = r._error;
+    return `<tr style="${hasErr?'opacity:.5':''}">${cells}</tr>`;
+  }).join('');
+
+  document.getElementById('rows-badge').textContent = `${rowData.length} registro${rowData.length!==1?'s':''}`;
+}
+
+// ═══════════════════════════════════════════════
+// XLSX DOWNLOAD
+// ═══════════════════════════════════════════════
+function downloadXLSX() {
+  if (!rowData.length) return;
+
+  const wb = XLSX.utils.book_new();
+
+  // ── Sheet 1: Dados ──
+  const sheetData = [
+    COLS.map(c => c.label),   // header row
+    ...rowData.map(r => COLS.map(c => r[c.key] || ''))
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+  // Column widths
+  const colWidths = COLS.map(c => {
+    const maxLen = Math.max(c.label.length, ...rowData.map(r => String(r[c.key]||'').length));
+    return { wch: Math.min(Math.max(maxLen + 2, 14), 40) };
+  });
+  ws['!cols'] = colWidths;
+
+  // Header style (SheetJS CE supports limited styling via theme)
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const addr = XLSX.utils.encode_cell({ r:0, c:C });
+    if (!ws[addr]) continue;
+    ws[addr].s = {
+      font:      { bold: true, color: { rgb: 'FFFFFF' } },
+      fill:      { fgColor: { rgb: '1E3A8A' } },
+      alignment: { horizontal: 'center', vertical: 'center' }
+    };
+  }
+
+  // Color VIN column mono
+  const vinIdx = COLS.findIndex(c=>c.key==='vehicleVin');
+  if (vinIdx >= 0) {
+    for (let R = 1; R <= rowData.length; R++) {
+      const addr = XLSX.utils.encode_cell({ r:R, c:vinIdx });
+      if (ws[addr] && ws[addr].v) {
+        ws[addr].s = { font:{ name:'Courier New', sz:10 } };
+      }
+    }
+  }
+
+  // Freeze header row
+  ws['!freeze'] = { xSplit:0, ySplit:1, topLeftCell:'A2', activePane:'bottomLeft', state:'frozen' };
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Cadastros SGW');
+
+  // ── Sheet 2: Resumo ──
+  const total  = rowData.length;
+  const comErr = rowData.filter(r=>r._error).length;
+  const comDados = total - comErr;
+  const allFields = rowData.flatMap(r => COLS.filter(c=>c.key!=='arquivo'&&r[c.key]).map(()=>1));
+  const avgFilled  = total ? Math.round(allFields.length / total) : 0;
+
+  const wsR = XLSX.utils.aoa_to_sheet([
+    ['Relatório de Extração SGW Pro'],
+    [],
+    ['Gerado em',       new Date().toLocaleString('pt-BR')],
+    ['Arquivo ZIP',     zipFile?.name || '—'],
+    [],
+    ['Total de PDFs',   total],
+    ['Processados OK',  comDados],
+    ['Com erro',        comErr],
+    ['Campos por doc (média)', avgFilled],
+    [],
+    ['Campos possíveis por documento', COLS.length - 1],
+    ['Total de campos preenchidos',    allFields.length],
+  ]);
+  wsR['!cols'] = [{ wch:34 }, { wch:22 }];
+  XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
+
+  const date = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `sgw-lote-${date}.xlsx`);
+  toast('s','Planilha baixada com sucesso!');
+}
+
+// ═══════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════
+function setDot(i, state) {
+  const el = document.getElementById(`dot-${i}`);
+  if (el) el.className = `dot dot-${state}`;
+}
+function setStatus(i, msg) {
+  const el = document.getElementById(`status-${i}`);
+  if (el) el.textContent = msg;
+}
+function setBadge(i, text, cls) {
+  const el = document.getElementById(`badge-${i}`);
+  if (el) { el.textContent = text; el.className = `bdg ${cls}`; }
+}
+function setProgress(done, total) {
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('pgfill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${done} / ${total} PDFs`;
+}
+function setStats(total, ok, err, fields) {
+  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-ok').textContent     = ok;
+  document.getElementById('stat-err').textContent    = err;
+  document.getElementById('stat-fields').textContent = fields;
+}
+function escH(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(type, msg) {
+  const w = document.getElementById('toasts');
+  const t = document.createElement('div');
+  const cls = type==='s'?'ts':type==='e'?'te':type==='w'?'tw':'ti';
+  const svg = type==='s'
+    ? `<svg width="15" height="15" fill="none" stroke="#4ade80" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`
+    : type==='e'
+    ? `<svg width="15" height="15" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+    : type==='w'
+    ? `<svg width="15" height="15" fill="none" stroke="#fbbf24" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>`
+    : `<svg width="15" height="15" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  t.className = `toast ${cls}`;
+  t.innerHTML = `${svg}<span style="flex:1">${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(()=>t.remove(), 4500);
+}
+</script>
+</body>
+</html>

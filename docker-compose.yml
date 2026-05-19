@@ -1,0 +1,76 @@
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sgw-postgres
+    environment:
+      POSTGRES_DB: sgwpro
+      POSTGRES_USER: sgwpro
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-sgwpro_dev}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "sgwpro"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - sgw-net
+
+  api:
+    build: ./api-server
+    container_name: sgw-api
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: sgwpro
+      DB_USER: sgwpro
+      DB_PASSWORD: ${DB_PASSWORD:-sgwpro_dev}
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:8081}
+      PORT: 3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sgw-net
+
+  sgw-pro:
+    build: .
+    container_name: sgw-pro-dev
+    ports:
+      - "${PORT:-8081}:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api:
+        condition: service_started
+    networks:
+      - sgw-net
+
+  ai-mock:
+    build:
+      context: ./mock-api
+      dockerfile: Dockerfile
+    container_name: sgw-ai-mock
+    restart: unless-stopped
+    networks:
+      - sgw-net
+
+volumes:
+  pgdata:
+
+networks:
+  sgw-net:
+    driver: bridge

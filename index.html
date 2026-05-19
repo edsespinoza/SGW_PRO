@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR" style="color-scheme:dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="autotech.app.br — Plataforma profissional de gestão de licenças SGW Stellantis para técnicos automotivos. Cadastro, emissão, certificados PDF e backup offline-first.">
+<meta name="theme-color" content="#030712">
+<title>autotech.app.br — SGW Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{
+  colors:{
+    sgw:{950:'#030712',900:'#080f1e',850:'#0d1526',800:'#1a2540',700:'#253460'},
+    cy:{400:'#22d3ee',500:'#06b6d4'},
+    vi:{400:'#a78bfa',500:'#8b5cf6'},
+  },
+  fontFamily:{sans:['Inter','system-ui','-apple-system','sans-serif']},
+}}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;background:#030712;color:#94a3b8;min-height:100vh;line-height:1.6;overflow-x:hidden}
+
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.45)}}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.splash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#030712;transition:opacity .6s ease-out,visibility .6s ease-out}
+.splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.splash-content{text-align:center;animation:fadeUp .6s ease-out both}
+.dot{width:10px;height:10px;border-radius:50%;margin:2px}
+.dot-cyan{background:#22d3ee}
+.dot-blue{background:#4455DD}
+.splash-bar{width:160px;margin:0 auto;height:3px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+.splash-bar-fill{height:100%;background:linear-gradient(90deg,#22d3ee,#a78bfa);border-radius:999px;transform-origin:left;animation:barGrow 2.5s ease-out forwards}
+.splash-btn{margin-top:2rem;opacity:0;transition:opacity .5s ease-out,transform .5s ease-out;transform:translateY(12px)}
+.splash-btn.show{opacity:1;transform:translateY(0)}
+body.splash-open{overflow:hidden}
+@media(prefers-reduced-motion:reduce){.splash,.splash-content,.splash-bar-fill,.dot,.splash-btn{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}
+
+.header{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,border-color .3s,backdrop-filter .3s}
+.header.scrolled{background:rgba(3,7,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05)}
+@supports not (backdrop-filter:blur(12px)){.header.scrolled{background:#030712}}
+
+.grid-bg{background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:48px 48px}
+
+.hero-glow{position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse at center,rgba(6,182,212,.1) 0%,transparent 60%);pointer-events:none}
+.hero-glow-2{position:absolute;bottom:-10%;right:-10%;width:400px;height:400px;background:radial-gradient(ellipse at center,rgba(139,92,246,.08) 0%,transparent 60%);pointer-events:none}
+
+.card{background:#0d1526;border:1px solid rgba(255,255,255,.05);border-radius:1rem;padding:1.75rem;transition:border-color .3s,background .3s,transform .3s}
+.card:hover{border-color:rgba(6,182,212,.15);background:#102031;transform:translateY(-2px)}
+.card-lg{background:#0d1526;border:1px solid rgba(255,255,255,.05);border-radius:1.25rem;padding:2rem}
+
+.glow-btn{box-shadow:0 0 30px rgba(6,182,212,.15)}
+.glow-btn:hover{box-shadow:0 0 45px rgba(6,182,212,.25)}
+
+.text-gradient{background:linear-gradient(135deg,#22d3ee,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.step-line{position:absolute;left:19px;top:48px;bottom:0;width:2px;background:linear-gradient(180deg,rgba(6,182,212,.4),transparent)}
+@media(min-width:768px){.step-line{display:none}}
+
+.mockup-card{background:#080f1e;border:1px solid rgba(255,255,255,.06);border-radius:.75rem;padding:1rem}
+.mockup-dot{width:8px;height:8px;border-radius:50%}
+.mockup-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.06)}
+.mockup-bar.fill{background:linear-gradient(90deg,#06b6d4,rgba(6,182,212,.2))}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
+
+.af{animation:fadeUp .5s ease-out both}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}.d4{animation-delay:.32s}.d5{animation-delay:.40s}.d6{animation-delay:.48s}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s ease-out,transform .5s ease-out}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+@media(prefers-reduced-motion:reduce){.af,.reveal,.header{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}
+
+.section-tag{display:inline-flex;padding:2px 10px;border-radius:999px;border:1px solid rgba(6,182,212,.2);background:rgba(6,182,212,.08);color:#22d3ee;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem}
+
+.pricing-card{position:relative;background:#0d1526;border:1px solid rgba(255,255,255,.05);border-radius:1.25rem;padding:2rem;transition:border-color .3s,transform .3s}
+.pricing-card:hover{border-color:rgba(6,182,212,.2);transform:translateY(-3px)}
+.pricing-card.featured{border-color:rgba(6,182,212,.3);background:linear-gradient(180deg,rgba(6,182,212,.04),transparent)}
+.pricing-card.featured::before{content:'';position:absolute;top:-1px;left:2rem;right:2rem;height:1px;background:linear-gradient(90deg,transparent,#06b6d4,transparent)}
+
+.footer-link{color:#64748b;font-size:.8125rem;transition:color .2s}
+.footer-link:hover{color:#e2e8f0}
+</style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splash" class="splash" role="status" aria-label="Carregando">
+  <div class="splash-content">
+    <div class="flex flex-wrap w-12 mx-auto justify-center">
+      <div class="dot dot-cyan" style="animation:blink .3s ease-in-out infinite alternate"></div>
+      <div class="dot dot-blue" style="animation:blink .4s ease-in-out infinite alternate-reverse"></div>
+      <div class="dot dot-cyan" style="animation:blink .5s ease-in-out infinite alternate"></div>
+      <div class="dot dot-blue" style="animation:blink .6s ease-in-out infinite alternate-reverse"></div>
+      <div class="dot dot-blue" style="animation:blink .7s ease-in-out infinite alternate"></div>
+      <div class="dot dot-cyan" style="animation:blink .8s ease-in-out infinite alternate-reverse"></div>
+      <div class="dot dot-blue" style="animation:blink .5s ease-in-out infinite alternate"></div>
+      <div class="dot dot-cyan" style="animation:blink .4s ease-in-out infinite alternate-reverse"></div>
+      <div class="dot dot-blue" style="animation:blink .3s ease-in-out infinite alternate"></div>
+    </div>
+    <div class="mt-4 mb-4">
+      <p class="text-2xl tracking-widest text-white font-bold" style="font-family:Inter,system-ui,sans-serif">SISTEMA TESTE</p>
+      <p class="text-xs text-cy-400 tracking-widest mt-1 font-mono">SGW PRO · Iniciando...</p>
+    </div>
+    <div class="splash-bar">
+      <div class="splash-bar-fill" id="splashBar"></div>
+    </div>
+    <div class="splash-btn" id="splashBtn">
+      <a href="/sgw_pro.html" class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-cy-500 hover:bg-cy-400 text-white font-bold text-sm transition-all glow-btn">
+        Acessar SGW Pro
+        <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+<!-- End Splash -->
+
+<header id="header" class="header px-6 py-4" role="banner">
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2.5 group" aria-label="SGW Pro Home">
+      <div class="w-8 h-8 rounded-lg bg-sgw-800 border border-cy-500/25 flex items-center justify-center group-hover:border-cy-500/50 transition-colors">
+        <svg aria-hidden="true" class="w-4 h-4 text-cy-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <span class="font-bold text-sm text-white">autotech<span class="text-cy-400">.app.br</span></span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm" aria-label="Navegação principal">
+      <a href="#recursos" class="text-slate-400 hover:text-white transition-colors">Recursos</a>
+      <a href="#funciona" class="text-slate-400 hover:text-white transition-colors">Como funciona</a>
+      <a href="#planos" class="text-slate-400 hover:text-white transition-colors">Planos</a>
+    </nav>
+    <a href="/sgw_pro.html" class="px-4 py-2 rounded-lg bg-cy-500 hover:bg-cy-400 text-white text-sm font-semibold transition-all glow-btn">Acessar</a>
+  </div>
+</header>
+
+<main>
+  <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 px-6 overflow-hidden grid-bg" aria-label="Hero">
+    <div class="hero-glow"></div>
+    <div class="max-w-6xl mx-auto relative">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div class="lg:col-span-7 relative z-10">
+          <div class="af d1">
+            <span class="section-tag">SGW Stellantis</span>
+          </div>
+          <h1 class="af d2 text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-[1.08] tracking-tight mb-5">
+            Gestão de licenças<br>
+            <span class="text-gradient">automotivas</span>
+          </h1>
+          <p class="af d3 text-base md:text-lg text-slate-400 max-w-xl mb-8 leading-relaxed">
+            Plataforma profissional para cadastro, emissão e renovação de licenças SGW Stellantis. Dashboard financeiro, certificados PDF com QR Code e backup offline-first com criptografia AES-256-GCM.
+          </p>
+          <div class="af d4 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <a href="/sgw_pro.html" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-cy-500 hover:bg-cy-400 text-white font-bold text-sm transition-all glow-btn">
+              Acessar SGW Pro
+              <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#recursos" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-sgw-700 hover:border-slate-500 text-slate-300 font-semibold text-sm transition-all">
+              Explorar recursos
+            </a>
+          </div>
+        </div>
+        <div class="lg:col-span-5 relative">
+          <div class="hero-glow-2"></div>
+          <div class="af d3 relative">
+            <div class="mockup-card space-y-3">
+              <div class="flex items-center gap-2">
+                <div class="mockup-dot bg-red-400/60"></div>
+                <div class="mockup-dot bg-yellow-400/60"></div>
+                <div class="mockup-dot bg-green-400/60"></div>
+                <span class="text-[10px] text-slate-600 ml-2 font-mono">sgw_pro — dashboard</span>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-xs font-semibold text-white">Licenças ativas</span>
+                <span class="text-lg font-black text-cy-400">127</span>
+              </div>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-500">Emissões este mês</span>
+                  <span class="text-white font-medium">34</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-500">Renovações</span>
+                  <span class="text-white font-medium">12</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-500">Receita mensal</span>
+                  <span class="text-cy-400 font-semibold">R$ 8.415</span>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-white/5">
+                <div class="flex items-center justify-between text-xs mb-2">
+                  <span class="text-slate-500">Meta mensal</span>
+                  <span class="text-slate-400 text-[10px]">68%</span>
+                </div>
+                <div class="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full rounded-full" style="width:68%;background:linear-gradient(90deg,#06b6d4,#a78bfa)"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <div class="mockup-bar"></div>
+                <div class="mockup-bar fill" style="width:75%"></div>
+                <div class="mockup-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-6 pb-16 md:pb-20">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 py-8 border-y border-white/5">
+      <div class="text-center reveal">
+        <div class="text-3xl md:text-4xl font-black text-gradient">50+</div>
+        <div class="text-xs text-slate-500 mt-1.5 font-medium uppercase tracking-wider">Equipamentos compatíveis</div>
+      </div>
+      <div class="text-center reveal reveal-delay-1">
+        <div class="text-3xl md:text-4xl font-black text-gradient">8</div>
+        <div class="text-xs text-slate-500 mt-1.5 font-medium uppercase tracking-wider">Telas por certificado</div>
+      </div>
+      <div class="text-center reveal reveal-delay-2">
+        <div class="text-3xl md:text-4xl font-black text-gradient">3s</div>
+        <div class="text-xs text-slate-500 mt-1.5 font-medium uppercase tracking-wider">Emissão de licença</div>
+      </div>
+      <div class="text-center reveal reveal-delay-3">
+        <div class="text-3xl md:text-4xl font-black text-gradient">200</div>
+        <div class="text-xs text-slate-500 mt-1.5 font-medium uppercase tracking-wider">PDFs por lote</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="recursos" class="max-w-6xl mx-auto px-6 pb-20 md:pb-28 scroll-mt-20">
+    <div class="text-center mb-14 reveal">
+      <span class="section-tag">Recursos</span>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">Tudo que você precisa para gerenciar licenças</h2>
+      <p class="text-sm text-slate-500 max-w-xl mx-auto">Ferramentas profissionais para controle de licenças SGW com segurança corporativa, certificação digital e operação offline.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="card reveal">
+        <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center mb-4">
+          <svg aria-hidden="true" class="w-5 h-5 text-cy-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <h3 class="text-white font-bold mb-2">Geração de Licenças</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Chave SHA-256 única vinculada ao VIN e serial do scanner. Antiduplicata em tempo real com validação automática.</p>
+      </div>
+      <div class="card reveal reveal-delay-1">
+        <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center mb-4">
+          <svg aria-hidden="true" class="w-5 h-5 text-cy-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3 class="text-white font-bold mb-2">Certificado PDF</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Documento profissional de 3 páginas com QR Code, hash de validação, evidências fotográficas e termo de ativação.</p>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center mb-4">
+          <svg aria-hidden="true" class="w-5 h-5 text-cy-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <h3 class="text-white font-bold mb-2">Dashboard Financeiro</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">KPIs de emissão, ARR/MRR estimado, distribuição por estado e relatórios completos para tomada de decisão.</p>
+      </div>
+      <div class="card reveal">
+        <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center mb-4">
+          <svg aria-hidden="true" class="w-5 h-5 text-cy-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="text-white font-bold mb-2">Segurança Corporativa</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">AES-256-GCM via API, JWT, SHA-256, log de auditoria completo e backup local com File System Access API.</p>
+      </div>
+      <div class="card reveal reveal-delay-1">
+        <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center mb-4">
+          <svg aria-hidden="true" class="w-5 h-5 text-cy-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3 class="text-white font-bold mb-2">Auditoria Completa</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Registro timestamp de todas as ações: criação, edição, exclusão e renovação de licenças com filtros inteligentes.</p>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center mb-4">
+          <svg aria-hidden="true" class="w-5 h-5 text-cy-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3 class="text-white font-bold mb-2">Offline First</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">IndexedDB como fallback completo. Funciona sem internet com sincronização automática quando online.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="funciona" class="max-w-6xl mx-auto px-6 pb-20 md:pb-28 scroll-mt-20">
+    <div class="text-center mb-14 reveal">
+      <span class="section-tag">Como funciona</span>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">4 passos para emitir uma licença</h2>
+      <p class="text-sm text-slate-500 max-w-xl mx-auto">Processo simplificado e seguro para geração de licenças SGW Stellantis.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+      <div class="relative reveal">
+        <div class="step-line"></div>
+        <div class="flex md:flex-col gap-4 md:gap-0 md:text-center">
+          <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center shrink-0">
+            <span class="text-sm font-black text-cy-400">1</span>
+          </div>
+          <div class="md:mt-3">
+            <h3 class="text-white font-bold text-sm mb-1.5">Cadastro do Cliente</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Registre os dados do cliente, veículo VIN e equipamento compatível com a frota Stellantis.</p>
+          </div>
+        </div>
+      </div>
+      <div class="relative reveal reveal-delay-1">
+        <div class="step-line"></div>
+        <div class="flex md:flex-col gap-4 md:gap-0 md:text-center">
+          <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center shrink-0">
+            <span class="text-sm font-black text-cy-400">2</span>
+          </div>
+          <div class="md:mt-3">
+            <h3 class="text-white font-bold text-sm mb-1.5">Geração da Licença</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Sistema gera chave SHA-256 única vinculada ao VIN e serial. Antiduplicata automático.</p>
+          </div>
+        </div>
+      </div>
+      <div class="relative reveal reveal-delay-2">
+        <div class="step-line"></div>
+        <div class="flex md:flex-col gap-4 md:gap-0 md:text-center">
+          <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center shrink-0">
+            <span class="text-sm font-black text-cy-400">3</span>
+          </div>
+          <div class="md:mt-3">
+            <h3 class="text-white font-bold text-sm mb-1.5">Certificado PDF</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Documento A4 com 3 páginas: licença, evidências fotográficas e termo de ativação assinado.</p>
+          </div>
+        </div>
+      </div>
+      <div class="relative reveal reveal-delay-3">
+        <div class="flex md:flex-col gap-4 md:gap-0 md:text-center">
+          <div class="w-10 h-10 rounded-xl bg-cy-500/15 border border-cy-500/20 flex items-center justify-center shrink-0">
+            <span class="text-sm font-black text-cy-400">4</span>
+          </div>
+          <div class="md:mt-3">
+            <h3 class="text-white font-bold text-sm mb-1.5">Armazenamento Seguro</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Registro criptografado no servidor PostgreSQL com fallback IndexedDB e backup local.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-6 pb-20 md:pb-28">
+    <div class="card-lg relative overflow-hidden reveal">
+      <div class="absolute inset-0 bg-gradient-to-br from-cy-500/3 to-transparent pointer-events-none"></div>
+      <div class="relative">
+        <div class="flex items-center justify-between mb-3">
+          <span class="section-tag">Dashboard</span>
+          <div class="flex items-center gap-1.5">
+            <div class="w-2 h-2 rounded-full bg-green-400/60"></div>
+            <span class="text-[10px] text-slate-600 font-mono">SGW Pro v11</span>
+          </div>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">Sistema completo na sua mão</h2>
+        <p class="text-sm text-slate-400 max-w-2xl mb-8">Dashboard financeiro com KPIs em tempo real, filtros inteligentes, busca avançada e relatórios exportáveis. Tudo que um gestor de licenças precisa.</p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="mockup-card space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-white">Licenças por período</span>
+              <span class="text-[10px] text-slate-600">últimos 30 dias</span>
+            </div>
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-500">Semana 1</span>
+                <div class="flex-1 mx-3 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full w-3/4 rounded-full bg-cy-500/60"></div>
+                </div>
+                <span class="text-white font-medium">18</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-500">Semana 2</span>
+                <div class="flex-1 mx-3 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full w-full rounded-full bg-cy-500/80"></div>
+                </div>
+                <span class="text-white font-medium">24</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-500">Semana 3</span>
+                <div class="flex-1 mx-3 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full w-1/2 rounded-full bg-cy-500/40"></div>
+                </div>
+                <span class="text-white font-medium">12</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-500">Semana 4</span>
+                <div class="flex-1 mx-3 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full w-5/6 rounded-full bg-gradient-to-r from-cy-500 to-vi-400"></div>
+                </div>
+                <span class="text-white font-medium">21</span>
+              </div>
+            </div>
+          </div>
+          <div class="mockup-card space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-white">Distribuição por estado</span>
+              <span class="text-[10px] text-slate-600">top 5</span>
+            </div>
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 w-16">SP</span>
+                <div class="flex-1 mx-2 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full w-full rounded-full" style="background:#06b6d4"></div>
+                </div>
+                <span class="text-white font-medium w-6 text-right">42</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 w-16">MG</span>
+                <div class="flex-1 mx-2 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full rounded-full" style="width:65%;background:#22d3ee"></div>
+                </div>
+                <span class="text-white font-medium w-6 text-right">28</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 w-16">PR</span>
+                <div class="flex-1 mx-2 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full rounded-full" style="width:55%;background:#67e8f9"></div>
+                </div>
+                <span class="text-white font-medium w-6 text-right">23</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 w-16">RS</span>
+                <div class="flex-1 mx-2 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full rounded-full" style="width:40%;background:#a78bfa"></div>
+                </div>
+                <span class="text-white font-medium w-6 text-right">17</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 w-16">SC</span>
+                <div class="flex-1 mx-2 h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full rounded-full" style="width:30%;background:#c4b5fd"></div>
+                </div>
+                <span class="text-white font-medium w-6 text-right">13</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 text-center">
+          <a href="/sgw_pro.html" class="inline-flex items-center gap-1.5 text-xs text-cy-400 hover:text-cy-300 transition-colors font-medium">
+            Ver dashboard completo
+            <svg aria-hidden="true" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="planos" class="max-w-6xl mx-auto px-6 pb-20 md:pb-28 scroll-mt-20">
+    <div class="text-center mb-14 reveal">
+      <span class="section-tag">Planos</span>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">Escolha o ideal para seu negócio</h2>
+      <p class="text-sm text-slate-500 max-w-xl mx-auto">Planos flexíveis para profissionais autônomos e distribuidores automotivos.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+      <div class="pricing-card text-center reveal">
+        <h3 class="text-white font-bold text-lg mb-1">Mensal</h3>
+        <div class="text-4xl font-black text-white mb-1">R$ 297</div>
+        <div class="text-xs text-slate-500 mb-6">por mês, sem fidelidade</div>
+        <ul class="text-sm text-slate-400 space-y-3 mb-8 text-left max-w-[180px] mx-auto">
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Até 30 licenças/mês</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Certificado PDF padrão</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Suporte por e-mail</span>
+          </li>
+        </ul>
+        <a href="/sgw_pro.html" class="block w-full py-2.5 rounded-xl border border-sgw-700 text-slate-300 font-semibold text-sm hover:border-slate-500 transition-all">Começar</a>
+      </div>
+      <div class="pricing-card featured text-center reveal reveal-delay-1">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-cy-500 text-white text-[10px] font-black uppercase tracking-wider">Mais popular</div>
+        <h3 class="text-white font-bold text-lg mb-1">Trimestral</h3>
+        <div class="text-4xl font-black text-white mb-1">R$ 747</div>
+        <div class="text-xs text-cy-400/80 mb-6">R$ 249/mês — 16% de desconto</div>
+        <ul class="text-sm text-slate-400 space-y-3 mb-8 text-left max-w-[180px] mx-auto">
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Licenças ilimitadas</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Certificado premium</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Suporte prioritário</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Backup automático</span>
+          </li>
+        </ul>
+        <a href="/sgw_pro.html" class="block w-full py-2.5 rounded-xl bg-cy-500 hover:bg-cy-400 text-white font-semibold text-sm transition-all glow-btn">Começar</a>
+      </div>
+      <div class="pricing-card text-center reveal reveal-delay-2">
+        <h3 class="text-white font-bold text-lg mb-1">Anual</h3>
+        <div class="text-4xl font-black text-white mb-1">R$ 2.388</div>
+        <div class="text-xs text-cy-400/80 mb-6">R$ 199/mês — 33% de desconto</div>
+        <ul class="text-sm text-slate-400 space-y-3 mb-8 text-left max-w-[180px] mx-auto">
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Licenças ilimitadas</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Certificado premium</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Suporte 24/7</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Prioridade em features</span>
+          </li>
+        </ul>
+        <a href="/sgw_pro.html" class="block w-full py-2.5 rounded-xl border border-sgw-700 text-slate-300 font-semibold text-sm hover:border-slate-500 transition-all">Começar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-6 pb-28">
+    <div class="card-lg relative overflow-hidden text-center reveal" style="background:linear-gradient(135deg,rgba(6,182,212,.04),rgba(139,92,246,.04));border-color:rgba(6,182,212,.15)">
+      <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 0,rgba(6,182,212,.08) 0%,transparent 60%)"></div>
+      <div class="relative max-w-xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">Pronto para profissionalizar sua gestão de licenças?</h2>
+        <p class="text-sm text-slate-400 mb-8">Acesse o sistema agora. Cadastro rápido, certificação digital e suporte especializado para técnicos automotivos.</p>
+        <a href="/sgw_pro.html" class="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-cy-500 hover:bg-cy-400 text-white font-bold text-sm transition-all glow-btn">
+          Acessar SGW Pro
+          <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-white/5" role="contentinfo">
+  <div class="max-w-6xl mx-auto px-6 py-12 md:py-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+      <div class="col-span-2 md:col-span-1">
+        <a href="/" class="flex items-center gap-2.5 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-sgw-800 border border-cy-500/25 flex items-center justify-center">
+            <svg aria-hidden="true" class="w-4 h-4 text-cy-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <span class="font-bold text-sm text-white">autotech<span class="text-cy-400">.app.br</span></span>
+        </a>
+        <p class="text-xs text-slate-600 leading-relaxed max-w-[220px]">Plataforma profissional de gestão de licenças SGW Stellantis para técnicos automotivos.</p>
+      </div>
+      <div>
+        <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Produto</h4>
+        <ul class="space-y-2.5">
+          <li><a href="#recursos" class="footer-link">Recursos</a></li>
+          <li><a href="#funciona" class="footer-link">Como funciona</a></li>
+          <li><a href="#planos" class="footer-link">Planos</a></li>
+          <li><a href="/sgw_pro.html" class="footer-link">Acessar</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Recursos</h4>
+        <ul class="space-y-2.5">
+          <li><a href="https://github.com/VoltAgent/awesome-design-md" target="_blank" rel="noopener" class="footer-link">Awesome DESIGN.md</a></li>
+          <li><a href="https://github.com/pbakaus/impeccable" target="_blank" rel="noopener" class="footer-link">Impeccable</a></li>
+          <li><a href="/sgw_pro.html" class="footer-link">Documentação</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Legal</h4>
+        <ul class="space-y-2.5">
+          <li><a href="#" class="footer-link">Política de privacidade</a></li>
+          <li><a href="#" class="footer-link">Termos de uso</a></li>
+          <li><a href="#" class="footer-link">LGPD</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-white/5 px-6 py-6">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+      <span>&copy; 2026 autotech.app.br — Todos os direitos reservados.</span>
+      <span>CNPJ: 00.000.000/0001-00</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Splash screen
+  var splash=document.getElementById('splash');
+  var splashBtn=document.getElementById('splashBtn');
+  if(splash&&splashBtn){
+    document.body.classList.add('splash-open');
+    var barEnd=Date.now()+2500;
+    var checkDone=function(){
+      if(Date.now()>=barEnd){
+        splashBtn.classList.add('show');
+        return;
+      }
+      requestAnimationFrame(checkDone);
+    };
+    requestAnimationFrame(checkDone);
+    var hideSplash=function(){
+      splash.classList.add('hide');
+      document.body.classList.remove('splash-open');
+    };
+    splashBtn.querySelector('a').addEventListener('click',function(e){
+      hideSplash();
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&splashBtn.classList.contains('show')){
+        hideSplash();
+      }
+    });
+  }
+
+  // Header scroll
+  var header = document.getElementById('header');
+  if(!header)return;
+  var ticking=false;
+  function onScroll(){
+    if(!ticking){ticking=true;requestAnimationFrame(function(){
+      if(window.scrollY>40){header.classList.add('scrolled')}else{header.classList.remove('scrolled')}
+      ticking=false
+    })}
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+
+  // Reveal on scroll
+  var reveals=document.querySelectorAll('.reveal');
+  if(reveals.length&&'IntersectionObserver'in window){
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})
+    },{threshold:0.15});
+    reveals.forEach(function(r){observer.observe(r)})
+  }else{
+    reveals.forEach(function(r){r.classList.add('visible')})
+  }
+})();
+</script>
+
+</body>
+</html>

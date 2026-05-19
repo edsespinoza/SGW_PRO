@@ -1,0 +1,67 @@
+{
+  "version": "11.0.0",
+  "exported": "2026-04-21T21:05:14.183Z",
+  "count": 2,
+  "licenses": [
+    {
+      "id": "lic_demo001",
+      "licenseKey": "ABR-2026-K7MN-P3QR-T8XY",
+      "validationHash": "A3F2D8E1B5C90F47",
+      "customerName": "ARLEN BRAZ DOS SANTOS",
+      "cpfCnpj": "123.456.789-00",
+      "email": "arlen.santos@gmail.com",
+      "phone": "(85) 99871-2345",
+      "equipment": "AUTEL MS908S",
+      "equipmentSerial": "VX2GR1C01235",
+      "region": "CE",
+      "sgwLogin": "sgwaberama",
+      "sgwPassword": "@Autel123",
+      "activationDate": "2025-04-21",
+      "validUntil": "2026-04-21",
+      "technician": "Carlos Aberama",
+      "status": "active",
+      "deviceFingerprint": "demo",
+      "hasCert": false,
+      "createdAt": "2025-04-21T10:30:00.000Z",
+      "updatedAt": "2026-04-21T21:02:34.993Z",
+      "brands": [
+        "FIAT",
+        "JEEP",
+        "CHRYSLER",
+        "DODGE",
+        "RAM",
+        "MASERATI"
+      ]
+    },
+    {
+      "id": "lic_demo002",
+      "licenseKey": "ABR-2026-W2HJ-L5VB-N9QK",
+      "validationHash": "7C4E91B3F6D82A05",
+      "customerName": "RODRIGO MENDES FERREIRA",
+      "cpfCnpj": "987.654.321-00",
+      "email": "rodrigo.ferreira@mecanica.com",
+      "phone": "(11) 98765-4321",
+      "equipment": "AUTEL MaxiSYS Elite II",
+      "equipmentSerial": "MS9ELITE887643",
+      "region": "SP",
+      "sgwLogin": "sgwaberama",
+      "sgwPassword": "@Autel456",
+      "activationDate": "2026-01-15",
+      "validUntil": "2027-01-15",
+      "technician": "Carlos Aberama",
+      "status": "active",
+      "deviceFingerprint": "demo",
+      "hasCert": false,
+      "createdAt": "2026-01-15T14:20:00.000Z",
+      "updatedAt": "2026-04-21T20:46:19.420Z",
+      "brands": [
+        "FIAT",
+        "JEEP",
+        "CHRYSLER",
+        "DODGE",
+        "RAM",
+        "MASERATI"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Export IndexedDB → JSON — SGW Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#080f1e;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:rgba(13,21,38,.8);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);border-radius:24px;padding:32px;max-width:520px;width:90%}
+h1{font-size:1.25rem;font-weight:800;color:#fff;margin-bottom:4px}
+p.sub{color:#64748b;font-size:.8rem;margin-bottom:20px}
+label{display:block;font-size:.75rem;font-weight:700;color:#94a3b8;margin-bottom:6px}
+select,input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;color:#fff;font-size:.875rem;margin-bottom:16px}
+select:focus,input:focus{outline:none;border-color:#22d3ee}
+.btn{display:block;width:100%;padding:12px;border-radius:14px;border:none;font-weight:700;font-size:.875rem;cursor:pointer;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(6,182,212,.3)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-success{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.25)}
+.btn-success:hover{background:rgba(16,185,129,.25)}
+.log{border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;margin-top:16px;max-height:200px;overflow-y:auto;font-family:monospace;font-size:.75rem;color:#94a3b8;white-space:pre-wrap}
+.log .ok{color:#34d399}.log .err{color:#f87171}.log .info{color:#22d3ee}
+#result{display:none;margin-top:16px}
+#result.show{display:block}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>📤 Export IndexedDB → JSON</h1>
+  <p class="sub">Ferramenta de migração — extrai dados do IndexedDB <code>SGWPro8</code> para arquivo JSON compatível com a API</p>
+
+  <label for="dbName">Database Name</label>
+  <input id="dbName" value="SGWPro8" readonly/>
+
+  <label for="stores">Stores</label>
+  <input id="stores" value="licenses, images, auditLogs, config" readonly/>
+
+  <button id="btnExport" class="btn btn-primary" onclick="runExport()">📥 Ler IndexedDB e Exportar</button>
+
+  <div id="result">
+    <label>Checksum (SHA-256)</label>
+    <input id="checksum" readonly/>
+    <label>Registros</label>
+    <input id="counts" readonly/>
+    <div class="log" id="log"></div>
+    <button id="btnDownload" class="btn btn-success" onclick="downloadJSON()" style="display:none;margin-top:12px">💾 Baixar JSON</button>
+  </div>
+
+  <p class="sub" style="margin-top:16px;text-align:center">
+    Use o arquivo gerado com o script <code>tools/import-to-api.js</code>
+  </p>
+</div>
+
+<script>
+let _exportedData = null;
+
+function log(msg, type = 'info') {
+  const el = document.getElementById('log');
+  el.innerHTML += `<span class="${type}">${msg}</span>\n`;
+  el.scrollTop = el.scrollHeight;
+}
+
+async function runExport() {
+  const btn = document.getElementById('btnExport');
+  btn.disabled = true;
+  btn.textContent = '⏳ Exportando...';
+  document.getElementById('result').classList.add('show');
+  document.getElementById('log').innerHTML = '';
+  _exportedData = null;
+  document.getElementById('btnDownload').style.display = 'none';
+
+  try {
+    if (!window.indexedDB) throw new Error('IndexedDB nao disponivel neste browser');
+
+    const stores = ['licenses', 'images', 'auditLogs', 'config'];
+    let db;
+
+    try {
+      const req = indexedDB.open('SGWPro8', 4);
+      db = await new Promise((ok, fail) => {
+        req.onsuccess = e => ok(e.target.result);
+        req.onerror = () => fail(new Error('Erro ao abrir IndexedDB'));
+        req.onupgradeneeded = () => {
+          log('Banco precisa de upgrade — dados serao lidos apos refresh', 'err');
+          db = req.result;
+          db.close();
+        };
+      });
+    } catch (e) {
+      log('Erro: ' + e.message, 'err');
+      btn.disabled = false;
+      btn.textContent = '📥 Ler IndexedDB e Exportar';
+      return;
+    }
+
+    const data = {};
+    let totalRecords = 0;
+
+    for (const storeName of stores) {
+      log(`Lendo store: ${storeName}...`);
+      try {
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+
+        if (storeName === 'config') {
+          const items = [];
+          const cursor = store.openCursor();
+          await new Promise((ok, fail) => {
+            cursor.onsuccess = e => {
+              const cur = e.target.result;
+              if (cur) {
+                items.push({ key: cur.key, value: cur.value });
+                cur.continue();
+              } else ok();
+            };
+            cursor.onerror = () => fail(cursor.error);
+          });
+          data[storeName] = items;
+          totalRecords += items.length;
+          log(`  → ${items.length} registros`, 'ok');
+        } else {
+          const items = [];
+          const cursor = store.openCursor();
+          await new Promise((ok, fail) => {
+            cursor.onsuccess = e => {
+              const cur = e.target.result;
+              if (cur) {
+                items.push(cur.value);
+                cur.continue();
+              } else ok();
+            };
+            cursor.onerror = () => fail(cursor.error);
+          });
+          data[storeName] = items;
+          totalRecords += items.length;
+          log(`  → ${items.length} registros`, 'ok');
+        }
+      } catch (e) {
+        log(`  → Erro ao ler ${storeName}: ${e.message}`, 'err');
+        data[storeName] = [];
+      }
+    }
+
+    db.close();
+
+    const payload = {
+      version: '1.0-export',
+      source: 'IndexedDB',
+      dbName: 'SGWPro8',
+      exportedAt: new Date().toISOString(),
+      data,
+    };
+
+    const json = JSON.stringify(payload, null, 2);
+    const checksum = CryptoJS.SHA256(json).toString();
+    _exportedData = { json, payload, checksum };
+
+    document.getElementById('checksum').value = checksum;
+    document.getElementById('counts').value = totalRecords + ' registros em ' + stores.length + ' stores';
+    document.getElementById('btnDownload').style.display = 'block';
+
+    log('Checksum: ' + checksum, 'ok');
+    log('Exportacao concluida com sucesso!', 'ok');
+  } catch (e) {
+    log('Erro: ' + e.message, 'err');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '📥 Ler IndexedDB e Exportar';
+}
+
+function downloadJSON() {
+  if (!_exportedData) return;
+  const blob = new Blob([_exportedData.json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sgwpro_idb_export_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 200);
+}
+</script>
+</body>
+</html>
