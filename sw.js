@@ -1,4 +1,4 @@
-const CACHE = 'sgw-pro-v7';
+const CACHE = 'sgw-pro-v8';
 const STATIC_ASSETS = [
   '/',
   '/sgw_pro.html',
