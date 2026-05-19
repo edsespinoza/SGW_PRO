@@ -1,7 +1,7 @@
 # SGW Pro — Registro Técnico, Bugs e Roadmap
 
 > **Propósito:** Ponto de retomada para qualquer sessão futura. Contém o estado exato do projeto, o que foi feito, o que está pendente e as decisões de arquitetura confirmadas.
-> Última atualização: 2026-05-18 (noturna)
+> Última atualização: 2026-05-19
 
 ---
 
@@ -21,7 +21,7 @@
 ## 1. PONTO DE PARADA
 
 **Arquivo principal:** `sgw_pro.html` (~10.239 linhas)
-**Status:** ✅ FUNCIONAL — Tailwind pre-built CSS, Babel pré-compilado (sem runtime), componentes OK, popover no Dashboard funcional.
+**Status:** ✅ FUNCIONAL — Tailwind pre-built CSS, Babel pré-compilado (sem runtime), componentes OK, popover no Dashboard funcional, senha mestra no App, backup criptografado .enc, notificações de vencimento, gráficos Financeiro.
 
 ### O que está funcionando
 - Dashboard com métricas e lista de licenças recentes
@@ -156,19 +156,17 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 | SPLASH-2 | System loading (9 dots blink + "SISTEMA TESTE" + progress bar) com mínimo 15s | `sgw_pro.html:4168` | ✅ Feito |
 | SPLASH-3 | Original spinner restaurado em ambas as telas (splash estática + auth loading) | `sgw_pro.html:4451-4468`, `sgw_pro.html:4698-4702` | ✅ Feito |
 
-### Sessão 2026-05-18 (noturna) — Correções pós-reversão + Tailwind CDN → Pre-built CSS
-
-| # | Alteração | Localização | Status |
-|---|-----------|-------------|--------|
-| TW-1 | Tailwind CDN removido (`createHash` crash) → pre-built CSS via CLI | `sgw_pro_files/tailwind.css`, `tailwind.config.js` | ✅ Feito |
-| BABEL-1 | Ring component: destructuring+default param crash → `function RingFn` + `memo()` | `sgw_pro.html` (Ring) | ✅ Feito |
-| BABEL-2 | Boot function: `}else if{` sem `if(` → adicionado `if(apiOk){` | `sgw_pro.html:4089` | ✅ Feito |
-| MISS-1 | `UpArea` component faltando — restaurado do `Backup_BD/` | `sgw_pro.html` (antes de LicForm) | ✅ Feito |
-| MISS-2 | `Serial` component faltando — restaurado do `Backup_BD/` | `sgw_pro.html` (antes de UpArea) | ✅ Feito |
-| POP-1 | `hoveredLic` movido para Dashboard + popover IIFE realocado do Clients | `sgw_pro.html:2915-2921`, `3175-3220` | ✅ Feito |
-| POP-2 | Popover redesenho: 440px→420px, `text-sm`, grid espaçado, rodapé datas | `sgw_pro.html:3175` | ✅ Feito |
-| POP-3 | Posicionamento: centralizado acima do item, fallback abaixo, `max-h-[85vh]`+scroll | `sgw_pro.html:3175` | ✅ Feito |
-| SW-1 | Cache key bump v4→v5 para forçar refresh SW | `sw.js:1` | ✅ Feito |
+### Sessão 2026-05-19
+- Backup criptografado AES-256 (.enc) com senha — export + import
+- Notificações de vencimento ≤30 dias via toast no boot
+- Gráficos no módulo Financeiro (receita mensal, distribuição plano/equipamento)
+- SEC-002: `S._cryptKey()` migrado de localStorage para sessionStorage
+- SEC-003: cache `sgw8_eq` expira em 7 dias (timestamp `sgw8_eq_ts`)
+- Autenticação pré-deploy: senha mestra SHA-256 no App (criação/unlock via sessionStorage)
+- BUG-002 resolvido: `db.deleteConfig('anthropicKey')` no boot + método `deleteConfig` no DB
+- MEL-02 resolvido: checksum SHA-256 em export JSON/.enc + verificação no import
+- Docker rebuild + push para `edsespinoza/SGW_PRO` (commit `a6f061a`)
+- AGENTS.md atualizado com master password, backup .enc, cache expiry, sessionStorage
 
 ### Sessão 2026-05-15 — Revisão de Segurança e Qualidade
 - Skills instaladas: 14 (ai-image-generation, ai-video-generation, content-marketing, docx, find-skills, frontend-design, infsh-cli, nano-banana-2, pdf, remotion-best-practices, twitter-automation, ui-ux-pro-max, vercel-react-best-practices, web-design-guidelines)
@@ -240,8 +238,8 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 | ID | Severidade | Descrição | Localização | Status |
 |----|------------|-----------|-------------|--------|
 | SEC-001 | 🔴 Alta | `anthropicKey` armazenada em IndexedDB — acessível via DevTools | `db.getConfig/setConfig('anthropicKey')` | Aberto - requer proxy server-side |
-| SEC-002 | 🟡 Média | Chave de criptografia (`APP.KEY`) em localStorage — menos seguro que sessionStorage | `localStorage.getItem('_sgw8k')` | Aberto - considerar sessionStorage |
-| SEC-003 | 🟢 Baixa | Dados de equipamentos em localStorage sem expiração | `localStorage.setItem('sgw8_eq')` | Aberto |
+| SEC-002 | 🟡 Média | Chave de criptografia (`APP.KEY`) em localStorage — menos seguro que sessionStorage | `localStorage.getItem('_sgw8k')` | ✅ Resolvido 2026-05-19 (sessionStorage) |
+| SEC-003 | 🟢 Baixa | Dados de equipamentos em localStorage sem expiração | `localStorage.setItem('sgw8_eq')` | ✅ Resolvido 2026-05-19 (7-day expiry) |
 
 ### Análise de Código - Pontos Positivos
 
@@ -260,7 +258,7 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 | ID | Descrição | Localização | Impacto | Status |
 |----|-----------|-------------|---------|--------|
 | BUG-001 | Babel transpilação em runtime — 800ms–2.5s no primeiro load | `<script type="text/babel">` | Performance | ✅ Resolvido 2026-05-18 (pré-compilado via Babel CLI) |
-| BUG-002 | `anthropicKey` persiste no IndexedDB de sessões anteriores — exposta no DevTools | `db.getConfig/setConfig('anthropicKey')` | Segurança em produção web | Aberto |
+| BUG-002 | `anthropicKey` persiste no IndexedDB de sessões anteriores — exposta no DevTools | `db.getConfig/setConfig('anthropicKey')` | Segurança em produção web | ✅ Resolvido 2026-05-19 (deleteConfig no boot + proxy server-side em ai.js) |
 | BUG-003 | `db.all('licenses')` sem paginação — carrega todos os registros na memória | `DB.all()` / `boot()` em `App` | Memória com 1k+ licenças | ✅ Resolvido 2026-05-14 (page, getCounts, count) |
 
 ### 🟡 Moderado
@@ -274,8 +272,8 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 | A11Y-02 | Modais sem overscroll-behavior e role=dialog | linhas ~648, 733, 838, 1101 | WCAG Dialog | ✅ Resolvido 2026-05-14 |
 | FEAT-01 | Backup JSON sem opção de criptografia | `doExport` / Settings | LGPD compliance | ✅ Resolvido 2026-05-15 |
 | FEAT-02 | Notificações de vencimento no boot | `boot()` no App | Usuário não sabia de licenças próximas | ✅ Resolvido 2026-05-15 |
-| MEL-01 | Mudar localStorage para sessionStorage para chave de criptografia | linha 223 | Melhoria de segurança | Aberto |
-| MEL-02 | Adicionar verificação de integridade de backup | Backup | Confiabilidade | Aberto |
+| MEL-01 | Mudar localStorage para sessionStorage para chave de criptografia | linha 223 | Melhoria de segurança | ✅ Resolvido 2026-05-19 |
+| MEL-02 | Adicionar verificação de integridade de backup | Backup | Confiabilidade | ✅ Resolvido 2026-05-19 |
 | MEL-03 | Exportação PDF com proteção por senha | CertPDF | Segurança + Profissionalismo | ✅ Resolvido 2026-05-15 |
 | MEL-04 | Exportação PDF com marca d'água | CertPDF | Branding | ✅ Resolvido 2026-05-15 |
 | MEL-05 | Melhorar extração de campos do PDF | exParsePdf | Importação de licenças via PDF | ✅ Resolvido 2026-05-15 |
@@ -312,56 +310,25 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 
 ### Sprint imediato (próxima sessão)
 
-**1. Verificar integração API + Frontend**
-- Confirmar que 11 licenças aparecem no Dashboard via API (não mais IDB)
-- Testar CRUD completo via formulário: Criar (Novo), Salvar, Editar, Excluir
-- Testar activationDate → validUntil auto-calc em licença nova
-- Testar validUntil manual edit independente
-
-**2. Testar popover no Dashboard**
-- Passar mouse sobre licenças recentes no Dashboard — popover deve aparecer com dados completos
-- Verificar posicionamento automático (ajuste se popover sair da tela)
-- Verificar hover nas bordas da popover não a esconde (cancelHide / scheduleHide)
-- Testar em janela estreita (responsivo)
-
-**3. Verificar Clientes tab sem tela preta**
-- Navegar entre Clientes e outras abas sem crash
-- Clientes deve mostrar grid de cards normalmente (não mais ReferenceError do popover)
-
-**2. Testar scanner screen cards**
-- Fazer upload de todas as 8 telas no formulário
-- Verificar cores/emoji específicos por tela (🏠🔍⚠️🚗🔑👤⏳✅)
-- Verificar hover scale e "Selecionada" section com cor dinâmica
-
-**3. Verificar timing dos splash screens**
-- Auth loading: mínimo 3s com spinner + "Conectando..."
-- System loading: mínimo 15s com 9 dots blink + barra animate-pulse
+**1. Verificar tudo funcionando no Docker**
+- Acessar `http://localhost:8081` — senha mestra deve aparecer primeiro
+- Login com `admin`/`admin123`
+- Confirmar que notificação de vencimento aparece no boot
+- Verificar gráficos no módulo Financeiro
+- Testar export/import de backup .enc criptografado
+- Verificar que `anthropicKey` antiga foi removida do IDB
 
 ### Médio prazo
 
-**4. BUG-002 — Migrar `anthropicKey` para solução segura**
-- Opção recomendada: proxy Cloudflare Worker — recebe request do browser, injeta chave server-side
-- Adicionar `db.deleteConfig('anthropicKey')` no boot para limpar chaves antigas já armazenadas
-- Detalhe em [Roadmap de Deploy](#6-roadmap-de-deploy-autotechappbr)
+**2. Fase 2 deploy — preparar Vercel/Cloudflare**
+- Rebuild `sgw_pro_final_v11.html` com Python
+- Configurar domínio `autotech.app.br/sgw-pro`
+- Testar HTTPS + File System Access API
 
-**5. Módulo Financeiro**
-- Componente `Financial` existe mas está em desenvolvimento (renderiza placeholder)
-- Definir escopo mínimo: receitas por período + total de licenças ativas por plano
-
-**6. Exportação de backup com criptografia (LGPD)**
-- Hoje o `.txt` de backup é legível em claro
-- Adicionar toggle "Exportar criptografado" usando AES-256 já disponível via `S.enc()`
-- A chave de descriptografia deve ser mostrada ao usuário uma única vez
-
-**7. Notificações de vencimento**
-- Licenças que vencem em ≤ 30 dias: badge no Dashboard + toast no boot
-- Não exige backend — `L.daysLeft()` já calcula dias restantes
-
-### Longo prazo (requer arquitetura nova)
-
-**8. Autenticação antes do deploy web**
-- Hoje não há autenticação — qualquer um com a URL acessa o sistema
-- Mínimo viável: senha mestra com hash SHA-256 stored no IDB + session flag
+**3. Melhorias adicionais**
+- Badge de licenças expirando no header global
+- Filtro de data no módulo Financeiro
+- Exportar gráficos como PNG/PDF
 
 ---
 

@@ -964,6 +964,16 @@ class DB {
       q.onerror = () => fail(q.error);
     });
   }
+  async deleteConfig(key) {
+    if (this.isMem) { delete this._cfg[key]; return; }
+    await this.ready;
+    return new Promise((ok, fail) => {
+      const tx = this.db.transaction(['config'], 'readwrite'),
+        q = tx.objectStore('config').delete(key);
+      q.onsuccess = () => ok();
+      q.onerror = () => fail(q.error);
+    });
+  }
 }
 const db = new DB();
 const BackupSvc = {
@@ -8898,6 +8908,8 @@ const System = ({
   const boot = async () => {
     const bootT0 = Date.now();
     try {
+      await db.ready;
+      db.deleteConfig('anthropicKey').catch(() => {});
       const k = L.gen();
       const h = L.hash(k);
       const fp = S.fp();
@@ -9274,16 +9286,18 @@ const System = ({
         count: lics.length,
         licenses: lics
       };
+      const payload = JSON.stringify(data);
+      const cs = typeof CryptoJS !== 'undefined' ? CryptoJS.SHA256(payload).toString() : 'NONE';
       let content, filename, type;
       if (encrypted && typeof CryptoJS !== 'undefined') {
         const pw = prompt('🔐 Digite uma senha para criptografar o backup:');
         if (!pw) { toast('Exportação cancelada', 'info'); return; }
-        const enc = CryptoJS.AES.encrypt(JSON.stringify(data), pw).toString();
+        const enc = CryptoJS.AES.encrypt(JSON.stringify({data:payload, checksum:cs, version:APP.VER}), pw).toString();
         content = JSON.stringify({format:'aes-256', data:enc});
         filename = `SGWPro_${new Date().toISOString().slice(0, 10)}.enc`;
         type = 'application/octet-stream';
       } else {
-        content = JSON.stringify(data, null, 2);
+        content = JSON.stringify({data:payload, checksum:cs, version:APP.VER});
         filename = `SGWPro11_${new Date().toISOString().slice(0, 10)}.json`;
         type = 'application/json';
       }
@@ -9304,7 +9318,7 @@ const System = ({
   const doImport = useCallback(async file => {
     try {
       let content = await file.text();
-      let data;
+      let data, checksum;
       // Detecta formato .enc (criptografado)
       if (file.name.endsWith('.enc')) {
         if (typeof CryptoJS === 'undefined') { toast('CryptoJS indisponível para descriptografar', 'error'); return; }
@@ -9315,14 +9329,21 @@ const System = ({
         if (parsed.format !== 'aes-256' || !parsed.data) { toast('Formato .enc desconhecido', 'error'); return; }
         const dec = CryptoJS.AES.decrypt(parsed.data, pw).toString(CryptoJS.enc.Utf8);
         if (!dec) { toast('Senha incorreta ou arquivo corrompido', 'error'); return; }
-        try { data = JSON.parse(dec); } catch { toast('Arquivo descriptografado inválido', 'error'); return; }
-      } else {
-        try {
-          data = JSON.parse(content);
-        } catch {
-          toast('Arquivo inválido', 'error');
-          return;
+        let decData;
+        try { decData = JSON.parse(dec); } catch { toast('Arquivo descriptografado inválido', 'error'); return; }
+        if (decData.checksum) {
+          const computed = CryptoJS.SHA256(decData.data).toString();
+          if (computed !== decData.checksum) { toast('Checksum inválido — arquivo corrompido', 'error'); return; }
         }
+        try { data = JSON.parse(decData.data || decData); } catch { toast('Conteúdo inválido', 'error'); return; }
+      } else {
+        let parsed;
+        try { parsed = JSON.parse(content); } catch { toast('Arquivo inválido', 'error'); return; }
+        if (parsed.checksum && typeof CryptoJS !== 'undefined') {
+          const computed = CryptoJS.SHA256(parsed.data).toString();
+          if (computed !== parsed.checksum) { toast('Checksum inválido — arquivo corrompido', 'error'); return; }
+        }
+        try { data = parsed.data ? JSON.parse(parsed.data) : parsed; } catch { toast('Arquivo inválido', 'error'); return; }
       }
       if (!data.licenses || !Array.isArray(data.licenses)) {
         toast('Arquivo inválido', 'error');
