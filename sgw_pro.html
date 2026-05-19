@@ -9614,15 +9614,19 @@ const System = ({
     window.addEventListener('beforeunload', h);
     return () => window.removeEventListener('beforeunload', h);
   }, [changed]);
+  const saveRef = useRef(save);
+  saveRef.current = save;
+  const newLicRef = useRef(newLic);
+  newLicRef.current = newLic;
   useEffect(() => {
     const h = e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        save();
+        saveRef.current();
       }
       if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
         e.preventDefault();
-        newLic();
+        newLicRef.current();
       }
       if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
@@ -9638,7 +9642,7 @@ const System = ({
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [save, newLic]);
+  }, []);
   const activeCount = lics.filter(l => l.status === 'active').length;
   const expCount = lics.filter(l => {
     const d = L.days(l.validUntil);
