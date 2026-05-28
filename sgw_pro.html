@@ -1,37 +1,37 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR" style="color-scheme: dark">
 <head>
 <!--
-  SGW Pro v11.0.0 — Sistema Teste
+  SGW Pro v11.0.0 —    Sistema Teste
   CRM/ERP: Controle de Distribuição e Acesso ao Sistema SGW Stellantis
-  Módulos: Landing · Dashboard · Licenças · Clientes · Financeiro · Relatórios · Auditoria · Configurações
-  Segurança: SHA-256 · AES-256 · HMAC · IndexedDB · UUID Polyfill · Offline-first
+  Módulos: Landing ·   Dashboard ·   Licenças ·   Clientes ·   Financeiro ·   Relatórios ·   Auditoria ·   Configurações
+  Segurança: SHA-256 ·   AES-256 ·   HMAC ·   IndexedDB ·   UUID Polyfill ·   Offline-first
 
-  v11.0.0 — Correções:
-  · QA-OFF1: loop retry corrigido (off-by-one)
-  · BUG-004: rate limiting com Retry-After + jitter
-  · A11Y-01: focus ring nos inputs sem accessibility
-  · Reconexão de permissão entre sessões (queryPermission / requestPermission)
-  · Importação de .txt (parse JSON interno) além do .json legado
-  · Fallback gracioso para Firefox/Safari (badge "Não disponível" + JSON mantido)
-  · Detecção de IDB bloqueado em múltiplas abas (onblocked handler)
+  v11.0.0 —    Correções:
+  ·   QA-OFF1: loop retry corrigido (off-by-one)
+  ·   BUG-004: rate limiting com Retry-After + jitter
+  ·   A11Y-01: focus ring nos inputs sem accessibility
+  ·   Reconexão de permissão entre sessões (queryPermission / requestPermission)
+  ·   Importação de .txt (parse JSON interno) além do .json legado
+  ·   Fallback gracioso para Firefox/Safari (badge "Não disponível" + JSON mantido)
+  ·   Detecção de IDB bloqueado em múltiplas abas (onblocked handler)
 
-  v9.0 — Melhorias anteriores:
-  · Fix memory leak: URL.revokeObjectURL após exportação JSON
-  · CSS: keyframes duplicados removidos do Tailwind config (eram dead code)
-  · Auto-detecção de status expirado ao salvar licença
-  · beforeunload: aviso de dados não salvos ao fechar/navegar
-  · Ctrl+P: atalho de teclado para abrir PDF
-  · Fld: mensagens de erro específicas por campo (prop errMsg)
-  · S.fmtPhone: formatação automática de telefone BR
-  · Toast: acessibilidade role="alert" + aria-live
-  · CertLink: fallback visual quando QR Code falha
-  · delLic: mensagem de confirmação com detalhes da licença
-  · Sidebar: role="navigation" + ARIA labels
-  · Main: role="main"
-  · Nav badges: contador de licenças ativas na sidebar
-  · Boot: safe-timeout de 10s para IndexedDB
-  · Fontes mínimas: elevadas de 9px → 11px
+  v9.0 —    Melhorias anteriores:
+  ·   Fix memory leak: URL.revokeObjectURL após exportação JSON
+  ·   CSS: keyframes duplicados removidos do Tailwind config (eram dead code)
+  ·   Auto-detecção de status expirado ao salvar licença
+  ·   beforeunload: aviso de dados não salvos ao fechar/navegar
+  ·   Ctrl+P: atalho de teclado para abrir PDF
+  ·   Fld: mensagens de erro específicas por campo (prop errMsg)
+  ·   S.fmtPhone: formatação automática de telefone BR
+  ·   Toast: acessibilidade role="alert" + aria-live
+  ·   CertLink: fallback visual quando QR Code falha
+  ·   delLic: mensagem de confirmação com detalhes da licença
+  ·   Sidebar: role="navigation" + ARIA labels
+  ·   Main: role="main"
+  ·   Nav badges: contador de licenças ativas na sidebar
+  ·   Boot: safe-timeout de 10s para IndexedDB
+  ·   Fontes mínimas: elevadas de 9px â 11px
 -->
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -40,7 +40,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Chivo:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SGW Pro v11.0 — CRM/ERP de controle de distribuição de licenças SGW Stellantis · Sistema Teste">
+<meta name="description" content="SGW Pro v11.0 —    CRM/ERP de controle de distribuição de licenças SGW Stellantis ·   Sistema Teste">
 <meta name="theme-color" content="#030712">
 <title>SGW Pro v11.0.0 | Sistema Teste</title>
 
@@ -61,14 +61,14 @@
 <script src="/sgw_pro_files/crypto-js.min.js"></script>
 <script>if(typeof CryptoJS==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-9ae915fbb8f4a81cbf944fae8d5e7bab88364cdba4d390642aaab4db13428528ee0b068d3a84158b9b9a2458978a4dc0" src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"><\/scr'+'ipt>');}</script>
 <script>if(typeof CryptoJS==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-9a059273159528ff05ecf05ba4da7b8bf6926f5ee43742dc89f0696a1029945dcc9f4191e3fbb5a0ca56226dab0fcc98" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"><\/scr'+'ipt>');}</script>
-<!-- Extrator de Lote ZIP — dependências -->
+<!-- Extrator de Lote ZIP —    dependências -->
 <script src="/sgw_pro_files/jszip.min.js"></script>
 <script>if(typeof JSZip==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-fa66d5d88635664fd7d69fe75a5946c9225250df2e32cfa0500375d0eafde54047d1fa63e867ca80f9a00b911789e5c6" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"><\/scr'+'ipt>');}</script>
 <script>if(typeof JSZip==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-fa66d5d88635664fd7d69fe75a5946c9225250df2e32cfa0500375d0eafde54047d1fa63e867ca80f9a00b911789e5c6" src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"><\/scr'+'ipt>');}</script>
 <script src="/sgw_pro_files/xlsx.full.min.js"></script>
 <script>if(typeof XLSX==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-bed8dab3289d528d245bde0ae4c5c35e7b73389a50801297984eded866b82c6d2c9134cb7818bdede1405eca9ec098f0" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/scr'+'ipt>');}</script>
 <script>if(typeof XLSX==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-bed8dab3289d528d245bde0ae4c5c35e7b73389a50801297984eded866b82c6d2c9134cb7818bdede1405eca9ec098f0" src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/scr'+'ipt>');}</script>
-<!-- PDF.js — extração de texto sem IA -->
+<!-- PDF.js —    extração de texto sem IA -->
 <script src="/sgw_pro_files/pdf.min.js"></script>
 <script>if(typeof pdfjsLib==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-ff5a940921b04eeafdbe37ffcfd966bbf7825186e93938128e6a5b310675fc2b57daffd670020aa91bfe5350d4086e9e" src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/scr'+'ipt>');}</script>
 <script>if(typeof pdfjsLib==='undefined'){document.write('<scr'+'ipt crossorigin="anonymous" integrity="sha384-ff5a940921b04eeafdbe37ffcfd966bbf7825186e93938128e6a5b310675fc2b57daffd670020aa91bfe5350d4086e9e" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"><\/scr'+'ipt>');}</script>
@@ -87,7 +87,7 @@
 
 
 <style>
-/* Fonts loaded via <link> no <head> — display=swap ativo */
+/* Fonts loaded via <link> no <head> —    display=swap ativo */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 
@@ -95,20 +95,22 @@ html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
 }
-body{font-family:'Inter',system-ui,sans-serif;background:#030712;color:#e2e8f0;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;}
+body{font-family:'Inter',system-ui,sans-serif;background:#030712;color:#e2e8f0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;text-wrap:pretty;overflow-x:hidden;min-height:100vh;touch-action:manipulation;}
+h1,h2,h3,h4,h5,h6,.font-heading{text-wrap:balance;}
+.serial,.tabular-nums,[class*="font-bold"],[class*="font-black"]{font-variant-numeric:tabular-nums;}
 
-/* ── SCROLLBAR ── */
+/* ââ SCROLLBAR ââ */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:#080f1e;}
 ::-webkit-scrollbar-thumb{background:#253460;border-radius:4px;}
 ::-webkit-scrollbar-thumb:hover{background:#3a52a3;}
 
-/* ── GLASS ── */
+/* ââ GLASS ââ */
 .glass{background:rgba(10,18,36,.85);border:1px solid rgba(255,255,255,.05);}
 .glass-card{background:rgba(10,18,36,.85);border:1px solid rgba(255,255,255,.06);border-radius:1rem;transition:background-color .3s ease,border-color .3s ease,transform .2s ease,box-shadow .3s ease;}
 .glass-card:hover{background:rgba(20,32,52,.9);border-color:rgba(6,182,212,.15);box-shadow:0 4px 24px rgba(0,0,0,.2);}
 
-/* ── FORMS ── */
+/* ââ FORMS ââ */
 .fi{width:100%;padding:.65rem 1rem;background:rgba(8,15,30,.8);border:1px solid rgba(255,255,255,.1);border-radius:.75rem;color:#e2e8f0;font-family:'Inter',sans-serif;font-size:.875rem;transition:border-color,box-shadow,background-color .2s;}
 .fi:focus{outline:none;}.fi:focus-visible{outline:none;border-color:rgba(6,182,212,.55);box-shadow:0 0 0 3px rgba(6,182,212,.1);}
 .fi::placeholder{color:#334155;}
@@ -117,57 +119,86 @@ body{font-family:'Inter',system-ui,sans-serif;background:#030712;color:#e2e8f0;-
 select.fi{appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");background-position:right .75rem center;background-repeat:no-repeat;background-size:1.4em;padding-right:2.5rem;}
 textarea.fi{resize:vertical;min-height:80px;}
 
-/* ── NAV ── */
+/* ââ NAV ââ */
 .ni{display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;border-radius:.75rem;cursor:pointer;transition:color .18s ease,background-color .18s ease,box-shadow .2s ease;color:#64748b;font-size:.82rem;font-weight:500;user-select:none;}
 .ni:hover{background:rgba(6,182,212,.08);color:#cbd5e1;}
 .ni.on{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2);box-shadow:inset 0 0 16px rgba(6,182,212,.07),0 0 8px rgba(6,182,212,.1);}
+.sb-item{position:relative;display:flex;align-items:center;width:100%;text-align:left;padding:.625rem;border-radius:.75rem;cursor:pointer;user-select:none;transition:color .2s,background-color .2s,box-shadow .2s;color:#94a3b8;}
+.sb-item:hover{background:rgba(15,23,42,.6);color:#e2e8f0;}
+.sb-item.on{color:#22d3ee;background:rgba(6,182,212,.12);font-weight:600;box-shadow:inset 0 0 16px rgba(6,182,212,.07);}
+.sb-indicator{position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:1.5rem;background:#22d3ee;border-radius:0 4px 4px 0;box-shadow:0 0 8px rgba(6,182,212,.5);}
 
-/* ── STATUS ── */
+/* ââ STATUS ââ */
 .s-active{background:rgba(16,185,129,.12);color:#34d399;border:1px solid rgba(16,185,129,.25);}
 .s-pending{background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.25);}
 .s-expired{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);}
 .s-revoked{background:rgba(100,116,139,.12);color:#94a3b8;border:1px solid rgba(100,116,139,.2);}
 
-/* ── KPI ── */
+/* ââ KPI ââ */
 .kpi{background:rgba(13,21,38,.8);border:1px solid rgba(255,255,255,.07);border-radius:1.25rem;padding:1.2rem 1.1rem;transition:background-color .25s ease,border-color .25s ease,transform .2s ease,box-shadow .25s ease;cursor:default;}
 .kpi:hover{border-color:rgba(6,182,212,.2);background:rgba(26,37,64,.8);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.2);}
 
-/* ── KPI PRIMARY (larger cards) ── */
+/* ââ KPI PRIMARY (larger cards) ââ */
 .kpi-primary{background:rgba(13,21,38,.85);border-radius:1.5rem;padding:1.5rem 1.5rem;transition:background-color .3s ease,border-color .3s ease,transform .2s ease,box-shadow .3s ease;cursor:default;box-shadow:0 2px 12px rgba(0,0,0,.15);}
 .kpi-primary:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.25);}
 
-/* ── TABLE ── */
+/* ââ TABLE ââ */
 .dt{width:100%;border-collapse:collapse;}
 .dt th{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#475569;padding:.8rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);}
 .dt td{padding:.85rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.875rem;vertical-align:middle;}
 .dt tbody tr{transition:background-color .15s ease;}
 
-/* ── TICKER ── */
+/* ââ TICKER ââ */
 .ticker-wrap{overflow:hidden;background:rgba(20,240,212,.05);border-bottom:1px solid rgba(20,240,212,.1);}
 .ticker-track{display:flex;width:max-content;animation:ticker 36s linear infinite;}
 
-/* ── CERT ── */
+/* ââ CERT ââ */
 .cert-dots{background-image:radial-gradient(circle,#4F6FFF 1.5px,transparent 1.5px);background-size:20px 20px;}
 .cert-grid-bg{background-image:linear-gradient(rgba(6,182,212,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(6,182,212,.07) 1px,transparent 1px);background-size:20px 20px;}
 
-/* ── PRINT ── */
+/* ââ PRINT ââ */
 @media print{@page{size:A4;margin:0}body{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.no-print{display:none!important}.pdf-pg{page-break-after:always}.pdf-pg:last-child{page-break-after:avoid}}
 
-/* ── ANIMATIONS ── */
+/* ââ ANIMATIONS ââ */
 @keyframes spinner{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.45)}}
 @keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 8px rgba(6,182,212,.15)}50%{box-shadow:0 0 20px rgba(6,182,212,.3)}}
 
 .af{animation:fadeUp .45s ease-out both;}
-.af.d1{animation-delay:.08s}.af.d2{animation-delay:.16s}.af.d3{animation-delay:.24s}.af.d4{animation-delay:.32s}.af.d5{animation-delay:.40s}.af.d6{animation-delay:.48s}.af.d7{animation-delay:.56s}.af.d8{animation-delay:.64s}
+.af.d1{animation-delay:.08s}.af.d2{animation-delay:.16s}.af.d3{animation-delay:.24s}.af.d4{animation-delay:.32s}.af.d5{animation-delay:.40s}.af.d6{animation-delay:.48s}.af.d7{animation-delay:.56s}.af.d8{animation-delay:.64s}.af.d9{animation-delay:.72s}.af.d10{animation-delay:.80s}.af.d11{animation-delay:.88s}.af.d12{animation-delay:.96s}
 
-/* ── LANDING v3.0 — Teal Coast Dark ── */
-/* Paleta: Electric Teal #14F0D4 · Deep Blue #2563EB · Navy #050D18 */
+/* KPI Gradient backgrounds */
+.kpi-emerald{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(5,150,105,.05));}
+.kpi-cyan{background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(14,116,144,.05));}
+.kpi-violet{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(109,40,217,.05));}
+.kpi-amber{background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(180,83,9,.05));}
+.kpi-red{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(185,28,28,.05));}
+.kpi-slate{background:linear-gradient(135deg,rgba(100,116,139,.10),rgba(71,85,105,.05));}
+
+/* Avatar gradient initials */
+.ava-em{background:linear-gradient(135deg,#059669,#34d399);}
+.ava-cy{background:linear-gradient(135deg,#0891b2,#22d3ee);}
+.ava-am{background:linear-gradient(135deg,#d97706,#fbbf24);}
+.ava-rd{background:linear-gradient(135deg,#dc2626,#f87171);}
+.ava-vt{background:linear-gradient(135deg,#7c3aed,#a78bfa);}
+.ava-sl{background:linear-gradient(135deg,#475569,#94a3b8);}
+
+/* Radial chart ring */
+.radial-ring{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.radial-ring svg{transform:rotate(-90deg);}
+.radial-ring .bg-circle{fill:none;stroke:rgba(255,255,255,.06);}
+.radial-ring .fg-circle{fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s ease-in-out;}
+
+/* ââ LANDING v3.0 —    Teal Coast Dark ââ */
+/* Paleta: Electric Teal #14F0D4 ·   Deep Blue #2563EB ·   Navy #050D18 */
 .hero-grid{background-image:linear-gradient(rgba(20,240,212,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(20,240,212,.04) 1px,transparent 1px);background-size:48px 48px;}
 .hero-glow{background:radial-gradient(ellipse 65% 55% at 50% -8%,rgba(20,240,212,.13),transparent);}
 
@@ -191,13 +222,16 @@ textarea.fi{resize:vertical;min-height:80px;}
 .noise-grain{position:relative;}
 .noise-grain::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' seed='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;opacity:.4;border-radius:inherit;}
 
-/* ── MISC ── */
+/* ââ FILTER BAR ââ */
+.filter-bar{background:rgba(13,21,38,.8);border:1px solid rgba(255,255,255,.06);border-radius:1rem;padding:.75rem 1rem;}
+
+/* ââ MISC ââ */
 .serial{font-family:'JetBrains Mono',monospace;letter-spacing:.1em;}
 .dot-live{animation:blink 1.8s ease-in-out infinite;}
 kbd{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:rgba(26,37,64,.8);border:1px solid rgba(255,255,255,.1);border-radius:.4rem;padding:.2rem .5rem;color:#94a3b8;}
 
 
-/* ── MOBILE ── */
+/* ââ MOBILE ââ */
 @media(max-width:768px){
   .hide-mobile{display:none!important;}
 }
@@ -338,7 +372,7 @@ const SCREENS_CFG = [{
   id: 1,
   name: 'Menu Principal',
   desc: 'Tela inicial do scanner',
-  emoji: '🏠',
+  emoji: '🏠 ',
   color: 'cyan',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -355,7 +389,7 @@ const SCREENS_CFG = [{
   id: 2,
   name: 'Inserção VIN',
   desc: 'Identificação do veículo',
-  emoji: '🔍',
+  emoji: '🔍',
   color: 'blue',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -378,7 +412,7 @@ const SCREENS_CFG = [{
   id: 3,
   name: 'Erro SGW',
   desc: 'Bloqueio detectado',
-  emoji: '⚠️',
+  emoji: '⚠️ï¸',
   color: 'red',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -399,7 +433,7 @@ const SCREENS_CFG = [{
   id: 4,
   name: 'Seleção Marca',
   desc: 'Escolha da montadora',
-  emoji: '🚗',
+  emoji: '🚗',
   color: 'amber',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -420,7 +454,7 @@ const SCREENS_CFG = [{
   id: 5,
   name: 'Menu Ativação',
   desc: 'Acesso ao SGW',
-  emoji: '🔑',
+  emoji: '🔑',
   color: 'purple',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -443,7 +477,7 @@ const SCREENS_CFG = [{
   id: 6,
   name: 'Credenciais',
   desc: 'Login do cliente',
-  emoji: '👤',
+  emoji: '👤¤',
   color: 'emerald',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -466,7 +500,7 @@ const SCREENS_CFG = [{
   id: 7,
   name: 'Carregamento',
   desc: 'Processo de ativação',
-  emoji: '⏳',
+  emoji: '⏳�³',
   color: 'yellow',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -487,7 +521,7 @@ const SCREENS_CFG = [{
   id: 8,
   name: 'Sucesso',
   desc: 'Confirmação OK',
-  emoji: '✅',
+  emoji: '✅�',
   color: 'green',
   icon: () => React.createElement("svg", {
     width: "22",
@@ -510,7 +544,7 @@ function uid() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     try {
       return crypto.randomUUID();
-    } catch (e) {}
+    } catch (e) { console.debug('[uid] crypto.randomUUID fallback:', e); }
   }
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = Math.random() * 16 | 0;
@@ -518,40 +552,69 @@ function uid() {
   });
 }
 const S = {
-  sha(d) {
-    if (typeof CryptoJS !== 'undefined') return CryptoJS.SHA256(d).toString(CryptoJS.enc.Hex);
-    let h = 0x6a09e667;
-    for (let i = 0; i < d.length; i++) {
-      h = Math.imul(h ^ d.charCodeAt(i), 0x9e3779b9);
-      h = h << 13 | h >>> 19;
-    }
-    return (h >>> 0).toString(16).padStart(8, '0').repeat(8).slice(0, 64);
-  },
-  _cryptKey() {
-    let s = sessionStorage.getItem('sgw_crypt_s');
+  _salt() {
+    let s = LS.get('sgw_crypt_salt');
     if (!s) {
-      s = '';
-      for (let i = 32; i--;) s += Math.random().toString(36)[2];
-      sessionStorage.setItem('sgw_crypt_s', s);
+      const a = new Uint8Array(16);
+      crypto.getRandomValues(a);
+      s = Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
+      LS.set('sgw_crypt_salt', s);
     }
-    return s + '::' + S.fp();
+    return s;
+  },
+  _key: null,
+  initCrypt(masterPw) {
+    if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS nao disponivel');
+    const salt = CryptoJS.enc.Hex.parse(S._salt());
+    S._key = CryptoJS.PBKDF2(masterPw, salt, { keySize: 256 / 32, iterations: 10000, hasher: CryptoJS.algo.SHA256 }).toString(CryptoJS.enc.Hex);
+  },
+  _sha256(msg) {
+    function rrot(x, n) { return (x >>> n) | (x << (32 - n)); }
+    const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    const m = []; for (let i = 0; i < msg.length; i++) m.push(msg.charCodeAt(i));
+    const l = m.length * 8; m.push(0x80);
+    while ((m.length * 8) % 512 !== 448) m.push(0);
+    for (let i = 0; i < 8; i++) m.push((l >>> (56 - i * 8)) & 0xff);
+    const H = [0x6a09e667|0,0xbb67ae85|0,0x3c6ef372|0,0xa54ff53a|0,0x510e527f|0,0x9b05688c|0,0x1f83d9ab|0,0x5be0cd19|0];
+    for (let b = 0; b < m.length; b += 64) {
+      const W = []; for (let t = 0; t < 16; t++) W[t] = (m[b+4*t]<<24)|(m[b+4*t+1]<<16)|(m[b+4*t+2]<<8)|m[b+4*t+3];
+      for (let t = 16; t < 64; t++) { const s0 = rrot(W[t-15],7)^rrot(W[t-15],18)^(W[t-15]>>>3); const s1 = rrot(W[t-2],17)^rrot(W[t-2],19)^(W[t-2]>>>10); W[t] = (W[t-16] + s0 + W[t-7] + s1)|0; }
+      let [a,b,c,d,e,f,g,h] = H;
+      for (let t = 0; t < 64; t++) {
+        const S1 = rrot(e,6)^rrot(e,11)^rrot(e,25), ch = (e&f)^((~e)&g), temp1 = (h + S1 + ch + K[t] + W[t])|0;
+        const S0 = rrot(a,2)^rrot(a,13)^rrot(a,22), maj = (a&b)^(a&c)^(b&c), temp2 = (S0 + maj)|0;
+        h = g; g = f; f = e; e = (d + temp1)|0; d = c; c = b; b = a; a = (temp1 + temp2)|0;
+      }
+      H[0] = (H[0] + a)|0; H[1] = (H[1] + b)|0; H[2] = (H[2] + c)|0; H[3] = (H[3] + d)|0;
+      H[4] = (H[4] + e)|0; H[5] = (H[5] + f)|0; H[6] = (H[6] + g)|0; H[7] = (H[7] + h)|0;
+    }
+    return H.map(x => (x >>> 0).toString(16).padStart(8,'0')).join('');
+  },
+  sha(d, iters = 10000) {
+    if (typeof CryptoJS !== 'undefined') {
+      const salt = CryptoJS.enc.Hex.parse(S._salt());
+      const key = CryptoJS.PBKDF2(d, salt, { keySize: 256 / 32, iterations: iters, hasher: CryptoJS.algo.SHA256 });
+      return key.toString(CryptoJS.enc.Hex);
+    }
+    // Fallback: SHA-256 puro (não PBKDF2 — usado apenas para fingerprint/validação)
+    return S._sha256(d + S._salt());
   },
   enc(t) {
-    if (!t || typeof CryptoJS === 'undefined') return t;
-    try {
-      return CryptoJS.AES.encrypt(t, S._cryptKey()).toString();
-    } catch (e) {
-      return t;
-    }
+    if (!t) return t;
+    if (!S._key) throw new Error('Criptografia nao inicializada — desbloqueie o sistema primeiro');
+    if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS nao disponivel');
+    return CryptoJS.AES.encrypt(t, S._key).toString();
   },
   dec(t) {
-    if (!t || t.length < 20 || typeof CryptoJS === 'undefined') return t;
-    try {
-      const r = CryptoJS.AES.decrypt(t, S._cryptKey()).toString(CryptoJS.enc.Utf8);
-      return r || t;
-    } catch (e) {
-      return t;
+    if (!t || t.length < 20) return t;
+    if (!S._key) throw new Error('Criptografia nao inicializada — desbloqueie o sistema primeiro');
+    if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS nao disponivel');
+    const r = CryptoJS.AES.decrypt(t, S._key).toString(CryptoJS.enc.Utf8);
+    if (!r) {
+      console.error('[Crypto] Falha na descriptografia — chave invalida ou dados corrompidos');
+      return null;
     }
+    return r;
   },
   fp() {
     const p = [navigator.userAgent, navigator.language, screen.colorDepth, new Date().getTimezoneOffset()];
@@ -643,17 +706,27 @@ const L = {
     return `${APP.PFX}-${new Date().getFullYear()}-${L.seg()}-${L.seg()}-${L.seg()}`;
   },
   hash(k) {
-    return S.sha(`${k}:${Date.now()}:${S.fp()}`).slice(0, 16).toUpperCase();
+    // Usa SHA-256 direto para compatibilidade com server (B-04)
+    // Server-side usa: crypto.createHash('sha256').update(`${licenseKey}:${Date.now()}`).digest('hex').slice(0,16).toUpperCase()
+    const m = (typeof CryptoJS !== 'undefined') ? CryptoJS.SHA256(`${k}:${Date.now()}`).toString() : S._sha256(`${k}:${Date.now()}`);
+    return m.slice(0, 16).toUpperCase();
   },
   days(d) {
-    if (!d) return null;
+    if (typeof d !== 'string' || !d) return null;
     const parts = d.split('-');
     if (parts.length !== 3) return null;
-    return Math.floor((new Date(parts[0], parts[1] - 1, parts[2]) - Date.now()) / 864e5);
+    const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10) - 1, day = parseInt(parts[2], 10);
+    if (isNaN(y) || isNaN(m) || isNaN(day)) return null;
+    return Math.floor((new Date(y, m, day) - Date.now()) / 864e5);
   },
   daysBetween(a, b) {
-    if (!a || !b) return null;
-    return Math.floor((new Date(b.split('-')[0], b.split('-')[1] - 1, b.split('-')[2]) - new Date(a.split('-')[0], a.split('-')[1] - 1, a.split('-')[2])) / 864e5);
+    if (typeof a !== 'string' || typeof b !== 'string' || !a || !b) return null;
+    const ap = a.split('-'), bp = b.split('-');
+    if (ap.length !== 3 || bp.length !== 3) return null;
+    const ay = parseInt(ap[0], 10), am = parseInt(ap[1], 10) - 1, ad = parseInt(ap[2], 10);
+    const by = parseInt(bp[0], 10), bm = parseInt(bp[1], 10) - 1, bd = parseInt(bp[2], 10);
+    if ([ay, am, ad, by, bm, bd].some(isNaN)) return null;
+    return Math.floor((new Date(by, bm, bd) - new Date(ay, am, ad)) / 864e5);
   },
   dup(k, list, exId = null) {
     return list.filter(l => l.licenseKey === k && l.id !== exId && l.status !== 'revoked');
@@ -677,6 +750,7 @@ const LS = {
     if (this._map) this._map.delete(k);
     localStorage.removeItem(k);
   },
+  del(k) { this.remove(k); },
   json(k) {
     try {
       return JSON.parse(this.get(k) || 'null');
@@ -688,12 +762,36 @@ const LS = {
     if (this._map && e.key) this._map.delete(e.key);
   }
 };
-if (typeof window !== 'undefined') window.addEventListener('storage', e => LS._onStorage(e));
+const SS = {
+  _map: typeof Map !== 'undefined' ? new Map() : null,
+  get(k) {
+    const m = this._map;
+    if (m && m.has(k)) return m.get(k);
+    const v = sessionStorage.getItem(k);
+    if (m) m.set(k, v);
+    return v;
+  },
+  set(k, v) {
+    v = String(v);
+    if (this._map) this._map.set(k, v);
+    sessionStorage.setItem(k, v);
+  },
+  remove(k) {
+    if (this._map) this._map.delete(k);
+    sessionStorage.removeItem(k);
+  },
+  del(k) { this.remove(k); },
+  json(k) {
+    try { return JSON.parse(this.get(k) || 'null'); } catch (e) { return null; }
+  }
+};
+if (typeof window !== 'undefined' && !window._sgwStorageListener) { window.addEventListener('storage', e => LS._onStorage(e)); window._sgwStorageListener = true; }
 class APIClient {
   constructor() {
     this.baseURL = '/api/v1';
-    this.token = LS.get('sgw_token');
+    this.token = SS.get('sgw_token') || LS.get('sgw_token');
     this.online = false;
+    if (LS.get('sgw_token')) { LS.remove('sgw_token'); if (this.token) SS.set('sgw_token', this.token); }
   }
   get isAuth() {
     return !!this.token;
@@ -701,9 +799,9 @@ class APIClient {
   setToken(t) {
     this.token = t;
     if (!t) {
-      LS.remove('sgw_token');
+      SS.remove('sgw_token');
     } else {
-      LS.set('sgw_token', t);
+      SS.set('sgw_token', t);
     }
   }
   async request(method, path, body, timeout = 60000) {
@@ -712,7 +810,7 @@ class APIClient {
     const h = {
       'Content-Type': 'application/json'
     };
-    if (this.token) h['Authorization'] = 'Bearer ' + this.token;
+    // Token enviado via httpOnly cookie (mais seguro que Bearer)
     try {
       const res = await fetch(this.baseURL + path, {
         method,
@@ -726,7 +824,7 @@ class APIClient {
       }
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.error || 'Erro ' + res.status);
+        throw new Error(e.error || 'Erro ' + res.status + ' ' + res.statusText);
       }
       return res.json();
     } finally {
@@ -762,17 +860,19 @@ class APIClient {
     this.setToken(r.token);
     return r.user;
   }
-  async register(u, p) {
-    const r = await this.request('POST', '/auth/register', {
-      username: u,
-      password: p
-    });
-    this.setToken(r.token);
-    return r.user;
-  }
-  async allLicenses(q = '') {
-    const r = await this.request('GET', '/licenses?limit=1000' + q);
-    return r.data || [];
+  // register removido (SEC-004) — admin criado via ADMIN_PASSWORD no .env
+  async allLicenses(opts = {}) {
+    const { page = 1, limit = 50, status, region, q, sort, order } = opts;
+    const p = new URLSearchParams();
+    p.set('page', page);
+    p.set('limit', limit);
+    if (status) p.set('status', status);
+    if (region) p.set('region', region);
+    if (q) p.set('q', q);
+    if (sort) p.set('sort', sort);
+    if (order) p.set('order', order);
+    const r = await this.request('GET', '/licenses?' + p.toString());
+    return { data: r.data || [], pagination: r.pagination || { total: 0, page: 1, totalPages: 1 } };
   }
   async getLicense(id) {
     return this.request('GET', '/licenses/' + id);
@@ -864,7 +964,7 @@ class DB {
                 unique: false
               });
             });
-          } catch (_) {}
+          } catch (idxErr) { console.debug('[DB] index creation error:', idxErr); }
         };
         setTimeout(() => {
           this.isMem = true;
@@ -940,7 +1040,7 @@ class DB {
         actor,
         ts: new Date().toISOString()
       });
-    } catch (e) {}
+    } catch (e) { console.debug('[DB] log failed:', e); }
   }
   async setConfig(key, value) {
     if (this.isMem) {
@@ -992,16 +1092,16 @@ const BackupSvc = {
     const json = JSON.stringify(meta);
     const checksum = typeof CryptoJS !== 'undefined' ? CryptoJS.SHA256(json).toString().slice(0, 8).toUpperCase() : 'NOCHECKSUM';
     const sep = '='.repeat(72);
-    return [sep, '  SGW PRO v' + APP.VER + ' — BACKUP DE LICENCAS', '  Sistema Teste · Sistema de Controle SGW Stellantis', sep, '  Exportado em : ' + new Date().toLocaleString('pt-BR'), '  Total        : ' + lics.length + ' licenca(s)', '  Versao App   : ' + APP.VER, '  Checksum SHA : ' + checksum, sep, '  COMO USAR: Abra o SGW Pro > Configuracoes > Importar .txt', '  NAO EDITE as linhas abaixo do separador DATA_BEGIN.', sep, '', 'DATA_BEGIN', json, 'DATA_END'].join('\n');
+    return [sep, '  SGW PRO v' + APP.VER + ' —    BACKUP DE LICENCAS', '  Sistema Teste ·   Sistema de Controle SGW Stellantis', sep, '  Exportado em : ' + new Date().toLocaleString('pt-BR'), '  Total        : ' + lics.length + ' licenca(s)', '  Versao App   : ' + APP.VER, '  Checksum SHA : ' + checksum, sep, '  COMO USAR: Abra o SGW Pro > Configuracoes > Importar .txt', '  NAO EDITE as linhas abaixo do separador DATA_BEGIN.', sep, '', 'DATA_BEGIN', json, 'DATA_END'].join('\n');
   },
   _buildReadme() {
     const sep = '='.repeat(56);
-    return ['SGW PRO v' + APP.VER + ' — SISTEMA TESTE', sep, '', 'COMO ABRIR O SISTEMA:', '  1. Abra o arquivo "SGW Pro.html" no Chrome ou Edge', '  2. Ou execute: python3 -m http.server 8080', '     e acesse http://localhost:8080/SGW%20Pro.html', '', 'ESTRUTURA DESTA PASTA:', '  SGW Pro.html  -> Sistema completo (abrir no Chrome/Edge)', '  backups/      -> Arquivos .txt de backup das licencas', '  README.txt    -> Este arquivo', '', 'COMO RESTAURAR UM BACKUP:', '  1. Abra SGW Pro.html', '  2. Va em: Configuracoes > Importar Backup .txt', '  3. Selecione o arquivo backup_*.txt desejado', '', 'FREQUENCIA RECOMENDADA:', '  Ative o backup automatico em Configuracoes.', '  Mantenha copias em nuvem ou pendrive externo.', '', 'SUPORTE: suporte@sistemateste.com.br', sep].join('\n');
+    return ['SGW PRO v' + APP.VER + ' —    SISTEMA TESTE', sep, '', 'COMO ABRIR O SISTEMA:', '  1. Abra o arquivo "SGW Pro.html" no Chrome ou Edge', '  2. Ou execute: python3 -m http.server 8080', '     e acesse http://localhost:8080/SGW%20Pro.html', '', 'ESTRUTURA DESTA PASTA:', '  SGW Pro.html  -> Sistema completo (abrir no Chrome/Edge)', '  backups/      -> Arquivos .txt de backup das licencas', '  README.txt    -> Este arquivo', '', 'COMO RESTAURAR UM BACKUP:', '  1. Abra SGW Pro.html', '  2. Va em: Configuracoes > Importar Backup .txt', '  3. Selecione o arquivo backup_*.txt desejado', '', 'FREQUENCIA RECOMENDADA:', '  Ative o backup automatico em Configuracoes.', '  Mantenha copias em nuvem ou pendrive externo.', '', 'SUPORTE: suporte@sistemateste.com.br', sep].join('\n');
   },
   parseTxt(text) {
     const start = text.indexOf('DATA_BEGIN\n');
     const end = text.indexOf('\nDATA_END');
-    if (start === -1 || end === -1) throw new Error('Formato invalido — marcadores DATA_BEGIN/DATA_END nao encontrados');
+    if (start === -1 || end === -1) throw new Error('Formato invalido —    marcadores DATA_BEGIN/DATA_END nao encontrados');
     return JSON.parse(text.slice(start + 'DATA_BEGIN\n'.length, end));
   },
   async pickDir() {
@@ -1009,7 +1109,8 @@ const BackupSvc = {
       mode: 'readwrite',
       startIn: 'documents'
     });
-    await db.setConfig('backupDirHandle', handle);
+    // Handle não é persistido no IndexedDB por segurança (SEC-011)
+    // Permissão é re-solicitada a cada sessão
     return handle;
   },
   async queryPerm(handle) {
@@ -1048,7 +1149,7 @@ const BackupSvc = {
         const hw = await hf.createWritable();
         await hw.write(htmlSelf);
         await hw.close();
-      } catch (e) {}
+      } catch (e) { console.debug('[Backup] saveSelf failed:', e); }
     }
   },
   async writeBackup(dirHandle, lics) {
@@ -1497,7 +1598,7 @@ const Fld = memo(({
   const ok = val && validate ? validate(val) : !!val;
   const isEmpty = !val || val === '';
   const showErr = touched && req && (!ok || isEmpty);
-  const errTxt = errMsg || (isEmpty ? 'Campo obrigatório' : 'Valor inválido — verifique o formato');
+  const errTxt = errMsg || (isEmpty ? 'Campo obrigatório' : 'Valor inválido —    verifique o formato');
   return React.createElement("div", {
     className: `space-y-1.5 ${cls}`
   }, label && React.createElement("label", {
@@ -1520,7 +1621,7 @@ const Fld = memo(({
     onClick: () => setReveal(r => !r),
     "aria-label": reveal ? 'Ocultar senha' : 'Mostrar senha',
     className: "absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors text-sm select-none"
-  }, reveal ? '🙈' : '👁')), hint && React.createElement("p", {
+  }, reveal ? 'ð' : 'ð')), hint && React.createElement("p", {
     className: "text-xs text-slate-600"
   }, hint), showErr && React.createElement("p", {
     className: "text-xs text-red-400 flex items-center gap-1",
@@ -1538,10 +1639,10 @@ const SBadge = memo(({
     revoked: 's-revoked'
   };
   const E = {
-    active: '✅',
-    pending: '⏳',
-    expired: '❌',
-    revoked: '🚫'
+    active: '✅�',
+    pending: '⏳�³',
+    expired: 'â',
+    revoked: 'ð«'
   };
   const T = {
     active: 'Ativa',
@@ -1551,7 +1652,7 @@ const SBadge = memo(({
   };
   return React.createElement("span", {
     className: `inline-flex items-center gap-1.5 font-bold rounded-full px-2.5 ${sm ? 'py-0.5 text-xs' : 'py-1 text-xs'} ${C[status] || 's-pending'}`
-  }, E[status] || '🟡', "\xA0", T[status] || status);
+  }, E[status] || 'ð¡', "\xA0", T[status] || status);
 });
 const Toast = memo(({
   id,
@@ -1593,7 +1694,7 @@ const Toast = memo(({
     className: `flex-1 text-sm font-medium ${c.t}`
   }, msg), React.createElement("button", {
     onClick: () => rm(id),
-    "aria-label": "Fechar notifica\xE7\xE3o",
+    "aria-label": "Fechar notificação",
     className: "text-slate-600 hover:text-white transition-colors flex-shrink-0 p-1"
   }, React.createElement("svg", {
     width: "16",
@@ -1685,7 +1786,7 @@ function RingFn({
     className: `mt-2.5 flex items-center gap-2 px-3 py-2 rounded-lg border ${period.ok ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`
   }, React.createElement("span", {
     className: `text-xs ${period.ok ? 'text-emerald-400' : 'text-red-400'}`
-  }, period.ok ? '✅' : '⚠️'), React.createElement("span", {
+  }, period.ok ? '✅�' : '⚠️ï¸'), React.createElement("span", {
     className: `text-xs font-bold ${period.ok ? 'text-emerald-400' : 'text-red-400'}`
   }, "Per\xEDodo: ", period.dias, "d (", Math.floor(period.dias / 30), "m)"), React.createElement("span", {
     className: "ml-auto text-[10px] text-slate-500"
@@ -2134,18 +2235,18 @@ const CertPDF = ({
     setGen(false);
   };
   if (!open) return null;
-  const fv = (v, mask) => !v || v === '---' ? '—' : mask ? mask(v) : v;
+  const fv = (v, mask) => !v || v === '---' ? '—   ' : mask ? mask(v) : v;
   const exp = lic.validUntil ? new Date(lic.validUntil + 'T00:00:00').toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
-  }) : '—';
+  }) : '—   ';
   const atv = lic.activationDate ? new Date(lic.activationDate + 'T00:00:00').toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
-  }) : '—';
-  const reg = lic.region ? RNAMES[lic.region] || lic.region : '—';
+  }) : '—   ';
+  const reg = lic.region ? RNAMES[lic.region] || lic.region : '—   ';
   const today = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -2591,7 +2692,7 @@ const CertPDF = ({
       textTransform: 'uppercase',
       marginBottom: '5px'
     }
-  }, "Informa\xE7\xF5es Importantes"), ['Guarde este certificado — ele comprova a ativação da sua licença SGW.', 'O acesso é de uso exclusivo e intransferível ao equipamento cadastrado.', 'Mantenha o scanner sempre atualizado para compatibilidade contínua.', 'Qualquer dúvida acione nosso suporte: suporte@sistemateste.com.br'].map((t, i) => React.createElement("div", {
+  }, "Informa\xE7\xF5es Importantes"), ['Guarde este certificado —    ele comprova a ativação da sua licença SGW.', 'O acesso é de uso exclusivo e intransferível ao equipamento cadastrado.', 'Mantenha o scanner sempre atualizado para compatibilidade contínua.', 'Qualquer dúvida acione nosso suporte: suporte@sistemateste.com.br'].map((t, i) => React.createElement("div", {
     key: i,
     style: {
       display: 'flex',
@@ -2979,7 +3080,7 @@ const CertLink = ({
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    } catch (e) {}
+    } catch (e) { console.debug('[CertLink] clipboard failed:', e); }
   };
   const stC = {
     active: 'text-emerald-400',
@@ -3010,13 +3111,13 @@ const CertLink = ({
     className: "font-heading text-lg font-black text-white"
   }, "Certificado Digital"), React.createElement("p", {
     className: "text-xs text-slate-500"
-  }, "Link p\xFAblico \xB7 QR Code \xB7 Verifica\xE7\xE3o"))), React.createElement("button", {
+  }, "Link p\xFAblico \xB7 QR Code \xB7 Verificação"))), React.createElement("button", {
     onClick: close,
     "aria-label": "Fechar",
     className: "p-2 hover:bg-sgw-800 rounded-xl text-slate-400 hover:text-white text-xl"
   }, "\xD7")), React.createElement("div", {
     className: "bg-sgw-850/50 border-b border-sgw-700 px-5 py-2 flex gap-2 shrink-0"
-  }, [['preview', '🪪', 'Prévia'], ['share', '🔗', 'Link & QR'], ['verify', '🔍', 'Verificar']].map(([id, ic, lb]) => React.createElement("button", {
+  }, [['preview', 'ðªª', 'Prévia'], ['share', 'ð', 'Link & QR'], ['verify', '🔍', 'Verificar']].map(([id, ic, lb]) => React.createElement("button", {
     key: id,
     onClick: () => setTab(id),
     className: `flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${tab === id ? 'bg-cy-500/20 text-cy-400 border border-cy-500/40' : 'text-slate-400 hover:text-white hover:bg-sgw-800'}`
@@ -3059,14 +3160,14 @@ const CertLink = ({
     className: "glass-card rounded-2xl p-6 space-y-5"
   }, React.createElement("div", null, React.createElement("div", {
     className: "text-xs text-slate-500 uppercase tracking-wider mb-2"
-  }, "Link de Verifica\xE7\xE3o"), React.createElement("div", {
+  }, "Link de Verificação"), React.createElement("div", {
     className: "flex gap-2"
   }, React.createElement("input", {
     readOnly: true,
     value: url,
     className: "fi flex-1 serial text-xs text-cy-400"
   }), React.createElement(Btn, {
-    ch: copied ? '✓ Copiado' : 'Copiar',
+    ch: copied ? 'â Copiado' : 'Copiar',
     variant: copied ? 'success' : 'secondary',
     size: "sm",
     onClick: copy
@@ -3074,7 +3175,7 @@ const CertLink = ({
     className: "flex flex-col items-center gap-3"
   }, React.createElement("div", {
     className: "text-xs text-slate-500 uppercase tracking-wider"
-  }, "QR Code de Verifica\xE7\xE3o"), React.createElement("img", {
+  }, "QR Code de Verificação"), React.createElement("img", {
     src: qr,
     alt: "QR Code da licen\xE7a SGW",
     className: "rounded-xl border border-sgw-700 w-40 h-40"
@@ -3100,7 +3201,7 @@ const CertLink = ({
     className: "glass-card rounded-2xl p-6"
   }, React.createElement("div", {
     className: "text-xs text-slate-500 uppercase tracking-wider mb-3"
-  }, "Verifica\xE7\xE3o do Certificado"), React.createElement("div", {
+  }, "Verificação do Certificado"), React.createElement("div", {
     className: "p-4 bg-sgw-850 rounded-xl border border-sgw-700 space-y-2"
   }, React.createElement("div", {
     className: "text-[10px] text-slate-500"
@@ -3185,7 +3286,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     key: 'observations',
     label: 'Obs.'
   }];
-  const EX_PROMPT = `Você é um extrator de dados especializado em certificados de ativação SGW (Security Gateway) da Aberama Brasil.\n\nExtraia os seguintes campos do documento PDF fornecido, seguindo o padrão Aberama (Certificado SGW Security Gateway):\n\nCAMPOS OBRIGATÓRIOS:\n- customerName: Nome ou Razão Social do cliente (label "NOME" na capa, Página 1)\n- equipmentSerial: Número de série do scanner (label "SERIAL NUMBER" na capa, ex: VX2GS9C01263)\n\nCAMPOS OPCIONAIS (use null se não encontrado):\n- documentType: "cpf" ou "cnpj" (inferir do nome — LTDA/EIRELI/ME = cnpj)\n- customerDocument: Número do CPF ou CNPJ\n- customerPhone: Telefone do cliente\n- customerEmail: E-mail do cliente\n- region: Sigla do estado BR de 2 letras (ex: SP, MG, RJ). Ignore "AMÉRICA DO NORTE" ou regiões que não sejam UF brasileira.\n- placa: Placa do veículo — formato Mercosul ABC1D23 ou antigo ABC-1234\n- ano: Ano do veículo (4 dígitos)\n\nCAMPOS ESPECÍFICOS SGW:\n- equipment: Marca do scanner (ex: AUTEL, label "SCANNER")\n- regiaoAtivacao: Região de ativação (ex: AMÉRICA DO NORTE, EUROPA, OUTRAS REGIÕES — label "REGIÃO")\n- sgwLogin: Login de acesso SGW (label "LOGIN")\n- sgwPassword: Senha de acesso SGW (label "SENHA")\n- validUntil: Data de expiração da licença (label "EXPIRA EM", formato DD/MM/AAAA → converter para YYYY-MM-DD)\n\nREGRAS IMPORTANTES:\n1. A Página 1 é a CAPA DA LICENÇA — contém os dados principais do cliente e scanner\n2. O nome do arquivo segue o padrão: [NOME]_[SERIAL]_[DESCRICAO].pdf\n3. Se não encontrar um campo, use null — NÃO invente dados\n4. Para CPF/CNPJ não encontrados, retorne null\n5. Preencha TODOS os campos SGW (regiaoAtivacao, sgwLogin, sgwPassword, validUntil) — são essenciais para a licença\n6. O campo "vinChassi" NÃO deve ser extraído\n7. O campo "modelo" NÃO deve ser extraído\n\nRetorne APENAS um objeto JSON válido, sem markdown, sem nenhum texto antes ou depois.`;
+  const EX_PROMPT = `Você é um extrator de dados especializado em certificados de ativação SGW (Security Gateway) da Aberama Brasil.\n\nExtraia os seguintes campos do documento PDF fornecido, seguindo o padrão Aberama (Certificado SGW Security Gateway):\n\nCAMPOS OBRIGATÓRIOS:\n- customerName: Nome ou Razão Social do cliente (label "NOME" na capa, Página 1)\n- equipmentSerial: Número de série do scanner (label "SERIAL NUMBER" na capa, ex: VX2GS9C01263)\n\nCAMPOS OPCIONAIS (use null se não encontrado):\n- documentType: "cpf" ou "cnpj" (inferir do nome —    LTDA/EIRELI/ME = cnpj)\n- customerDocument: Número do CPF ou CNPJ\n- customerPhone: Telefone do cliente\n- customerEmail: E-mail do cliente\n- region: Sigla do estado BR de 2 letras (ex: SP, MG, RJ). Ignore "AMÉRICA DO NORTE" ou regiões que não sejam UF brasileira.\n- placa: Placa do veículo —    formato Mercosul ABC1D23 ou antigo ABC-1234\n- ano: Ano do veículo (4 dígitos)\n\nCAMPOS ESPECÍFICOS SGW:\n- equipment: Marca do scanner (ex: AUTEL, label "SCANNER")\n- regiaoAtivacao: Região de ativação (ex: AMÉRICA DO NORTE, EUROPA, OUTRAS REGIÕES —    label "REGIÃO")\n- sgwLogin: Login de acesso SGW (label "LOGIN")\n- sgwPassword: Senha de acesso SGW (label "SENHA")\n- validUntil: Data de expiração da licença (label "EXPIRA EM", formato DD/MM/AAAA â converter para YYYY-MM-DD)\n\nREGRAS IMPORTANTES:\n1. A Página 1 é a CAPA DA LICENÇA —    contém os dados principais do cliente e scanner\n2. O nome do arquivo segue o padrão: [NOME]_[SERIAL]_[DESCRICAO].pdf\n3. Se não encontrar um campo, use null —    NÃO invente dados\n4. Para CPF/CNPJ não encontrados, retorne null\n5. Preencha TODOS os campos SGW (regiaoAtivacao, sgwLogin, sgwPassword, validUntil) —    são essenciais para a licença\n6. O campo "vinChassi" NÃO deve ser extraído\n7. O campo "modelo" NÃO deve ser extraído\n\nRetorne APENAS um objeto JSON válido, sem markdown, sem nenhum texto antes ou depois.`;
   const MAX_RETRIES = 3;
   const RETRY_DELAYS = [2000, 5000, 10000];
   const eng = useRef({
@@ -3275,7 +3376,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
         addToast('e', 'Nenhum PDF encontrado dentro do ZIP');
         return;
       }
-      if (pdfs.length > 200) addToast('w', `Encontrados ${pdfs.length} PDFs — processando os primeiros 200`);
+      if (pdfs.length > 200) addToast('w', `Encontrados ${pdfs.length} PDFs —    processando os primeiros 200`);
       addToast('i', `Carregando ${Math.min(pdfs.length, 200)} PDFs...`);
       const loaded = [];
       for (const pf of pdfs.slice(0, 200)) {
@@ -3311,7 +3412,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       addToast('e', 'Nenhum arquivo .pdf selecionado');
       return;
     }
-    if (pdfs.length > 200) addToast('w', `${pdfs.length} PDFs selecionados — processando os primeiros 200`);
+    if (pdfs.length > 200) addToast('w', `${pdfs.length} PDFs selecionados —    processando os primeiros 200`);
     const batch = pdfs.slice(0, 200);
     addToast('i', `Carregando ${batch.length} PDF${batch.length > 1 ? 's' : ''}...`);
     try {
@@ -3428,7 +3529,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       e.doneCount = resultados.length;
       e.errCount = 0;
       setPdfFiles(resultados.map((_, i) => ({
-        name: file.name + ' → linha ' + (i + 1)
+        name: file.name + ' â linha ' + (i + 1)
       })));
       setShowResults(true);
       setStatusMsg(resultados.length + ' registro' + (resultados.length > 1 ? 's' : '') + ' importado' + (resultados.length > 1 ? 's' : '') + ' da planilha!');
@@ -3452,7 +3553,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       const text = await file.text();
       const lines = text.split('\n').map(l => l.trimEnd());
       if (!lines.some(l => l.includes('SECURITY GATEWAY CERTIFICATE ANALYSIS'))) {
-        addToast('e', 'Formato TXT inválido — cabeçalho não encontrado');
+        addToast('e', 'Formato TXT inválido —    cabeçalho não encontrado');
         return;
       }
       const resultados = [];
@@ -3542,7 +3643,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       er.doneCount = resultados.length;
       er.errCount = 0;
       setPdfFiles(resultados.map((_, i) => ({
-        name: file.name + ' → cert #' + (i + 1)
+        name: file.name + ' â cert #' + (i + 1)
       })));
       setShowResults(true);
       setStatusMsg(resultados.length + ' certificado' + (resultados.length > 1 ? 's' : '') + ' importado' + (resultados.length > 1 ? 's' : '') + ' do TXT!');
@@ -3600,7 +3701,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     await Promise.all(workers);
     setRunning(false);
     if (!e.stopped) {
-      const msg = e.errCount ? `Concluído! ${e.doneCount} OK · ${e.errCount} erro${e.errCount > 1 ? 's' : ''}.` : `Tudo pronto! ${e.doneCount} PDFs extraídos.`;
+      const msg = e.errCount ? `Concluído! ${e.doneCount} OK ·   ${e.errCount} erro${e.errCount > 1 ? 's' : ''}.` : `Tudo pronto! ${e.doneCount} PDFs extraídos.`;
       setStatusMsg(msg);
       addToast(e.errCount ? 'w' : 's', msg);
       setShowResults(true);
@@ -3666,8 +3767,8 @@ const ExtractorBatch = memo(function ExtractorBatch({
               delay = raSecs * 1000;
               const jitter = Math.floor(Math.random() * 2000);
               delay += jitter;
-              setMsg(`Rate limit — aguardando ${Math.round(delay / 1000)}s...`);
-              toast('w', `Rate limit da API — pausando ${Math.round(delay / 1000)}s`);
+              setMsg(`Rate limit —    aguardando ${Math.round(delay / 1000)}s...`);
+              toast('w', `Rate limit da API —    pausando ${Math.round(delay / 1000)}s`);
             }
             if (item.retries >= MAX_RETRIES) {
               iaFailed = true;
@@ -3733,16 +3834,16 @@ const ExtractorBatch = memo(function ExtractorBatch({
         }]
       })
     });
-    if (res.status === 401) throw new Error('401 — Serviço de IA inválido. Contate o suporte.');
-    if (res.status === 503) throw new Error('503 — Serviço de IA não configurado. Contate o administrador.');
-    if (res.status === 529) throw new Error('529 overloaded — aguarde alguns segundos e tente novamente.');
+    if (res.status === 401) throw new Error('401 —    Serviço de IA inválido. Contate o suporte.');
+    if (res.status === 503) throw new Error('503 —    Serviço de IA não configurado. Contate o administrador.');
+    if (res.status === 529) throw new Error('529 overloaded —    aguarde alguns segundos e tente novamente.');
     if (res.status === 429) {
       const ra = res.headers.get('retry-after');
-      throw new Error(ra ? `429 rate limit — retry-after:${ra}` : '429 rate limit — muitas requisições. Reduza a concorrência.');
+      throw new Error(ra ? `429 rate limit —    retry-after:${ra}` : '429 rate limit —    muitas requisições. Reduza a concorrência.');
     }
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
-      throw new Error(e?.error?.message || `HTTP ${res.status}`);
+      throw new Error(e?.error?.message || `HTTP ${res.status} ${res.statusText}`);
     }
     const d = await res.json();
     const raw = (d.content || []).map(b => b.text || '').join('');
@@ -3900,10 +4001,10 @@ const ExtractorBatch = memo(function ExtractorBatch({
     const cont = a.includes(b) || b.includes(a);
     return cont ? {
       status: 'alerta',
-      mensagem: `Nome no filename diverge: "${nomeFile}" ≠ "${nomePdf}"`
+      mensagem: `Nome no filename diverge: "${nomeFile}" â  "${nomePdf}"`
     } : {
       status: 'erro',
-      mensagem: `Nome no filename não corresponde: "${nomeFile}" ≠ "${nomePdf}"`
+      mensagem: `Nome no filename não corresponde: "${nomeFile}" â  "${nomePdf}"`
     };
   }
   async function exParsePdf(base64, filename = '') {
@@ -4094,7 +4195,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     const fnMatch = validarNomeNoFilename({
       customerName
     }, filename);
-    if (fnMatch) obsPartes.push(`Filename: ${fnMatch.status === 'erro' ? '⚠ ERRO' : '⚠'} ${fnMatch.mensagem}`);
+    if (fnMatch) obsPartes.push(`Filename: ${fnMatch.status === 'erro' ? 'â  ERRO' : 'â '} ${fnMatch.mensagem}`);
     if (filename) obsPartes.push(`Arquivo: ${filename}`);
     const observations = obsPartes.join(' | ');
     let validUntilValid = validUntil;
@@ -4164,7 +4265,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     }
     const invalid = selected.filter(r => !r.customerName && !r.customerDocument);
     if (invalid.length) {
-      addToast('w', `${invalid.length} registro(s) sem nome ou documento — serão ignorados`);
+      addToast('w', `${invalid.length} registro(s) sem nome ou documento —    serão ignorados`);
     }
     const valid = selected.filter(r => r.customerName || r.customerDocument);
     if (!valid.length) {
@@ -4273,8 +4374,8 @@ const ExtractorBatch = memo(function ExtractorBatch({
   } = snap;
   const qDone = qOk + qErr;
   const qPct = qTotal ? Math.round(qDone / qTotal * 100) : 0;
-  let speedStr = '—',
-    etaStr = '—';
+  let speedStr = '—   ',
+    etaStr = '—   ';
   if (e.startTime && qDone > 0) {
     const elapsed = (Date.now() - e.startTime) / 1000;
     const rate = qDone / elapsed;
@@ -4327,7 +4428,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       state: 'frozen'
     };
     XLSX.utils.book_append_sheet(wb, ws, 'Cadastros SGW');
-    const wsR = XLSX.utils.aoa_to_sheet([['RELATÓRIO — SGW PRO Extrator de Lote'], [], ['Gerado em', new Date().toLocaleString('pt-BR')], ['Lote ID', e.batchId || '—'], ['Arquivo ZIP', e.zipName], ['Workers', concurrency], [], ['Total PDFs', qTotal], ['OK', qOk], ['Erro', qErr]]);
+    const wsR = XLSX.utils.aoa_to_sheet([['RELATÓRIO —    SGW PRO Extrator de Lote'], [], ['Gerado em', new Date().toLocaleString('pt-BR')], ['Lote ID', e.batchId || '—   '], ['Arquivo ZIP', e.zipName], ['Workers', concurrency], [], ['Total PDFs', qTotal], ['OK', qOk], ['Erro', qErr]]);
     wsR['!cols'] = [{
       wch: 32
     }, {
@@ -4357,7 +4458,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       const status = r.statusLicenca || 'INCOMPLETA';
       const hash = r.hashVerificacao || 'N/A';
       const exp = r.validUntil ? new Date(r.validUntil + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
-      const obs = ((r.observations || '').includes('Filename:') ? '⚠ ' : '') + r.observations || '';
+      const obs = ((r.observations || '').includes('Filename:') ? 'â  ' : '') + r.observations || '';
       lines.push(`CERTIFICADO #${i + 1}`, dash, `  Cliente         : ${r.customerName || 'N/A'}`, `  Serial Number   : ${r.equipmentSerial || 'N/A'}`, `  Scanner         : ${r.equipment || 'AUTEL'}`, `  Regiao          : ${r.regiaoAtivacao || r.region || 'N/A'}`, `  Login           : ${r.sgwLogin || 'N/A'}`, `  Expiracao       : ${exp}`, `  Dias Restantes  : ${dias}${dias !== 'N/A' ? ' dia' + (dias !== 1 ? 's' : '') : ''}`, `  Status          : ${status}`, `  Hash            : ${hash}`, obs ? `  Obs             : ${obs}` : null, '');
     });
     lines.push(sep, '  RESUMO', sep, `  Ativos      : ${ativos}`, `  Expirados   : ${expirados}`, `  Incompletos : ${incompletos}`, `  Revogados   : ${revogados}`, sep, `  Gerado por: SGW Pro Certificate Processor v2.0`, `  Skill ID: sgw-pro-cert-processor`, sep);
@@ -4393,13 +4494,13 @@ const ExtractorBatch = memo(function ExtractorBatch({
     key: t.id,
     className: `flex items-center gap-2 px-4 py-3 rounded-xl border text-sm text-white pointer-events-auto backdrop-blur-sm
             ${t.type === 's' ? 'bg-emerald-950/90 border-emerald-500/30' : t.type === 'e' ? 'bg-red-950/90 border-red-500/30' : t.type === 'w' ? 'bg-amber-950/90 border-amber-500/30' : 'bg-blue-950/90 border-blue-500/30'}`
-  }, t.type === 's' ? '✓' : t.type === 'e' ? '✗' : t.type === 'w' ? '⚠' : 'ℹ', " ", t.msg))), React.createElement("div", {
+  }, t.type === 's' ? 'â' : t.type === 'e' ? 'â' : t.type === 'w' ? 'â ' : 'â¹', " ", t.msg))), React.createElement("div", {
     className: "glass-card rounded-2xl p-4"
   }, React.createElement("div", {
     className: "flex items-center gap-2 mb-3"
   }, React.createElement("span", {
     className: "text-sm font-black text-white"
-  }, "Modo de Extra\xE7\xE3o"), React.createElement("span", {
+  }, "Modo de Extração"), React.createElement("span", {
     className: "text-[10px] px-2 py-0.5 rounded-full bg-cy-500/10 border border-cy-500/25 text-cy-400 font-mono"
   }, "selecione")), React.createElement("div", {
     className: "grid grid-cols-2 gap-3"
@@ -4463,7 +4564,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     points: "14 2 14 8 20 8"
   })), React.createElement("span", null, "Importa arquivo .txt no formato do ExtractorBatch \u2014 ", React.createElement("strong", {
     className: "text-cy-200"
-  }, "_SKILL_SPEC.md se\xE7\xE3o 4"), ". Parseia certificados exportados anteriormente para reimportar ou editar.")), exMode === 'ai' && React.createElement("div", {
+  }, "_SKILL_SPEC.md seção 4"), ". Parseia certificados exportados anteriormente para reimportar ou editar.")), exMode === 'ai' && React.createElement("div", {
     className: "flex items-center gap-3 px-4 py-3 rounded-xl border border-cy-500/25 bg-cy-500/6 text-sm text-cy-300/80"
   }, React.createElement("svg", {
     className: "w-5 h-5 text-cy-400 flex-shrink-0",
@@ -4480,7 +4581,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     ry: "2"
   }), React.createElement("path", {
     d: "M7 11V7a5 5 0 0110 0v4"
-  })), React.createElement("span", null, "Extra\xE7\xE3o via IA com fallback autom\xE1tico para Regex em caso de falha. API Anthropic configurada em Configura\xE7\xF5es ou servidor proxy.")), React.createElement("div", {
+  })), React.createElement("span", null, "Extração via IA com fallback autom\xE1tico para Regex em caso de falha. API Anthropic configurada em Configura\xE7\xF5es ou servidor proxy.")), React.createElement("div", {
     className: "flex items-center justify-between flex-wrap gap-3"
   }, React.createElement("div", null, React.createElement("h2", {
     className: "font-heading text-2xl font-black text-white flex items-center gap-2"
@@ -4488,7 +4589,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "text-cy-400"
   }, "PDF")), React.createElement("p", {
     className: "text-xs text-slate-500 mt-1"
-  }, exMode === 'regex' ? 'Modo Automático (PDF.js + Regex) — sem IA, offline, instantâneo' : 'Modo IA Claude — alta precisão, com fallback automático para Regex', " \xB7 ZIP ou PDFs diretos \u2192 Excel")), React.createElement("div", {
+  }, exMode === 'regex' ? 'Modo Automático (PDF.js + Regex) —    sem IA, offline, instantâneo' : 'Modo IA Claude —    alta precisão, com fallback automático para Regex', " \xB7 ZIP ou PDFs diretos \u2192 Excel")), React.createElement("div", {
     className: "flex items-center gap-3"
   }, React.createElement("label", {
     className: "text-xs text-slate-500"
@@ -4636,7 +4737,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "text-emerald-400"
   }, ".csv / .xlsx"), " aqui"), React.createElement("p", {
     className: "text-xs text-slate-600 mt-1"
-  }, loadMode === 'zip' ? 'Até 200 PDFs dentro do ZIP · Máx. 200 MB' : loadMode === 'pdf' ? 'Até 200 arquivos PDF · Seleção múltipla permitida' : loadMode === 'txt' ? 'TXT do ExtractorBatch · Máx. 5 MB' : 'CSV ou Excel · Máx. 20 MB')), (loadMode === 'csv' || loadMode === 'txt' ? e.results.length > 0 : pdfFiles.length > 0) && React.createElement("div", {
+  }, loadMode === 'zip' ? 'Até 200 PDFs dentro do ZIP ·   Máx. 200 MB' : loadMode === 'pdf' ? 'Até 200 arquivos PDF ·   Seleção múltipla permitida' : loadMode === 'txt' ? 'TXT do ExtractorBatch ·   Máx. 5 MB' : 'CSV ou Excel ·   Máx. 20 MB')), (loadMode === 'csv' || loadMode === 'txt' ? e.results.length > 0 : pdfFiles.length > 0) && React.createElement("div", {
     className: `mt-3 flex items-center gap-3 px-4 py-2.5 rounded-xl border ${loadMode === 'zip' ? 'bg-purple-500/5 border-purple-500/15' : loadMode === 'csv' ? 'bg-emerald-500/5 border-emerald-500/15' : loadMode === 'txt' ? 'bg-cy-500/5 border-cy-500/15' : 'bg-red-500/5 border-red-500/15'}`
   }, React.createElement("span", {
     className: `text-xs font-bold px-2 py-0.5 rounded ${loadMode === 'zip' ? 'bg-purple-500/10 text-purple-400' : loadMode === 'csv' ? 'bg-emerald-500/10 text-emerald-400' : loadMode === 'txt' ? 'bg-cy-500/10 text-cy-400' : 'bg-red-500/10 text-red-400'}`
@@ -4668,7 +4769,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     },
     disabled: !running,
     className: "inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all whitespace-nowrap"
-  }, e.paused ? '▶ Retomar' : '⏸ Pausar'), React.createElement("button", {
+  }, e.paused ? 'â¶ Retomar' : 'â¸ Pausar'), React.createElement("button", {
     onClick: () => {
       eng.current.stopped = true;
       eng.current.paused = false;
@@ -4759,9 +4860,9 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "flex items-center gap-3 flex-wrap"
   }, React.createElement("span", {
     className: "text-xs text-slate-500"
-  }, statusMsg), speedStr !== '—' && React.createElement("span", {
+  }, statusMsg), speedStr !== '—   ' && React.createElement("span", {
     className: "px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400"
-  }, speedStr, " docs/min"), etaStr !== '—' && React.createElement("span", {
+  }, speedStr, " docs/min"), etaStr !== '—   ' && React.createElement("span", {
     className: "px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400"
   }, "ETA ", etaStr))))), qTotal > 0 && React.createElement("div", {
     className: "bg-sgw-900 border border-sgw-800 rounded-2xl p-5"
@@ -4804,7 +4905,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "font-medium text-slate-300 truncate"
   }, item.name), React.createElement("p", {
     className: `truncate ${item.state === 'ok' ? 'text-emerald-400' : item.state === 'err' ? 'text-red-400' : item.state === 'running' ? 'text-blue-400' : item.state === 'retry' ? 'text-amber-400' : 'text-slate-600'}`
-  }, item.state === 'idle' ? 'Aguardando' : item.state === 'queue' ? 'Na fila' : item.state === 'running' ? 'Analisando...' : item.state === 'ok' ? (item.result?.customerName ? `✓ ${item.result.customerName.slice(0, 35)}` : '✓ Extraído') + (item.result?.status && item.result.status.includes('fallback') ? ' (Regex)' : '') : item.state === 'err' ? `✗ ${(item.error || 'erro').slice(0, 50)}` : `Retry ${item.retries}/${MAX_RETRIES}...`)), item.retries > 0 && React.createElement("span", {
+  }, item.state === 'idle' ? 'Aguardando' : item.state === 'queue' ? 'Na fila' : item.state === 'running' ? 'Analisando...' : item.state === 'ok' ? (item.result?.customerName ? `â ${item.result.customerName.slice(0, 35)}` : 'â Extraído') + (item.result?.status && item.result.status.includes('fallback') ? ' (Regex)' : '') : item.state === 'err' ? `â ${(item.error || 'erro').slice(0, 50)}` : `Retry ${item.retries}/${MAX_RETRIES}...`)), item.retries > 0 && React.createElement("span", {
     className: "px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-semibold",
     style: {
       fontSize: 10
@@ -4859,20 +4960,20 @@ const ExtractorBatch = memo(function ExtractorBatch({
         className: "px-3 py-2 whitespace-nowrap"
       }, React.createElement("span", {
         className: `px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`
-      }, v || '—'));
+      }, v || '—   '));
     }
     if (c.key === 'diasRestantes') {
       const cls = v < 0 ? 'text-red-400 font-bold' : v <= 30 ? 'text-amber-400' : v <= 90 ? 'text-cy-400' : 'text-emerald-400';
       return React.createElement("td", {
         key: c.key,
         className: `px-3 py-2 whitespace-nowrap font-bold ${cls}`
-      }, v !== undefined && v !== null ? v + 'd' : '—');
+      }, v !== undefined && v !== null ? v + 'd' : '—   ');
     }
     if (c.key === 'hashVerificacao') return React.createElement("td", {
       key: c.key,
       className: "px-3 py-2 text-slate-400 font-mono text-[10px] whitespace-nowrap",
       title: v || ''
-    }, v ? v.slice(0, 12) + '…' : '—');
+    }, v ? v.slice(0, 12) + '…   ' : '—   ');
     return React.createElement("td", {
       key: c.key,
       className: "px-3 py-2 text-slate-300 whitespace-nowrap max-w-44 overflow-hidden text-ellipsis",
@@ -4903,7 +5004,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "text-xs text-slate-500"
   }, l), React.createElement("span", {
     className: `px-2 py-0.5 rounded-full text-xs font-semibold bg-white/5 ${c}`
-  }, v || '—'))), React.createElement("div", {
+  }, v || '—   '))), React.createElement("div", {
     className: "h-px bg-sgw-800 my-1"
   }), React.createElement("div", {
     className: "flex justify-between items-center"
@@ -4921,9 +5022,9 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "bg-sgw-900 border border-sgw-800 rounded-2xl p-4"
   }, React.createElement("p", {
     className: "text-xs font-bold uppercase tracking-widest text-slate-600 mb-2"
-  }, "Exporta\xE7\xE3o"), React.createElement("p", {
+  }, "Exportação"), React.createElement("p", {
     className: "text-xs text-slate-500 leading-relaxed mb-3"
-  }, "Baixe a planilha ou importe direto no sistema a qualquer momento, mesmo com extra\xE7\xE3o em andamento."), React.createElement("button", {
+  }, "Baixe a planilha ou importe direto no sistema a qualquer momento, mesmo com extração em andamento."), React.createElement("button", {
     onClick: downloadXLSX,
     disabled: e.results.length === 0,
     className: "w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -4941,9 +5042,9 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "bg-sgw-900 border border-sgw-800 rounded-2xl p-4"
   }, React.createElement("p", {
     className: "text-xs font-bold uppercase tracking-widest text-slate-600 mb-3"
-  }, "Configura\xE7\xE3o"), React.createElement("div", {
+  }, "Configuração"), React.createElement("div", {
     className: "space-y-2 text-xs"
-  }, [['Workers paralelos', loadMode === 'zip' || loadMode === 'pdf' ? concurrency : '—', 'text-blue-400'], ['Suporte TXT/CSV/Excel', '.txt .csv .xlsx .xls', 'text-cy-400'], ['Mapeamento colunas', 'Automático via header', 'text-cy-400'], ['Pipeline Validação', '4 fases · Aberama', 'text-cy-400'], ['Status Licença', 'ATIVA/EXPIRANDO/EXPIRADA', 'text-violet-400'], ['Hash Verificação', 'SHA256', 'text-slate-500']].map(([l, v, c]) => React.createElement("div", {
+  }, [['Workers paralelos', loadMode === 'zip' || loadMode === 'pdf' ? concurrency : '—   ', 'text-blue-400'], ['Suporte TXT/CSV/Excel', '.txt .csv .xlsx .xls', 'text-cy-400'], ['Mapeamento colunas', 'Automático via header', 'text-cy-400'], ['Pipeline Validação', '4 fases ·   Aberama', 'text-cy-400'], ['Status Licença', 'ATIVA/EXPIRANDO/EXPIRADA', 'text-violet-400'], ['Hash Verificação', 'SHA256', 'text-slate-500']].map(([l, v, c]) => React.createElement("div", {
     key: l,
     className: "flex justify-between"
   }, React.createElement("span", {
@@ -4956,7 +5057,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "text-xs font-bold uppercase tracking-widest text-slate-600 mb-3"
   }, "Como funciona"), React.createElement("div", {
     className: "space-y-3"
-  }, [['bg-blue-500/15 text-blue-400', '1', 'Envie ZIP com PDFs, PDFs avulsos, CSV/Excel ou TXT (arraste ou clique)'], ['bg-purple-500/15 text-purple-400', '2', 'ZIP/PDF: extração via PDF.js + regex na CAPA do certificado Aberama'], ['bg-emerald-500/15 text-emerald-400', '', 'CSV/Excel: leitura direta via SheetJS — mapeamento automático de colunas'], ['bg-cy-500/10 text-cy-400', '', 'TXT: parsing do formato _SKILL_SPEC.md seção 4 — Cert. Aberama'], ['bg-amber-500/15 text-amber-400', '3', 'Validação: CPF/CNPJ, serial, login, senha, prazo de validade, região de ativação'], ['bg-cy-500/15 text-cy-400', '4', 'Enriquecimento: status da licença, dias restantes, hash SHA256, plataforma de homologação + alertas'], ['bg-cy-500/15 text-cy-400', '5', 'Exporte .xlsx/.txt ou importe no SGW Pro — deduplicação por serial/documento']].map(([cls, n, txt]) => React.createElement("div", {
+  }, [['bg-blue-500/15 text-blue-400', '1', 'Envie ZIP com PDFs, PDFs avulsos, CSV/Excel ou TXT (arraste ou clique)'], ['bg-purple-500/15 text-purple-400', '2', 'ZIP/PDF: extração via PDF.js + regex na CAPA do certificado Aberama'], ['bg-emerald-500/15 text-emerald-400', '', 'CSV/Excel: leitura direta via SheetJS —    mapeamento automático de colunas'], ['bg-cy-500/10 text-cy-400', '', 'TXT: parsing do formato _SKILL_SPEC.md seção 4 —    Cert. Aberama'], ['bg-amber-500/15 text-amber-400', '3', 'Validação: CPF/CNPJ, serial, login, senha, prazo de validade, região de ativação'], ['bg-cy-500/15 text-cy-400', '4', 'Enriquecimento: status da licença, dias restantes, hash SHA256, plataforma de homologação + alertas'], ['bg-cy-500/15 text-cy-400', '5', 'Exporte .xlsx/.txt ou importe no SGW Pro —    deduplicação por serial/documento']].map(([cls, n, txt]) => React.createElement("div", {
     key: n,
     className: "flex gap-2.5 items-start"
   }, React.createElement("div", {
@@ -5035,7 +5136,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
       className: "flex items-center gap-2 flex-wrap"
     }, React.createElement("span", {
       className: "font-semibold text-white text-sm truncate"
-    }, r.customerName || '—'), r.statusLicenca && (() => {
+    }, r.customerName || '—   '), r.statusLicenca && (() => {
       const cls = r.statusLicenca === 'ATIVA' ? 'bg-emerald-500/15 text-emerald-400' : r.statusLicenca === 'EXPIRANDO' ? 'bg-amber-500/15 text-amber-400' : 'bg-red-500/15 text-red-400';
       return React.createElement("span", {
         className: `text-[10px] px-1.5 py-0.5 rounded border font-bold flex-shrink-0 ${cls}`
@@ -5077,7 +5178,7 @@ const ExtractorBatch = memo(function ExtractorBatch({
     className: "text-xs text-amber-400 flex items-start gap-2"
   }, React.createElement("span", {
     className: "font-black flex-shrink-0 mt-0.5"
-  }, "\u26A0"), React.createElement("span", null, "Os registros ser\xE3o criados com status ", React.createElement("strong", null, "Pendente"), ". Complete os campos obrigat\xF3rios (Scanner, Login SGW, Datas) diretamente em cada licen\xE7a ap\xF3s a importa\xE7\xE3o."))), React.createElement("div", {
+  }, "\u26A0"), React.createElement("span", null, "Os registros ser\xE3o criados com status ", React.createElement("strong", null, "Pendente"), ". Complete os campos obrigat\xF3rios (Scanner, Login SGW, Datas) diretamente em cada licen\xE7a ap\xF3s a importação."))), React.createElement("div", {
     className: "flex items-center justify-end gap-3 px-6 py-4 border-t border-sgw-800"
   }, React.createElement("button", {
     onClick: () => setImportModal(false),
@@ -5125,7 +5226,7 @@ const Landing = memo(({
   const bebas = {
     fontFamily: "'Bebas Neue',sans-serif"
   };
-  const TICKER = ['Sistema Teste', 'SGW Pro v11.0', 'SHA-256 · AES-256', 'Witech 2.0 Certificado', 'OBDSTAR · Autel · Launch', '99.9% Uptime', '27 Estados', '10.000+ Licenças', 'Stellantis Certified', 'Offline-First', 'LGPD Compliant', 'Certificado PDF 3 Págs'];
+  const TICKER = ['Sistema Teste', 'SGW Pro v11.0', 'SHA-256 ·   AES-256', 'Witech 2.0 Certificado', 'OBDSTAR ·   Autel ·   Launch', '99.9% Uptime', '27 Estados', '10.000+ Licenças', 'Stellantis Certified', 'Offline-First', 'LGPD Compliant', 'Certificado PDF 3 Págs'];
   const doubled = [...TICKER, ...TICKER];
   const [demoKey] = useState(() => L.gen());
   const cnt1 = useCounter(10000);
@@ -5305,7 +5406,7 @@ const Landing = memo(({
     }), React.createElement("path", {
       d: "M12 16v-4M12 8h.01"
     })),
-    t: 'Extrator IA — Claude',
+    t: 'Extrator IA —    Claude',
     d: 'Importa até 200 PDFs em lote via IA'
   }];
   const STEPS = [{
@@ -5422,7 +5523,7 @@ const Landing = memo(({
       fontWeight: 700,
       fontSize: '13px',
       boxShadow: `0 4px 20px rgba(20,240,212,.22)`,
-      transition: 'all .2s'
+      transition: 'transform .2s, box-shadow .2s'
     },
     onMouseEnter: e => {
       e.currentTarget.style.transform = 'translateY(-1px)';
@@ -5530,12 +5631,12 @@ const Landing = memo(({
       maxWidth: '580px',
       margin: '0 auto 44px'
     }
-  }, "CRM/ERP especializado para controle de distribui\xE7\xE3o e acesso ao", ' ', React.createElement("strong", {
+  }, "CRM/ERP especializado para controle de distribuição e acesso ao", ' ', React.createElement("strong", {
     style: {
       color: W,
       fontWeight: 600
     }
-  }, "Sistema SGW Stellantis"), ". Gera\xE7\xE3o, valida\xE7\xE3o e auditoria completa em todo o Brasil."), React.createElement("div", {
+  }, "Sistema SGW Stellantis"), ". Geração, validação e auditoria completa em todo o Brasil."), React.createElement("div", {
     style: {
       display: 'flex',
       gap: '14px',
@@ -5558,7 +5659,7 @@ const Landing = memo(({
       fontWeight: 700,
       fontSize: '15px',
       boxShadow: `0 8px 36px rgba(20,240,212,.28)`,
-      transition: 'all .25s'
+      transition: 'transform .25s, box-shadow .25s'
     },
     onMouseEnter: e => {
       e.currentTarget.style.transform = 'translateY(-2px)';
@@ -5589,7 +5690,7 @@ const Landing = memo(({
       cursor: 'pointer',
       fontWeight: 600,
       fontSize: '14px',
-      transition: 'all .2s'
+      transition: 'border-color .2s, color .2s'
     },
     onMouseEnter: e => {
       e.currentTarget.style.borderColor = T;
@@ -5764,7 +5865,7 @@ const Landing = memo(({
       maxWidth: '500px',
       margin: '0 auto'
     }
-  }, "Tudo para controlar a distribui\xE7\xE3o de licen\xE7as SGW em um \xFAnico sistema offline-first")), React.createElement("div", {
+  }, "Tudo para controlar a distribuição de licen\xE7as SGW em um \xFAnico sistema offline-first")), React.createElement("div", {
     style: {
       display: 'grid',
       gridTemplateColumns: 'repeat(3,1fr)',
@@ -6119,7 +6220,7 @@ const Landing = memo(({
       maxWidth: '500px',
       margin: '0 auto 44px'
     }
-  }, "Acesse o painel completo para controle de distribui\xE7\xE3o e acesso ao Sistema SGW Stellantis em todo o Brasil."), React.createElement("button", {
+  }, "Acesse o painel completo para controle de distribuição e acesso ao Sistema SGW Stellantis em todo o Brasil."), React.createElement("button", {
     onClick: go,
     style: {
       display: 'inline-flex',
@@ -6135,7 +6236,7 @@ const Landing = memo(({
       fontSize: '17px',
       letterSpacing: '.3px',
       boxShadow: `0 12px 52px rgba(20,240,212,.30)`,
-      transition: 'all .25s'
+      transition: 'transform .25s, box-shadow .25s'
     },
     onMouseEnter: e => {
       e.currentTarget.style.transform = 'translateY(-3px)';
@@ -6333,152 +6434,113 @@ const Dashboard = ({
     return Object.entries(m).sort((a, b) => a[0].localeCompare(b[0])).slice(-8);
   }, [lics]);
   const maxM = Math.max(...months.map(([, v]) => v), 1);
-  const KPI_TOP = [{
-    l: 'ARR Estimado',
+  const renewalColor = st.renewalRate >= 80 ? 'emerald' : st.renewalRate >= 60 ? 'amber' : 'red';
+  const KPI_DATA = [{
+    l: 'ARR',
     v: `R$ ${Math.round(st.arr).toLocaleString('pt-BR')}`,
-    sub: 'receita anual recorrente',
+    sub: 'receita anual',
     ic: Icon.finance,
-    c: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20'
+    cls: 'emerald',
+    size: 'lg'
   }, {
     l: 'MRR',
     v: `R$ ${Math.round(st.mrr).toLocaleString('pt-BR')}`,
-    sub: 'receita mensal recorrente',
+    sub: 'receita mensal',
     ic: Icon.trendUp,
-    c: 'text-cy-400',
-    bg: 'bg-cy-500/10',
-    border: 'border-cy-500/20'
+    cls: 'cyan',
+    size: 'lg'
   }, {
     l: 'Licenças Ativas',
     v: st.active,
     sub: `de ${st.total} total`,
     ic: Icon.check,
-    c: 'text-emerald-400',
-    bg: 'bg-emerald-500/8',
-    border: 'border-emerald-500/15'
+    cls: 'emerald',
+    size: 'sm'
   }, {
-    l: 'Taxa de Renovação',
+    l: 'Renovação',
     v: `${st.renewalRate}%`,
-    sub: `churn: ${st.churnRate}%`,
+    sub: `churn ${st.churnRate}%`,
     ic: Icon.refresh,
-    c: st.renewalRate >= 80 ? 'text-emerald-400' : st.renewalRate >= 60 ? 'text-amber-400' : 'text-red-400',
-    bg: st.renewalRate >= 80 ? 'bg-emerald-500/8' : 'bg-amber-500/8',
-    border: st.renewalRate >= 80 ? 'border-emerald-500/15' : 'border-amber-500/20'
-  }];
-  const KPI_BOT = [{
+    cls: renewalColor,
+    size: 'sm'
+  }, {
     l: 'Pendentes',
     v: st.pending,
+    sub: 'aguardando',
     ic: Icon.clock,
-    c: 'text-amber-400',
-    bg: 'bg-amber-500/10',
-    bo: 'border-amber-500/20'
+    cls: 'amber',
+    size: 'sm'
   }, {
     l: 'Expiradas',
     v: st.expired,
+    sub: 'sem renovação',
     ic: Icon.alert,
-    c: 'text-red-400',
-    bg: 'bg-red-500/10',
-    bo: 'border-red-500/20'
-  }, {
-    l: 'Revogadas',
-    v: st.revoked,
-    ic: Icon.x,
-    c: 'text-slate-400',
-    bg: 'bg-sgw-750',
-    bo: 'border-slate-600/30'
-  }, {
-    l: 'Venc. 7 dias',
-    v: st.exp7,
-    ic: Icon.alert,
-    c: st.exp7 > 0 ? 'text-red-400' : 'text-slate-500',
-    bg: st.exp7 > 0 ? 'bg-red-500/10' : 'bg-sgw-750',
-    bo: st.exp7 > 0 ? 'border-red-500/25' : 'border-slate-600/30'
-  }, {
-    l: 'Venc. 15 dias',
-    v: st.exp15,
-    ic: Icon.clock,
-    c: st.exp15 > 0 ? 'text-orange-400' : 'text-slate-500',
-    bg: st.exp15 > 0 ? 'bg-orange-500/10' : 'bg-sgw-750',
-    bo: st.exp15 > 0 ? 'border-orange-500/25' : 'border-slate-600/30'
-  }, {
-    l: 'Emitidas Mês',
-    v: st.thisMonth,
-    ic: Icon.calendar,
-    c: 'text-cy-400',
-    bg: 'bg-cy-500/10',
-    bo: 'border-cy-500/20'
+    cls: 'red',
+    size: 'sm'
   }, {
     l: 'Crescimento',
     v: `${st.growthPct > 0 ? '+' : ''}${st.growthPct}%`,
+    sub: 'vs. mês anterior',
     ic: st.growthPct >= 0 ? Icon.trendUp : Icon.chart,
-    c: st.growthPct >= 0 ? 'text-emerald-400' : 'text-red-400',
-    bg: st.growthPct >= 0 ? 'bg-emerald-500/8' : 'bg-red-500/8',
-    bo: st.growthPct >= 0 ? 'border-emerald-500/20' : 'border-red-500/20'
+    cls: st.growthPct >= 0 ? 'emerald' : 'red',
+    size: 'sm'
   }, {
-    l: 'Duração Média',
-    v: `${st.avgDuration || '—'} m`,
-    ic: Icon.calendar,
-    c: 'text-slate-300',
-    bg: 'bg-sgw-750',
-    bo: 'border-slate-600/30'
+    l: 'Vencimento ≤15d',
+    v: st.exp15,
+    sub: `${st.exp7} urgente(s)`,
+    ic: Icon.clock,
+    cls: st.exp15 > 0 ? (st.exp7 > 0 ? 'red' : 'amber') : 'slate',
+    size: 'sm'
   }];
+  const kpiColor = (c, shade) => {
+    const map = { emerald: 'emerald', cyan: 'cyan', amber: 'amber', red: 'red', violet: 'violet', slate: 'slate' };
+    return `text-${map[c]}-${shade}`;
+  };
   return React.createElement("div", {
-    className: "space-y-5 af"
+    className: "space-y-5"
   }, (st.exp7 > 0 || st.pending > 5) && React.createElement("div", {
-    className: "glass-card rounded-2xl p-4 border border-red-500/25 bg-red-500/5"
+    className: "glass-card rounded-2xl overflow-hidden border-0 af"
   }, React.createElement("div", {
-    className: "flex items-center gap-2 mb-3"
-  }, React.createElement("span", {
-    className: "text-red-400"
-  }, Icon.alert()), React.createElement("span", {
-    className: "font-heading font-black text-red-300 text-sm"
-  }, "Aten\xE7\xE3o Necess\xE1ria")), React.createElement("div", {
-    className: "flex flex-wrap gap-3"
+    className: `flex items-center gap-3 px-5 py-4 ${st.exp7 > 0 ? 'bg-gradient-to-r from-red-500/10 to-transparent border-l-4 border-l-red-500' : 'bg-gradient-to-r from-amber-500/10 to-transparent border-l-4 border-l-amber-500'}`
+  }, React.createElement("div", {
+    className: `w-9 h-9 rounded-xl ${st.exp7 > 0 ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'} flex items-center justify-center flex-shrink-0`
+  }, st.exp7 > 0 ? Icon.alert() : Icon.clock()), React.createElement("div", {
+    className: "flex-1"
+  }, React.createElement("div", {
+    className: "font-heading font-black text-sm text-white"
+  }, st.exp7 > 0 ? 'Atenção: Licenças Próximas do Vencimento' : 'Licenças Pendentes de Ativação'), React.createElement("div", {
+    className: "text-xs text-slate-400 mt-0.5"
+  }, st.exp7 > 0 ? `${st.exp7} licença${st.exp7 > 1 ? 's' : ''} vence${st.exp7 > 1 ? 'm' : ''} em até 7 dias` : `${st.pending} licença${st.pending > 1 ? 's' : ''} aguardando ativação`)), React.createElement("div", {
+    className: "flex gap-2 px-5 py-3 bg-white/[.02] border-t border-white/[.04]"
   }, st.exp7 > 0 && React.createElement("div", {
-    className: "flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/25 rounded-xl text-xs"
+    className: "flex items-center gap-1.5 text-xs text-red-400/80"
   }, React.createElement("span", {
-    className: "font-black text-red-400"
-  }, st.exp7), React.createElement("span", {
-    className: "text-red-300"
-  }, "licen\xE7a", st.exp7 > 1 ? 's' : '', " vence", st.exp7 > 1 ? 'm' : '', " em at\xE9 7 dias")), st.pending > 5 && React.createElement("div", {
-    className: "flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/25 rounded-xl text-xs"
+    className: "font-black text-red-400 text-sm"
+  }, st.exp7), "urgente", st.exp7 > 1 ? 's' : ''), st.pending > 5 && React.createElement("div", {
+    className: "flex items-center gap-1.5 text-xs text-amber-400/80"
   }, React.createElement("span", {
-    className: "font-black text-amber-400"
-  }, st.pending), React.createElement("span", {
-    className: "text-amber-300"
-  }, "licen\xE7as aguardando ativa\xE7\xE3o")))), React.createElement("div", {
+    className: "font-black text-amber-400 text-sm"
+  }, st.pending), "pendente", st.pending > 1 ? 's' : '')))), React.createElement("div", {
     className: "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"
-  }, KPI_TOP.map((k, i) => React.createElement("div", {
+  }, KPI_DATA.map((k, i) => React.createElement("div", {
     key: i,
-    className: `glass-card rounded-2xl p-6 border ${k.border} ${k.bg}`
+    className: `kpi-${k.cls} glass-card rounded-2xl border border-${k.cls === 'emerald' ? 'emerald' : k.cls === 'cyan' ? 'cyan' : k.cls === 'violet' ? 'violet' : k.cls === 'amber' ? 'amber' : k.cls === 'red' ? 'red' : 'slate'}-500/15 af d${i + 1}`
   }, React.createElement("div", {
-    className: "flex items-start justify-between mb-4"
+    className: "flex items-start justify-between mb-3"
   }, React.createElement("span", {
-    className: "text-cy-400"
-  }, k.ic()), React.createElement("span", {
-    className: "text-[10px] font-mono text-slate-500 uppercase tracking-widest"
-  }, "SaaS KPI")), React.createElement("div", {
-    className: `font-heading font-black leading-none mb-2 ${k.c}`,
+    className: `text-${k.cls === 'emerald' ? 'emerald' : k.cls === 'cyan' ? 'cyan' : k.cls === 'amber' ? 'amber' : k.cls === 'red' ? 'red' : 'slate'}-400`
+  }, k.ic()), k.size === 'lg' && React.createElement("span", {
+    className: "text-[10px] font-mono text-slate-600 uppercase tracking-widest"
+  }, "KPI")), React.createElement("div", {
+    className: `font-heading font-black leading-none mb-1 ${kpiColor(k.cls, k.size === 'lg' ? '300' : '300')}`,
     style: {
-      fontSize: '2.25rem'
+      fontSize: k.size === 'lg' ? '2.25rem' : '1.5rem'
     }
   }, k.v), React.createElement("div", {
     className: "text-sm font-semibold text-slate-300 mt-1"
   }, k.l), React.createElement("div", {
     className: "text-xs text-slate-500 mt-0.5"
   }, k.sub)))), React.createElement("div", {
-    className: "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3"
-  }, KPI_BOT.map((k, i) => React.createElement("div", {
-    key: i,
-    className: `kpi rounded-2xl border ${k.bg} ${k.bo}`
-  }, React.createElement("span", {
-    className: "text-cy-400 block mb-2"
-  }, k.ic()), React.createElement("div", {
-    className: `font-heading text-xl font-black leading-none mb-1 ${k.c}`
-  }, k.v), React.createElement("div", {
-    className: "text-xs text-slate-400 font-medium"
-  }, k.l)))), React.createElement("div", {
     className: "grid grid-cols-1 xl:grid-cols-3 gap-5"
   }, React.createElement("div", {
     className: "xl:col-span-2 glass-card rounded-2xl overflow-hidden"
@@ -6512,7 +6574,7 @@ const Dashboard = ({
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }) : '—';
+    }) : '—   ';
     return React.createElement("div", {
       key: l.id,
       className: "flex items-center gap-3 px-5 py-3.5 cursor-pointer hover:bg-white/[.02] transition-colors",
@@ -6527,7 +6589,7 @@ const Dashboard = ({
         }
       }
     }, React.createElement("div", {
-      className: "w-8 h-8 rounded-full bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-xs font-bold text-cy-400 flex-shrink-0",
+      className: `w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${l.status === 'active' ? 'ava-em' : l.status === 'pending' ? 'ava-am' : l.status === 'expired' ? 'ava-rd' : 'ava-sl'}`,
       "aria-hidden": "true"
     }, init), React.createElement("div", {
       className: "min-w-0 flex-1"
@@ -6536,7 +6598,7 @@ const Dashboard = ({
     }, l.customerName || '---'), React.createElement("div", {
       className: "text-xs text-slate-500 truncate",
       translate: 'no'
-    }, l.region || '', l.cpfCnpj ? ` · ${l.cpfCnpj.slice(0, 7)}…` : '')), React.createElement("div", {
+    }, l.region || '', l.cpfCnpj ? ` ·   ${l.cpfCnpj.slice(0, 7)}…   ` : '')), React.createElement("div", {
       className: "hidden sm:block min-w-0 flex-1"
     }, React.createElement("span", {
       className: "serial text-xs text-slate-400 truncate block"
@@ -6570,25 +6632,40 @@ const Dashboard = ({
     const score = Math.round(st.active / Math.max(st.total, 1) * 100);
     const label = score >= 80 ? 'Excelente' : score >= 60 ? 'Bom' : score >= 40 ? 'Atenção' : 'Crítico';
     const color = score >= 80 ? 'text-emerald-400' : score >= 60 ? 'text-cy-400' : score >= 40 ? 'text-amber-400' : 'text-red-400';
-    const barColor = score >= 80 ? 'bg-emerald-400' : score >= 60 ? 'bg-cy-400' : score >= 40 ? 'bg-amber-400' : 'bg-red-400';
+    const ringColor = score >= 80 ? '#34d399' : score >= 60 ? '#22d3ee' : score >= 40 ? '#fbbf24' : '#f87171';
+    const txtColor = score >= 80 ? 'text-emerald-400' : score >= 60 ? 'text-cy-400' : score >= 40 ? 'text-amber-400' : 'text-red-400';
     return React.createElement("div", {
-      className: "mb-4 p-3 rounded-xl bg-sgw-800/50 border border-sgw-700"
+      className: "flex flex-col items-center mb-4"
     }, React.createElement("div", {
-      className: "flex items-center justify-between mb-2"
+      className: "radial-ring",
+      style: { width: 104, height: 104 }
+    }, React.createElement("svg", {
+      width: 104,
+      height: 104,
+      viewBox: "0 0 104 104"
+    }, React.createElement("circle", {
+      className: "bg-circle",
+      cx: 52,
+      cy: 52,
+      r: 38,
+      strokeWidth: 8
+    }), React.createElement("circle", {
+      className: "fg-circle",
+      cx: 52,
+      cy: 52,
+      r: 38,
+      stroke: ringColor,
+      strokeWidth: 8,
+      strokeDasharray: 238.76,
+      strokeDashoffset: 238.76 - 238.76 * score / 100
+    })), React.createElement("div", {
+      className: "absolute inset-0 flex flex-col items-center justify-center"
     }, React.createElement("span", {
-      className: "text-xs text-slate-400 font-semibold"
-    }, "Health Score"), React.createElement("span", {
-      className: `text-lg font-black ${color}`
-    }, score, "/100")), React.createElement("div", {
-      className: "h-2 bg-sgw-950 rounded-full overflow-hidden mb-1.5"
-    }, React.createElement("div", {
-      className: `h-full rounded-full ${barColor}`,
-      style: {
-        width: `${score}%`,
-        transition: 'width .7s ease'
-      }
-    })), React.createElement("span", {
-      className: `text-xs font-bold ${color}`
+      className: `font-heading font-black text-2xl ${txtColor}`
+    }, score), React.createElement("span", {
+      className: "text-[9px] text-slate-500 font-semibold uppercase tracking-wider"
+    }, "/100"))), React.createElement("span", {
+      className: `text-xs font-bold ${txtColor} mt-1`
     }, label));
   })(), React.createElement("div", {
     className: "space-y-2.5"
@@ -6645,7 +6722,7 @@ const Dashboard = ({
     className: "mt-4 pt-3 border-t border-sgw-700 flex justify-between text-xs"
   }, React.createElement("span", {
     className: "text-slate-500"
-  }, "Taxa de Ativa\xE7\xE3o"), React.createElement("span", {
+  }, "Taxa de Ativação"), React.createElement("span", {
     className: "font-black text-white"
   }, Math.round(st.active / st.total * 100), "%"))), months.length > 0 && React.createElement("div", {
     className: "glass-card rounded-2xl p-5"
@@ -6679,7 +6756,7 @@ const Dashboard = ({
   }))), byReg.length > 0 && React.createElement("div", {
     className: "glass-card rounded-2xl p-5"
   }, React.createElement("h3", {
-    className: "font-heading font-black text-white mb-3 text-sm flex items-center gap-2"
+    className: "font-heading font-black text-white mb-4 text-sm flex items-center gap-2"
   }, Icon.users({
     width: '16',
     height: '16'
@@ -6705,7 +6782,7 @@ const Dashboard = ({
   }, c))))), byEq.length > 0 && React.createElement("div", {
     className: "glass-card rounded-2xl p-5"
   }, React.createElement("h3", {
-    className: "font-heading font-black text-white mb-3 text-sm flex items-center gap-2"
+    className: "font-heading font-black text-white mb-4 text-sm flex items-center gap-2"
   }, Icon.settings({
     width: '16',
     height: '16'
@@ -6773,7 +6850,7 @@ const Dashboard = ({
       className: "text-xs text-slate-400 truncate block"
     }, l.equipment || '---'), React.createElement("span", {
       className: "text-xs text-slate-500"
-    }, l.region || '—')), React.createElement("span", {
+    }, l.region || '—   ')), React.createElement("span", {
       className: `text-xs font-black px-2.5 py-1.5 rounded-lg flex-shrink-0 ${d <= 7 ? 'text-red-300 bg-red-500/15' : d <= 15 ? 'text-orange-300 bg-orange-500/15' : 'text-amber-300 bg-amber-500/15'}`
     }, d, "d"));
   }))), !!hoveredLic && (() => {
@@ -6786,14 +6863,14 @@ const Dashboard = ({
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }) : '—';
+    }) : '—   ';
     const aDate = l.activationDate ? new Date(l.activationDate).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }) : '—';
-    const pW = 420;
-    const pH = 500;
+    }) : '—   ';
+    const pW = 380;
+    const pH = 440;
     let lx = rect.left + (rect.width - pW) / 2;
     let ty = rect.top - pH - 12 >= 12 ? rect.top - pH - 12 : rect.bottom + 12;
     if (lx < 12) lx = 12;
@@ -6803,97 +6880,76 @@ const Dashboard = ({
       style: {
         left: lx + 'px',
         top: ty + 'px',
-        animation: 'fadeIn .12s ease-out'
+        animation: 'scaleIn .15s ease-out'
       },
       onMouseEnter: cancelHide,
       onMouseLeave: scheduleHide
     }, React.createElement("div", {
-      className: "bg-sgw-900/95 border border-sgw-600/60 rounded-xl shadow-2xl shadow-black/60 p-5 w-[420px] max-h-[85vh]",
+      className: "bg-sgw-900/95 border border-sgw-600/60 rounded-xl shadow-2xl shadow-black/60 overflow-hidden",
       style: {
         backdropFilter: 'blur(12px)',
-        overflowY: 'auto'
+        width: pW + 'px'
       }
     }, React.createElement("div", {
-      className: "flex items-center justify-between mb-4 pb-3 border-b border-sgw-700/50"
+      className: "flex items-center gap-3 px-4 py-3 border-b border-sgw-700/50"
     }, React.createElement("div", {
-      className: "flex items-center gap-3 min-w-0 flex-1"
-    }, React.createElement("div", {
-      className: "w-10 h-10 rounded-full bg-cy-500/20 border border-cy-500/30 flex items-center justify-center text-sm font-black text-cy-400 flex-shrink-0"
+      className: `w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${l.status === 'active' ? 'ava-em' : l.status === 'pending' ? 'ava-am' : l.status === 'expired' ? 'ava-rd' : 'ava-sl'}`
     }, (l.customerName || '?')[0].toUpperCase()), React.createElement("div", {
-      className: "min-w-0"
+      className: "min-w-0 flex-1"
     }, React.createElement("div", {
-      className: "font-heading font-black text-white text-base truncate"
+      className: "font-heading font-black text-white text-sm truncate"
     }, l.customerName || '---'), React.createElement("div", {
-      className: "serial text-[11px] text-cy-400/60 truncate"
-    }, l.licenseKey || '---'))), React.createElement(SBadge, {
-      status: l.status
+      className: "serial text-[10px] text-cy-400/60 truncate"
+    }, l.licenseKey || '---')), React.createElement(SBadge, {
+      status: l.status,
+      sm: true
     })), React.createElement("div", {
-      className: "grid grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 text-sm"
+      className: "px-4 py-3 space-y-3 max-h-[350px] overflow-y-auto"
+    }, React.createElement("div", {
+      className: "grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-xs"
     }, React.createElement("span", {
-      className: "text-slate-500"
-    }, "Status"), React.createElement("span", {
-      className: `font-bold ${l.status === 'active' ? 'text-emerald-400' : l.status === 'pending' ? 'text-amber-400' : l.status === 'expired' ? 'text-red-400' : 'text-slate-400'}`
-    }, l.status), React.createElement("span", {
       className: "text-slate-500"
     }, "Validade"), React.createElement("span", {
       className: `font-semibold ${d === null ? 'text-slate-500' : d < 0 ? 'text-red-400' : d <= 7 ? 'text-red-400' : d <= 30 ? 'text-amber-400' : 'text-emerald-400'}`
-    }, vDate, " ", d !== null ? `(${d < 0 ? 'exp. ' : 'em '}${Math.abs(d)}d)` : '—'), React.createElement("span", {
+    }, vDate, " ", d !== null ? `(${d < 0 ? 'exp. ' : ''}${Math.abs(d)}d)` : ''), React.createElement("span", {
       className: "text-slate-500"
-    }, "Ativa\xE7\xE3o"), React.createElement("span", {
+    }, "Ativação"), React.createElement("span", {
       className: "text-slate-300"
     }, aDate), React.createElement("span", {
       className: "text-slate-500"
     }, "Documento"), React.createElement("span", {
       className: "serial text-slate-300"
-    }, S.maskDoc(l.cpfCnpj || '') || '---'), React.createElement("span", {
-      className: "text-slate-500"
-    }, "Email"), React.createElement("span", {
-      className: "text-slate-300 break-all"
-    }, l.email || '---'), React.createElement("span", {
-      className: "text-slate-500"
-    }, "Telefone"), React.createElement("span", {
-      className: "text-slate-300"
-    }, l.phone || '---'), React.createElement("span", {
-      className: "text-slate-500"
-    }, "Equipamento"), React.createElement("span", {
-      className: "text-slate-300"
-    }, l.equipment || '---'), React.createElement("span", {
-      className: "text-slate-500"
-    }, "S/N Equip."), React.createElement("span", {
-      className: "text-slate-300",
-      translate: 'no'
-    }, l.equipmentSerial || '---'), React.createElement("span", {
-      className: "text-slate-500"
-    }, "VIN"), React.createElement("span", {
-      className: "text-slate-300",
-      translate: 'no'
-    }, l.vin || '---'), React.createElement("span", {
+    }, S.maskDoc(l.cpfCnpj || '') || '—'), React.createElement("span", {
       className: "text-slate-500"
     }, "Login SGW"), React.createElement("span", {
-      className: "serial text-slate-300"
-    }, l.sgwLogin || '---'), React.createElement("span", {
+      className: "serial text-slate-300 truncate"
+    }, l.sgwLogin || '—'), React.createElement("span", {
       className: "text-slate-500"
-    }, "Senha SGW"), React.createElement("span", {
-      className: "serial text-slate-300"
-    }, l.sgwPassword || '---'), React.createElement("span", {
+    }, "Equipamento"), React.createElement("span", {
+      className: "text-slate-300 truncate"
+    }, l.equipment || '—'), React.createElement("span", {
       className: "text-slate-500"
-    }, "Regi\xE3o"), React.createElement("span", {
-      className: `font-medium ${l.regiaoAtivacao === 'AMÉRICA DO NORTE' ? 'text-blue-400' : l.regiaoAtivacao === 'EUROPA' ? 'text-purple-400' : l.regiaoAtivacao === 'OUTRAS REGIÕES' ? 'text-slate-300' : 'text-slate-300'}`
-    }, l.region || l.regiaoAtivacao || '—'), React.createElement("span", {
+    }, "S/N"), React.createElement("span", {
+      className: "text-slate-300 truncate"
+    }, l.equipmentSerial || '—'), React.createElement("span", {
+      className: "text-slate-500"
+    }, "Região"), React.createElement("span", {
+      className: "text-slate-300"
+    }, l.region || '—'), React.createElement("span", {
       className: "text-slate-500"
     }, "Marcas"), React.createElement("span", {
-      className: "text-slate-300"
-    }, (l.brands || []).join(', ') || '—')), React.createElement("div", {
-      className: "mt-4 pt-3 border-t border-sgw-700/50 flex justify-between text-xs text-slate-600"
+      className: "text-slate-300 truncate"
+    }, (l.brands || []).join(', ') || '—'))), React.createElement("div", {
+      className: "px-4 py-2.5 border-t border-sgw-700/50 flex justify-between text-[10px] text-slate-600"
     }, React.createElement("span", null, "Criado: ", l.createdAt ? new Date(l.createdAt).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }) : '—'), React.createElement("span", null, "Atualizado: ", l.updatedAt ? new Date(l.updatedAt).toLocaleDateString('pt-BR', {
+    }) : '—   '), React.createElement("span", null, "Atualizado: ", l.updatedAt ? new Date(l.updatedAt).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }) : '—'))));
+    }) : '—   '))));
   })());
 };
 const Clients = ({
@@ -6921,10 +6977,23 @@ const Clients = ({
     expired: lics.filter(l => l.status === 'expired').length,
     revoked: lics.filter(l => l.status === 'revoked').length
   };
+  const expiringCount = lics.filter(l => { const d = L.days(l.validUntil); return d !== null && d >= 0 && d <= 30 && l.status === 'active'; }).length;
   return React.createElement("div", {
-    className: "space-y-5 af"
+    className: "space-y-5"
   }, React.createElement("div", {
-    className: "flex flex-col sm:flex-row gap-3"
+    className: "flex items-center gap-4 af"
+  }, React.createElement("h2", {
+    className: "font-heading font-black text-white text-base"
+  }, "Clientes"), React.createElement("div", {
+    className: "flex gap-2 ml-auto"
+  }, React.createElement("span", {
+    className: "text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-lg font-semibold"
+  }, cnt.active, " ativos"), expiringCount > 0 && React.createElement("span", {
+    className: "text-xs bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-lg font-semibold"
+  }, expiringCount, " vencendo"))), React.createElement("div", {
+    className: "filter-bar af d1"
+  }, React.createElement("div", {
+    className: "flex flex-col sm:flex-row gap-3 mb-3"
   }, React.createElement("div", {
     className: "relative flex-1"
   }, React.createElement("svg", {
@@ -6950,7 +7019,7 @@ const Clients = ({
   })), React.createElement("select", {
     value: sort,
     onChange: e => setSort(e.target.value),
-    className: "fi w-44"
+    className: "fi w-40"
   }, React.createElement("option", {
     value: "date"
   }, "Mais recentes"), React.createElement("option", {
@@ -6958,7 +7027,7 @@ const Clients = ({
   }, "Nome A-Z"), React.createElement("option", {
     value: "exp"
   }, "Vence primeiro"))), React.createElement("div", {
-    className: "flex gap-2 flex-wrap"
+    className: "flex gap-2 flex-wrap items-center"
   }, ['all', 'active', 'pending', 'expired', 'revoked'].map(s => React.createElement("button", {
     key: s,
     onClick: () => setF(s),
@@ -6970,7 +7039,7 @@ const Clients = ({
     expired: `Expirados (${cnt.expired})`,
     revoked: `Revogados (${cnt.revoked})`
   }[s])), React.createElement("span", {
-    className: "w-px bg-sgw-700/50 mx-1"
+    className: "w-px h-4 bg-sgw-700/50 mx-1"
   }), [{
     v: 'all',
     l: 'Todas'
@@ -6987,8 +7056,8 @@ const Clients = ({
     key: r.v,
     onClick: () => setFr(r.v),
     className: `px-2.5 py-1.5 rounded-xl text-[10px] font-semibold transition-all ${fr === r.v ? 'bg-sgw-700 text-white border border-sgw-600' : 'text-slate-600 hover:text-slate-300 bg-sgw-850 border border-sgw-700'}`
-  }, r.l))), filtered.length === 0 ? React.createElement("div", {
-    className: "glass-card rounded-2xl py-20 text-center"
+  }, r.l)))), filtered.length === 0 ? React.createElement("div", {
+    className: "glass-card rounded-2xl py-20 text-center af d2"
   }, React.createElement("div", {
     className: "text-5xl mb-4"
   }, "\uD83D\uDC65"), React.createElement("p", {
@@ -6997,12 +7066,14 @@ const Clients = ({
     className: "text-slate-600 text-sm mt-1"
   }, "Crie uma nova licen\xE7a para cadastrar um cliente")) : React.createElement(React.Fragment, null, React.createElement("div", {
     className: "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"
-  }, pg.slice.map(l => {
+  }, pg.slice.map((l, idx) => {
     const d = L.days(l.validUntil);
-    const statusColor = !l.validUntil || d === null ? 'border-slate-700/40' : d < 0 ? 'border-red-500/30' : d <= 7 ? 'border-red-500/25' : d <= 30 ? 'border-amber-500/25' : 'border-emerald-500/20';
+    const urg = d !== null && d <= 7 && d >= 0;
+    const warn = d !== null && d <= 30 && d > 7;
+    const statusColor = !l.validUntil || d === null ? 'border-sgw-700/40' : d < 0 ? 'border-red-500/30' : urg ? 'border-red-500/25' : warn ? 'border-amber-500/25' : 'border-emerald-500/20';
     return React.createElement("div", {
       key: l.id,
-      className: `glass-card rounded-2xl border ${statusColor} overflow-hidden hover:border-cy-500/30 transition-all duration-200 group`
+      className: `glass-card rounded-2xl border ${statusColor} overflow-hidden hover:border-cy-500/30 transition-all duration-200 group af d${Math.min(idx + 2, 12)}`
     }, React.createElement("div", {
       className: "p-4 space-y-3"
     }, React.createElement("div", {
@@ -7010,7 +7081,7 @@ const Clients = ({
     }, React.createElement("div", {
       className: "flex items-center gap-2.5 min-w-0 flex-1"
     }, React.createElement("div", {
-      className: "w-9 h-9 rounded-full bg-cy-500/20 border border-cy-500/25 flex items-center justify-center text-sm font-black text-cy-400 flex-shrink-0"
+      className: `w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${l.status === 'active' ? 'ava-em' : l.status === 'pending' ? 'ava-am' : l.status === 'expired' ? 'ava-rd' : 'ava-sl'}`
     }, (l.customerName || '?')[0].toUpperCase()), React.createElement("div", {
       className: "min-w-0 flex-1"
     }, React.createElement("div", {
@@ -7034,8 +7105,8 @@ const Clients = ({
     }, S.maskDoc(l.cpfCnpj || '') || '---')), React.createElement("div", null, React.createElement("span", {
       className: "text-slate-600"
     }, "Validade"), React.createElement("span", {
-      className: `font-bold block ${d === null ? 'text-slate-500' : d < 0 ? 'text-red-400' : d <= 30 ? 'text-amber-400' : 'text-emerald-400'}`
-    }, d === null ? '—' : d < 0 ? `Exp. ${Math.abs(d)}d atrás` : d === 0 ? 'Vence hoje' : d === 1 ? 'Amanhã' : `${d}d`)), React.createElement("div", null, React.createElement("span", {
+      className: `font-bold block ${d === null ? 'text-slate-500' : d < 0 ? 'text-red-400' : urg ? 'text-red-400' : warn ? 'text-amber-400' : 'text-emerald-400'}`
+    }, d === null ? '—' : d < 0 ? `Exp. ${Math.abs(d)}d` : d === 0 ? 'Vence hoje' : d === 1 ? 'Amanhã' : urg || warn ? `Em ${d}d` : `${d}d`)), React.createElement("div", null, React.createElement("span", {
       className: "text-slate-600"
     }, "Equipamento"), React.createElement("span", {
       className: "text-slate-300 block truncate"
@@ -7048,10 +7119,10 @@ const Clients = ({
       className: "col-span-2"
     }, React.createElement("span", {
       className: "text-slate-600"
-    }, "Reg. Ativa\xE7\xE3o"), React.createElement("span", {
+    }, "Reg. Ativação"), React.createElement("span", {
       className: `font-bold ml-2 ${l.regiaoAtivacao === 'AMÉRICA DO NORTE' ? 'text-blue-400' : l.regiaoAtivacao === 'EUROPA' ? 'text-purple-400' : l.regiaoAtivacao === 'OUTRAS REGIÕES' ? 'text-slate-400' : 'text-slate-600'}`
     }, l.regiaoAtivacao || '—'))), React.createElement("div", {
-      className: "flex gap-2 pt-1"
+      className: "flex gap-2 pt-1 group-hover:opacity-100 opacity-70 transition-opacity"
     }, React.createElement("button", {
       onClick: () => onEdit(l),
       className: "flex-1 py-2 bg-cy-500/12 hover:bg-cy-500/25 text-cy-400 text-xs font-bold rounded-lg border border-cy-500/20 transition-colors flex items-center justify-center gap-1.5"
@@ -7161,22 +7232,22 @@ const Financial = ({
     l: 'Licenças Ativas',
     v: st.active,
     c: 'text-emerald-400',
-    ic: '✅'
+    ic: '✅�'
   }, {
     l: 'MRR Estimado',
     v: `R$ ${Math.round(st.mrr).toLocaleString('pt-BR')}`,
     c: 'text-yellow-400',
-    ic: '📈'
+    ic: 'ð'
   }, {
     l: 'ARR Estimado',
     v: `R$ ${Math.round(st.arr).toLocaleString('pt-BR')}`,
     c: 'text-cy-400',
-    ic: '💰'
+    ic: 'ð°'
   }, {
     l: 'Renovar em 30d',
     v: st.exp30,
     c: 'text-amber-400',
-    ic: '⏰'
+    ic: 'â°'
   }].map((k, i) => React.createElement("div", {
     key: i,
     className: "kpi rounded-2xl"
@@ -7201,14 +7272,14 @@ const Financial = ({
   }, {
     name: 'Trimestral',
     price: PRICES.quarterly,
-    desc: `R$ ${Math.round(PRICES.quarterly / 3)}/mês · 16% de desconto`,
+    desc: `R$ ${Math.round(PRICES.quarterly / 3)}/mês ·   16% de desconto`,
     col: 'cyan',
     feats: ['Renovação trimestral', 'Suporte prioritário', 'Backup automático'],
     hi: true
   }, {
     name: 'Anual',
     price: PRICES.annual,
-    desc: `R$ ${Math.round(PRICES.annual / 12)}/mês · 33% de desconto`,
+    desc: `R$ ${Math.round(PRICES.annual / 12)}/mês ·   33% de desconto`,
     col: 'amber',
     feats: ['Renovação anual', 'Suporte 24/7', 'Certificado premium']
   }].map(p => React.createElement("div", {
@@ -7326,7 +7397,7 @@ const Financial = ({
     className: "bg-sgw-850 rounded-xl border border-sgw-700 p-5"
   }, React.createElement("h4", {
     className: "font-heading font-black text-white text-sm mb-4 flex items-center gap-2"
-  }, React.createElement("span", null, "\uD83D\uDCC8"), "Distribui\xE7\xE3o por Plano",
+  }, React.createElement("span", null, "\uD83D\uDCC8"), "Distribuição por Plano",
     React.createElement("span", {className: "ml-auto flex gap-1.5"},
       React.createElement("button", {
         onClick: () => {
@@ -7340,7 +7411,7 @@ const Financial = ({
           });
         },
         className: "px-2 py-0.5 rounded bg-sgw-800 hover:bg-sgw-700 text-slate-400 hover:text-white text-[9px] font-bold transition-all border border-sgw-700"
-      }, "\uD83D\uDDBC\uFE0F")), React.createElement("div", {id: "sgw-chart-plan"}, function() {
+      }, "\uD83D\uDDBC\uFE0F"))), React.createElement("div", {id: "sgw-chart-plan"}, function() {
     const byPlan = {monthly:0, quarterly:0, annual:0};
     lics.forEach(function(l) {
       if (l.status === 'active') {
@@ -7362,7 +7433,7 @@ const Financial = ({
         React.createElement("div", {className: "w-full h-2 bg-sgw-800 rounded-full overflow-hidden"},
           React.createElement("div", {className: col.c + " h-full rounded-full transition-all duration-500", style: {width: p + '%'}})));
     }));
-  }()), React.createElement("div", {
+  }()))), React.createElement("div", {
     className: "bg-sgw-850 rounded-xl border border-sgw-700 p-5"
   }, React.createElement("h4", {
     className: "font-heading font-black text-white text-sm mb-4 flex items-center gap-2"
@@ -7380,7 +7451,7 @@ const Financial = ({
           });
         },
         className: "px-2 py-0.5 rounded bg-sgw-800 hover:bg-sgw-700 text-slate-400 hover:text-white text-[9px] font-bold transition-all border border-sgw-700"
-      }, "\uD83D\uDDBC\uFE0F")), React.createElement("div", {id: "sgw-chart-equip"}, function() {
+      }, "\uD83D\uDDBC\uFE0F"))), React.createElement("div", {id: "sgw-chart-equip"}, function() {
     const m = {};
     lics.forEach(function(l) {
       if (l.equipment && l.status === 'active') m[l.equipment] = (m[l.equipment] || 0) + 1;
@@ -7397,7 +7468,7 @@ const Financial = ({
         React.createElement("div", {className: "w-full h-1.5 bg-sgw-800 rounded-full overflow-hidden"},
           React.createElement("div", {className: "bg-emerald-400 h-full rounded-full", style: {width: p + '%'}})));
     }));
-  }()))));
+  }())));
 };
 const Reports = ({
   lics
@@ -7586,7 +7657,7 @@ const Reports = ({
     className: "glass-card rounded-2xl p-6"
   }, React.createElement("h3", {
     className: "font-heading font-black text-white mb-5 text-sm flex items-center gap-2"
-  }, React.createElement("span", null, "\uD83D\uDDFA\uFE0F"), "Distribui\xE7\xE3o por Estado"), React.createElement("div", {
+  }, React.createElement("span", null, "\uD83D\uDDFA\uFE0F"), "Distribuição por Estado"), React.createElement("div", {
     className: "grid grid-cols-2 sm:grid-cols-5 gap-3"
   }, byReg.map(([r, c]) => React.createElement("div", {
     key: r,
@@ -7634,7 +7705,7 @@ const Audit = ({
   })), React.createElement("input", {
     value: q,
     onChange: e => setQ(e.target.value),
-    placeholder: "Buscar por tipo, a\xE7\xE3o, entidade ou ator...",
+    placeholder: "Buscar por tipo, ação, entidade ou ator...",
     className: "fi pl-9"
   })), React.createElement("select", {
     value: fa,
@@ -7666,7 +7737,7 @@ const Audit = ({
     className: "overflow-x-auto max-h-[560px] overflow-y-auto"
   }, React.createElement("table", {
     className: "dt"
-  }, React.createElement("thead", null, React.createElement("tr", null, React.createElement("th", null, "Data/Hora"), React.createElement("th", null, "Tipo"), React.createElement("th", null, "A\xE7\xE3o"), React.createElement("th", null, "Entidade"), React.createElement("th", null, "Ator"))), React.createElement("tbody", null, filtered.map(l => React.createElement("tr", {
+  }, React.createElement("thead", null, React.createElement("tr", null, React.createElement("th", null, "Data/Hora"), React.createElement("th", null, "Tipo"), React.createElement("th", null, "Ação"), React.createElement("th", null, "Entidade"), React.createElement("th", null, "Ator"))), React.createElement("tbody", null, filtered.map(l => React.createElement("tr", {
     key: l.id
   }, React.createElement("td", null, React.createElement("span", {
     className: "serial text-[11px] text-slate-500"
@@ -7723,7 +7794,7 @@ const ProxyStatus = memo(() => {
     className: "text-xs font-normal text-slate-500 ml-1"
   }, "(Extrator de Lote PDF)")), React.createElement("p", {
     className: "text-sm text-slate-500 mb-4"
-  }, "Extra\xE7\xE3o de dados via Claude AI roteada pelo servidor seguro \u2014 a chave de API nunca passa pelo seu navegador."), React.createElement("div", {
+  }, "Extração de dados via Claude AI roteada pelo servidor seguro \u2014 a chave de API nunca passa pelo seu navegador."), React.createElement("div", {
     className: `flex items-center gap-3 rounded-xl px-4 py-3 border ${checking ? 'bg-slate-500/8 border-slate-500/20' : ok ? 'bg-emerald-500/8 border-emerald-500/20' : 'bg-amber-500/8 border-amber-500/20'}`
   }, checking ? React.createElement("span", {
     className: "w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full",
@@ -7760,9 +7831,9 @@ const ProxyStatus = memo(() => {
     y2: "17"
   }))), React.createElement("div", null, React.createElement("p", {
     className: `text-sm font-bold ${checking ? 'text-slate-400' : ok ? 'text-emerald-400' : 'text-amber-400'}`
-  }, checking ? 'Verificando conexão…' : ok ? 'Proxy ativo — pronto para extrações' : 'Proxy indisponível'), React.createElement("p", {
+  }, checking ? 'Verificando conexão…   ' : ok ? 'Proxy ativo —    pronto para extrações' : 'Proxy indisponível'), React.createElement("p", {
     className: "text-xs text-slate-600 mt-0.5"
-  }, ok ? 'Endpoint: /api/ai-proxy · Modelo: claude-opus-4-5' : 'Verifique a variável ANTHROPIC_API_KEY no painel Vercel.'))));
+  }, ok ? 'Endpoint: /api/ai-proxy ·   Modelo: claude-opus-4-5' : 'Verifique a variável ANTHROPIC_API_KEY no painel Vercel.'))));
 });
 const Settings = ({
   isMem,
@@ -7816,7 +7887,7 @@ const Settings = ({
     className: "font-heading font-black text-white mb-5 flex items-center gap-2"
   }, "\u2139\uFE0F Informa\xE7\xF5es do Sistema"), React.createElement("div", {
     className: "grid grid-cols-2 gap-3"
-  }, [['Versão', `SGW Pro v${APP.VER}`], ['Build', APP.BUILD], ['Storage', isMem ? 'RAM (temporário)' : 'IndexedDB v2'], ['Licenças', `${lics.length} registradas`], ['Ativos', `${lics.filter(l => l.status === 'active').length} ativos`], ['Criptografia', 'SHA-256 · AES-256 · HMAC'], ['UUID', 'Polyfill RFC4122 v4'], ['Plataforma', navigator.platform || 'Web Browser'], ['Backup Local', BackupSvc.supported ? 'File System API ✅' : 'Não disponível ⚠️']].map(([k, v]) => React.createElement("div", {
+  }, [['Versão', `SGW Pro v${APP.VER}`], ['Build', APP.BUILD], ['Storage', isMem ? 'RAM (temporário)' : 'IndexedDB v2'], ['Licenças', `${lics.length} registradas`], ['Ativos', `${lics.filter(l => l.status === 'active').length} ativos`], ['Criptografia', 'SHA-256 ·   AES-256 ·   HMAC'], ['UUID', 'Polyfill RFC4122 v4'], ['Plataforma', navigator.platform || 'Web Browser'], ['Backup Local', BackupSvc.supported ? 'File System API ✅�' : 'Não disponível ⚠️ï¸']].map(([k, v]) => React.createElement("div", {
     key: k,
     className: "p-3 bg-sgw-850 rounded-xl border border-sgw-700"
   }, React.createElement("div", {
@@ -7841,7 +7912,7 @@ const Settings = ({
     className: "rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-300 leading-relaxed"
   }, React.createElement("strong", {
     className: "text-amber-400"
-  }, "File System Access API"), " n\xE3o dispon\xEDvel neste browser.", React.createElement("br", null), "Use ", React.createElement("strong", null, "Google Chrome 86+"), " ou ", React.createElement("strong", null, "Microsoft Edge 86+"), " para ativar o backup em pasta local.", React.createElement("br", null), "O backup manual via JSON continua dispon\xEDvel na se\xE7\xE3o abaixo.") : React.createElement("div", {
+  }, "File System Access API"), " n\xE3o dispon\xEDvel neste browser.", React.createElement("br", null), "Use ", React.createElement("strong", null, "Google Chrome 86+"), " ou ", React.createElement("strong", null, "Microsoft Edge 86+"), " para ativar o backup em pasta local.", React.createElement("br", null), "O backup manual via JSON continua dispon\xEDvel na seção abaixo.") : React.createElement("div", {
     className: "space-y-4"
   }, React.createElement("div", {
     className: "p-4 bg-sgw-850 rounded-xl border border-sgw-700"
@@ -7851,7 +7922,7 @@ const Settings = ({
     className: "min-w-0"
   }, React.createElement("p", {
     className: "font-bold text-white text-sm truncate"
-  }, dirHandle ? `📂 ${dirHandle.name}` : 'Nenhuma pasta configurada'), React.createElement("p", {
+  }, dirHandle ? `ð ${dirHandle.name}` : 'Nenhuma pasta configurada'), React.createElement("p", {
     className: "text-xs mt-0.5"
   }, !dirHandle && React.createElement("span", {
     className: "text-slate-500"
@@ -7871,7 +7942,7 @@ const Settings = ({
     size: "sm",
     onClick: onReconnectDir
   }), React.createElement(Btn, {
-    ch: dirHandle ? '🔄 Trocar Pasta' : '📁 Escolher Pasta',
+    ch: dirHandle ? 'ð Trocar Pasta' : 'ð Escolher Pasta',
     variant: "secondary",
     size: "sm",
     onClick: onPickDir
@@ -7932,7 +8003,7 @@ const Settings = ({
     className: "hidden",
     onChange: handleTxtFile
   }), React.createElement(Btn, {
-    ch: txtDone ? '✅ Importado!' : '📂 Selecionar .txt',
+    ch: txtDone ? '✅� Importado!' : 'ð Selecionar .txt',
     variant: txtDone ? 'success' : 'secondary',
     size: "sm",
     cls: "w-full",
@@ -8364,7 +8435,7 @@ const LicForm = ({
     placeholder: "000.000.000-00"
   }), lic.cpfCnpj && React.createElement("p", {
     className: `text-xs mt-1 ${docOk === true ? 'text-emerald-400' : docOk === false ? 'text-red-400' : 'text-slate-500'}`
-  }, docOk === true ? '✓ Válido' : docOk === false ? '✕ Inválido' : '...')), React.createElement("div", {
+  }, docOk === true ? 'â Válido' : docOk === false ? 'â Inválido' : '...')), React.createElement("div", {
     className: "space-y-1.5"
   }, React.createElement("label", {
     className: "block text-xs font-bold uppercase tracking-wider text-slate-500"
@@ -8385,7 +8456,7 @@ const LicForm = ({
     className: "space-y-1.5"
   }, React.createElement("label", {
     className: "block text-xs font-bold uppercase tracking-wider text-slate-500"
-  }, "Regi\xE3o de Ativa\xE7\xE3o"), React.createElement("select", {
+  }, "Regi\xE3o de Ativação"), React.createElement("select", {
     value: lic.regiaoAtivacao || '',
     onChange: e => {
       const v = e.target.value;
@@ -8402,7 +8473,7 @@ const LicForm = ({
   }, "EUROPA"), React.createElement("option", {
     value: "OUTRAS REGI\xD5ES"
   }, "OUTRAS REGI\xD5ES"))), React.createElement(Fld, {
-    label: "Plataforma de Homologa\xE7\xE3o",
+    label: "Plataforma de Homologação",
     val: lic.plataformaHomologacao || '',
     set: v => setF('plataformaHomologacao', v),
     placeholder: "Auto-preenchido pela regi\xE3o"
@@ -8514,7 +8585,7 @@ const LicForm = ({
                       ${enabled ? 'bg-cy-500/15 text-cy-400 border-cy-500/35 hover:bg-cy-500/25 shadow-sm shadow-cy-500/10' : 'bg-sgw-900/60 text-slate-600 border-sgw-700 hover:border-slate-600 hover:text-slate-400 line-through'}`
     }, React.createElement("span", {
       className: `w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0 ${enabled ? 'bg-cy-500/30' : 'bg-sgw-800'}`
-    }, enabled ? '✓' : '✕'), b);
+    }, enabled ? 'â' : 'â'), b);
   })), (lic.brands || STELLANTIS).length === 0 && React.createElement("div", {
     className: "px-3 pb-3"
   }, React.createElement("p", {
@@ -8539,13 +8610,13 @@ const LicForm = ({
     r: "6"
   }), React.createElement("path", {
     d: "M8 5v3l2 2"
-  }))), "Configura\xE7\xE3o da Licen\xE7a"), React.createElement("div", {
+  }))), "Configuração da Licen\xE7a"), React.createElement("div", {
     className: "space-y-4"
   }, React.createElement("div", {
     className: "grid grid-cols-2 gap-4"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5"
-  }, "Data de Ativa\xE7\xE3o ", React.createElement("span", {
+  }, "Data de Ativação ", React.createElement("span", {
     className: "text-red-400"
   }, "*")), React.createElement("input", {
     type: "date",
@@ -8568,17 +8639,17 @@ const LicForm = ({
       className: `flex items-center gap-3 px-4 py-2.5 rounded-xl border ${ok ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`
     }, React.createElement("span", {
       className: `text-lg ${ok ? 'text-emerald-400' : 'text-red-400'}`
-    }, ok ? '✅' : '⚠️'), React.createElement("div", {
+    }, ok ? '✅�' : '⚠️ï¸'), React.createElement("div", {
       className: "flex-1"
     }, React.createElement("p", {
       className: `text-xs font-bold uppercase tracking-wider ${ok ? 'text-emerald-400' : 'text-red-400'}`
-    }, "Per\xEDodo de Valida\xE7\xE3o"), React.createElement("p", {
+    }, "Per\xEDodo de Validação"), React.createElement("p", {
       className: "text-sm font-black text-white"
     }, dias, " dias ", ok ? `(${Math.floor(dias / 30)} meses)` : '(inconsistente)')), React.createElement("div", {
       className: "text-right"
     }, React.createElement("p", {
       className: "text-[10px] text-slate-500"
-    }, "Ativa\xE7\xE3o"), React.createElement("p", {
+    }, "Ativação"), React.createElement("p", {
       className: "text-xs font-bold text-white"
     }, lic.activationDate), React.createElement("p", {
       className: "text-[10px] text-slate-500 mt-0.5"
@@ -8589,7 +8660,7 @@ const LicForm = ({
     className: "text-xs text-amber-400/80"
   }, "Defina a data de validade para calcular o per\xEDodo") : null, lic.validUntil && lic.activationDate && L.daysBetween(lic.activationDate, lic.validUntil) <= 0 && React.createElement("p", {
     className: "text-xs text-red-400"
-  }, "V\xE1lido at\xE9 deve ser posterior \xE0 ativa\xE7\xE3o"), React.createElement("div", null, React.createElement("label", {
+  }, "V\xE1lido at\xE9 deve ser posterior \xE0 ativação"), React.createElement("div", null, React.createElement("label", {
     className: "block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5"
   }, "\uD83D\uDD16 Status"), React.createElement("select", {
     value: lic.status || 'pending',
@@ -8660,7 +8731,7 @@ const LicForm = ({
   }))), "Telas do Scanner"), React.createElement("span", {
     className: `serial text-sm font-black ${Object.keys(screens).length === 8 ? 'text-emerald-400' : 'text-slate-500'}`
   }, Object.keys(screens).length, "/8")), React.createElement("div", {
-    className: "grid grid-cols-4 gap-2 mb-3"
+    className: "grid grid-cols-4 gap-3 mb-3"
   }, SCREENS_CFG.map(sc => {
     const c = sc.color;
     const bgSel = {
@@ -8706,17 +8777,17 @@ const LicForm = ({
     return React.createElement("button", {
       key: sc.id,
       onClick: () => setCurSc(sc.id),
-      className: `p-2.5 rounded-xl border-2 transition-all duration-200 hover:scale-105 active:scale-95 ${curSc === sc.id ? bgSel + ' shadow-lg' : screens[sc.id] ? bgUp : colBg + ' border-transparent hover:border-sgw-600'}`
+      className: `flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 hover:scale-105 active:scale-95 ${curSc === sc.id ? bgSel + ' shadow-lg' : screens[sc.id] ? bgUp : colBg + ' border-transparent hover:border-sgw-600'}`
     }, React.createElement("div", {
-      className: "text-center text-2xl leading-none mb-0.5"
+      className: "text-center text-3xl leading-none mb-1"
     }, sc.emoji), React.createElement("div", {
       className: `text-center ${colTxt}`
     }, sc.icon()), React.createElement("div", {
-      className: "text-center text-[9px] text-slate-400 leading-tight font-medium"
+      className: "text-center text-[10px] text-slate-300 leading-snug font-semibold mt-0.5"
     }, sc.name), screens[sc.id] ? React.createElement("div", {
       className: `text-center text-xs mt-1 font-black ${colTxt}`
     }, "\u25CF") : React.createElement("div", {
-      className: "text-center text-[8px] text-slate-600 mt-1"
+      className: "text-center text-[9px] text-slate-500 mt-1 font-medium"
     }, "\u2014"));
   })), (() => {
     const sc = SCREENS_CFG.find(s => s.id === curSc);
@@ -8753,19 +8824,19 @@ const LicForm = ({
       green: 'text-green-400/20'
     }[c];
     return React.createElement("div", {
-      className: `p-3 rounded-xl border-2 mb-4 transition-all ${selBd} ${selBg}`
+      className: `p-4 rounded-xl border-2 mb-4 transition-all ${selBd} ${selBg}`
     }, React.createElement("div", {
       className: "flex justify-between items-center"
     }, React.createElement("div", {
-      className: "flex items-center gap-2"
+      className: "flex items-center gap-3"
     }, React.createElement("span", {
-      className: "text-xl"
+      className: "text-2xl"
     }, sc.emoji), React.createElement("div", null, React.createElement("p", {
       className: "text-[10px] text-slate-500 uppercase tracking-wider"
     }, "Selecionada"), React.createElement("p", {
       className: "font-heading font-black text-white"
     }, sc.name), React.createElement("p", {
-      className: "text-xs text-slate-500"
+      className: "text-xs text-slate-400"
     }, sc.desc))), React.createElement("div", {
       className: `font-heading text-5xl font-black ${bigTxt}`
     }, curSc)));
@@ -8837,7 +8908,7 @@ const LicForm = ({
     d: "M8 2v1M8 12v2M4 4l1 1M11 11l1 1M2 8h1M13 8h1M4.5 4.5L6 6"
   })), "Dicas Pro"), React.createElement("div", {
     className: "grid grid-cols-2 gap-2.5"
-  }, ['Sistema verifica duplicidade de serial automaticamente', 'Use Ctrl+S para salvar · Ctrl+P para abrir PDF', 'Exporte backup JSON em Configurações regularmente', 'Complete as 8 telas do scanner para certificação completa', 'Data de ativação auto-preenche validade +12 meses', 'Licenças expiradas têm status atualizado automaticamente'].map((t, i) => React.createElement("div", {
+  }, ['Sistema verifica duplicidade de serial automaticamente', 'Use Ctrl+S para salvar ·   Ctrl+P para abrir PDF', 'Exporte backup JSON em Configurações regularmente', 'Complete as 8 telas do scanner para certificação completa', 'Data de ativação auto-preenche validade +12 meses', 'Licenças expiradas têm status atualizado automaticamente'].map((t, i) => React.createElement("div", {
     key: i,
     className: "flex items-start gap-2 text-xs text-slate-500"
   }, React.createElement("span", {
@@ -8885,10 +8956,10 @@ const DEMO_LICS = [{
   equipmentSerial: 'VX2GR1C01235',
   region: 'CE',
   sgwLogin: 'sgwaberama',
-  sgwPassword: '@Autel123',
+  sgwPassword: '@senha_demo_001',
   activationDate: '2025-04-21',
   validUntil: '2026-04-21',
-  technician: 'Carlos Técnico',
+  technician: 'Técnico Demo',
   status: 'active',
   deviceFingerprint: 'demo',
   hasCert: false,
@@ -8906,7 +8977,7 @@ const DEMO_LICS = [{
   equipmentSerial: 'MS9ELITE887643',
   region: 'SP',
   sgwLogin: 'sgwaberama',
-  sgwPassword: '@Autel456',
+  sgwPassword: '@senha_demo_002',
   activationDate: '2026-01-15',
   validUntil: '2027-01-15',
   technician: 'Carlos Técnico',
@@ -8998,9 +9069,11 @@ const System = ({
   };
   const boot = async () => {
     const bootT0 = Date.now();
+    let ls;
     try {
       await db.ready;
-      db.deleteConfig('anthropicKey').catch(() => {});
+      // anthropicKey removida — chave deve ser configurada apenas no .env do servidor
+      sessionStorage.removeItem('sgw_crypt_s'); // SEC-005: key agora em memória via initCrypt
       const k = L.gen();
       const h = L.hash(k);
       const fp = S.fp();
@@ -9017,8 +9090,9 @@ const System = ({
         apiOk = await api.health();
         console.debug('[SGW boot] health=' + apiOk + ' isAuth=' + api.isAuth);
         if (apiOk) {
-          setBootPhase('API online — carregando dados...');
-          const [stats, lsData] = await Promise.all([api.getStats().catch(() => null), api.allLicenses().catch(() => [])]);
+          setBootPhase('API online —    carregando dados...');
+          const [stats, lsRes] = await Promise.all([api.getStats().catch(() => null), api.allLicenses({ limit: 500 }).catch(() => ({ data: [] }))]);
+          const lsData = lsRes.data || [];
           if (stats) setLicCounts({
             total: stats.total,
             active: stats.active,
@@ -9037,16 +9111,17 @@ const System = ({
             data: []
           }));
           setLogs(lgData.data || []);
+          ls = lsData;
           setIsOnline(true);
           apiOk = true;
         } else if (apiOk && !api.isAuth) {
-          setBootPhase('API disponível — sem token');
+          setBootPhase('API disponível —    sem token');
         } else {
           setBootPhase('API indisponível');
         }
       } catch (e) {
         console.warn('[API] offline, falling back to IDB', e.message);
-        setBootPhase('API falhou — usando fallback');
+        setBootPhase('API falhou —    usando fallback');
       }
       if (!apiOk || !api.isAuth) {
         setBootPhase('Carregando dados locais...');
@@ -9066,23 +9141,24 @@ const System = ({
           revoked: 0
         }));
         setLicCounts(counts);
-        let ls = counts.total > 0 ? await db.all('licenses').catch(() => []) : [];
+        ls = counts.total > 0 ? await db.all('licenses').catch(() => []) : [];
         if (!ls.length) {
           setBootPhase('Carregando dados de demonstração...');
           for (const d of DEMO_LICS) await db.save('licenses', d).catch(() => {});
           ls = await db.all('licenses').catch(() => []);
         }
         setTotalLics(ls.length);
+        const tryDec = (v) => v && typeof v === 'string' && v.startsWith('U2FsdGVkX1') ? (S.dec(v) || '') : (v || '');
         setLics(ls.map(l => ({
           pdfSource: '',
           hasCert: false,
           ...l,
           brands: l.brands || [...STELLANTIS],
-          cpfCnpj: S.dec(l.cpfCnpj),
-          sgwLogin: S.dec(l.sgwLogin),
-          sgwPassword: S.dec(l.sgwPassword),
-          email: S.dec(l.email),
-          phone: S.dec(l.phone)
+          cpfCnpj: tryDec(l.cpfCnpj),
+          sgwLogin: tryDec(l.sgwLogin),
+          sgwPassword: tryDec(l.sgwPassword),
+          email: tryDec(l.email),
+          phone: tryDec(l.phone)
         })).map(fixStatus));
         const lg = await db.all('auditLogs').catch(() => []);
         setLogs(lg);
@@ -9090,21 +9166,17 @@ const System = ({
       if (BackupSvc.supported) {
         setBootPhase('Verificando backup...');
         try {
-          const savedHandle = await db.getConfig('backupDirHandle');
-          if (savedHandle) {
-            setDirHandle(savedHandle);
-            const perm = await savedHandle.queryPermission({
-              mode: 'readwrite'
-            });
+          // Handle não é mais persistido (SEC-011) — re-solicitar permissão se houver handle em memória
+          if (dirHandle) {
+            const perm = await dirHandle.queryPermission({ mode: 'readwrite' });
             setDirPerm(perm);
           }
           const autoB = await db.getConfig('autoBackup');
           if (autoB) {
             setAutoBackup(true);
-            const permOk = savedHandle && (await savedHandle.queryPermission({
-              mode: 'readwrite'
-            }).catch(() => 'denied')) === 'granted';
-            if (!permOk) queueMicrotask(() => toast('Auto-backup ativo mas pasta requer reconexão — acesse Configurações', 'warning'));
+            if (!dirHandle) {
+              queueMicrotask(() => toast('Auto-backup ativo —    acesse Configurações para selecionar a pasta', 'warning'));
+            }
           }
         } catch (e) {
           console.warn('[SGW backup boot]', e);
@@ -9117,12 +9189,12 @@ const System = ({
       const elapsed = Date.now() - bootT0;
       console.debug('[SGW boot] finally elapsed=' + elapsed + 'ms');
       const rest = 15000 - elapsed;
-      setBootPhase(bp => bp + ' ✓');
+      setBootPhase(bp => bp + ' â');
       if (rest > 0) await new Promise(r => setTimeout(r, rest));
       setBootPhase('Pronto!');
       setLoading(false);
       const expCount = ls.filter(l => { const d = L.days(l.validUntil); return d !== null && d >= 0 && d <= 30; }).length;
-      if (expCount > 0) queueMicrotask(() => toast(`⏰ ${expCount} licença${expCount>1?'s':''} vence${expCount>1?'m':''} em até 30 dias`, 'warning'));
+      if (expCount > 0) queueMicrotask(() => toast(`â° ${expCount} licença${expCount>1?'s':''} vence${expCount>1?'m':''} em até 30 dias`, 'warning'));
     }
   };
   useEffect(() => {
@@ -9289,7 +9361,7 @@ const System = ({
         setLogs(lg);
       }
       setChanged(false);
-      const autoMsg = autoStatus === 'expired' && lic.status !== 'expired' ? ' (status → Expirada)' : '';
+      const autoMsg = autoStatus === 'expired' && lic.status !== 'expired' ? ' (status â Expirada)' : '';
       toast((lic.id ? 'Licença atualizada!' : 'Licença salva com sucesso!') + autoMsg, 'success');
       if (autoBackup && dirHandle) {
         const perm = await dirHandle.queryPermission({
@@ -9297,7 +9369,7 @@ const System = ({
         }).catch(() => 'denied');
         if (perm !== 'granted') {
           setDirPerm(perm);
-          toast('Auto-backup ignorado: permissão da pasta perdida — reconecte em Configurações', 'warning');
+          toast('Auto-backup ignorado: permissão da pasta perdida —    reconecte em Configurações', 'warning');
         } else {
           try {
             const fname = await BackupSvc.writeBackup(dirHandle, updatedLics);
@@ -9337,7 +9409,7 @@ const System = ({
   }, [toast, isOnline]);
   const delLic = useCallback(async id => {
     const target = lics.find(l => l.id === id);
-    const msg = target ? `Excluir licença de "${target.customerName || 'sem nome'}"?\n\nSerial: ${target.licenseKey || '—'}\nStatus: ${target.status || '—'}\n\nEsta ação não pode ser desfeita.` : 'Excluir esta licença permanentemente?';
+    const msg = target ? `Excluir licença de "${target.customerName || 'sem nome'}"?\n\nSerial: ${target.licenseKey || '—   '}\nStatus: ${target.status || '—   '}\n\nEsta ação não pode ser desfeita.` : 'Excluir esta licença permanentemente?';
     if (!confirm(msg)) return;
     if (isOnline) {
       try {
@@ -9381,7 +9453,7 @@ const System = ({
       const cs = typeof CryptoJS !== 'undefined' ? CryptoJS.SHA256(payload).toString() : 'NONE';
       let content, filename, type;
       if (encrypted && typeof CryptoJS !== 'undefined') {
-        const pw = prompt('🔐 Digite uma senha para criptografar o backup:');
+        const pw = prompt('ð Digite uma senha para criptografar o backup:');
         if (!pw) { toast('Exportação cancelada', 'info'); return; }
         const enc = CryptoJS.AES.encrypt(JSON.stringify({data:payload, checksum:cs, version:APP.VER}), pw).toString();
         content = JSON.stringify({format:'aes-256', data:enc});
@@ -9413,7 +9485,7 @@ const System = ({
       // Detecta formato .enc (criptografado)
       if (file.name.endsWith('.enc')) {
         if (typeof CryptoJS === 'undefined') { toast('CryptoJS indisponível para descriptografar', 'error'); return; }
-        const pw = prompt('🔐 Digite a senha do backup criptografado:');
+        const pw = prompt('ð Digite a senha do backup criptografado:');
         if (!pw) { toast('Importação cancelada', 'info'); return; }
         let parsed;
         try { parsed = JSON.parse(content); } catch { toast('Arquivo .enc inválido', 'error'); return; }
@@ -9424,7 +9496,7 @@ const System = ({
         try { decData = JSON.parse(dec); } catch { toast('Arquivo descriptografado inválido', 'error'); return; }
         if (decData.checksum) {
           const computed = CryptoJS.SHA256(decData.data).toString();
-          if (computed !== decData.checksum) { toast('Checksum inválido — arquivo corrompido', 'error'); return; }
+          if (computed !== decData.checksum) { toast('Checksum inválido —    arquivo corrompido', 'error'); return; }
         }
         try { data = JSON.parse(decData.data || decData); } catch { toast('Conteúdo inválido', 'error'); return; }
       } else {
@@ -9432,7 +9504,7 @@ const System = ({
         try { parsed = JSON.parse(content); } catch { toast('Arquivo inválido', 'error'); return; }
         if (parsed.checksum && typeof CryptoJS !== 'undefined') {
           const computed = CryptoJS.SHA256(parsed.data).toString();
-          if (computed !== parsed.checksum) { toast('Checksum inválido — arquivo corrompido', 'error'); return; }
+          if (computed !== parsed.checksum) { toast('Checksum inválido —    arquivo corrompido', 'error'); return; }
         }
         try { data = parsed.data ? JSON.parse(parsed.data) : parsed; } catch { toast('Arquivo inválido', 'error'); return; }
       }
@@ -9501,9 +9573,10 @@ const System = ({
         format: 'json',
         data
       });
-      toastMsg(`✅ Migração concluída: ${result.licenses} licenças, ${result.images} imagens`);
-      const ls = await api.allLicenses();
-      if (ls.length > 0) setLics(ls.map(fixStatus));
+      toastMsg(`✅� Migração concluída: ${result.licenses} licenças, ${result.images} imagens`);
+      const lsRes2 = await api.allLicenses({ limit: 500 });
+      const ls2 = lsRes2.data || [];
+      if (ls2.length > 0) setLics(ls2.map(fixStatus));
     } catch (e) {
       toast('Erro na migração: ' + e.message, 'error');
       console.error('[Migration]', e);
@@ -9524,7 +9597,7 @@ const System = ({
       await BackupSvc.initStructure(handle, htmlSelf);
       setDirHandle(handle);
       setDirPerm('granted');
-      toast('Pasta configurada: ' + handle.name + ' · estrutura criada!', 'success');
+      toast('Pasta configurada: ' + handle.name + ' ·   estrutura criada!', 'success');
     } catch (e) {
       if (e.name !== 'AbortError') toast('Erro ao selecionar pasta: ' + e.message, 'error');
     }
@@ -9560,7 +9633,7 @@ const System = ({
       console.warn('[API] setConfig failed', e.message);
     }
     await db.setConfig('autoBackup', next).catch(() => {});
-    toast(next ? 'Backup automático ativado ✅' : 'Backup automático desativado', 'info');
+    toast(next ? 'Backup automático ativado ✅�' : 'Backup automático desativado', 'info');
   }, [autoBackup, isOnline]);
   const importTxt = useCallback(async file => {
     try {
@@ -9847,11 +9920,11 @@ const System = ({
           setSidebar(false);
         }
       },
-      className: `relative flex items-center w-full text-left ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3'} py-2.5 rounded-xl cursor-pointer select-none transition-all duration-200 ${active ? 'text-cy-400 bg-cy-500/12 font-semibold shadow-[inset_0_0_16px_rgba(6,182,212,0.07)]' : 'text-slate-400 hover:text-slate-200 hover:bg-sgw-800'}`,
+      className: `sb-item ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} ${active ? 'on' : ''}`,
       "aria-current": active ? 'page' : undefined,
       title: sidebarCollapsed ? n.lb : undefined
     }, active && !sidebarCollapsed && React.createElement("span", {
-      className: "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-cy-400 rounded-r-full shadow-[0_0_8px_rgba(6,182,212,0.5)]"
+      className: "sb-indicator"
     }), React.createElement("span", {
       className: "text-base flex-shrink-0"
     }, n.ic()), !sidebarCollapsed && React.createElement("span", {
@@ -9896,7 +9969,7 @@ const System = ({
     className: "text-slate-600"
   }, "Backup"), React.createElement("span", {
     className: `font-bold ${dirHandle && dirPerm === 'granted' ? autoBackup ? 'text-cy-400' : 'text-emerald-400' : 'text-slate-600'}`
-  }, !dirHandle ? '—' : dirPerm === 'granted' ? autoBackup ? 'Auto' : 'Pronto' : dirPerm === 'prompt' ? 'Reconectar' : 'Negado'))), React.createElement("div", {
+  }, !dirHandle ? '—   ' : dirPerm === 'granted' ? autoBackup ? 'Auto' : 'Pronto' : dirPerm === 'prompt' ? 'Reconectar' : 'Negado'))), React.createElement("div", {
     className: "pt-1 flex justify-between items-center"
   }, React.createElement("span", {
     className: "serial text-[9px] text-slate-700"
@@ -10082,6 +10155,9 @@ const System = ({
     "aria-modal": "true",
     "aria-labelledby": "search-title",
     className: "fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]",
+    style: {
+      overscrollBehavior: 'contain'
+    },
     onClick: e => {
       if (e.target === e.currentTarget) setSearchOpen(false);
     },
@@ -10375,27 +10451,35 @@ const App = () => {
   const [mUnlocked, setMUnlocked] = useState(!!sessionStorage.getItem('sgw_mp_unlocked'));
   const [mpErr, setMpErr] = useState('');
   useEffect(() => {
-    let ok = false;
+    let cancelled = false;
+    let forceTimer = null;
     (async () => {
       const t0 = Date.now();
-      const t = LS.get('sgw_token');
+      const t = SS.get('sgw_token');
+      let authOk = false;
       if (t) {
         api.setToken(t);
-        ok = await api.verify();
-        setAuth(ok);
-        if (!ok) api.setToken(null);
+        authOk = await api.verify();
+        if (cancelled) return;
+        if (!authOk) api.setToken(null);
       }
       const rest = 3000 - (Date.now() - t0);
       if (rest > 0) await new Promise(r => setTimeout(r, rest));
-      console.debug('[SGW auth] ok=' + ok);
+      if (cancelled) return;
+      console.debug('[SGW auth] ok=' + authOk);
+      setAuth(authOk);
       setAuthLoaded(true);
     })();
-    setTimeout(() => {
-      if (!ok) {
+    forceTimer = setTimeout(() => {
+      if (!cancelled) {
         console.warn('[SGW auth] forcing authLoaded');
         setAuthLoaded(true);
       }
     }, 15000);
+    return () => {
+      cancelled = true;
+      if (forceTimer) clearTimeout(forceTimer);
+    };
   }, []);
   if (!mUnlocked) {
     const mp = LS.get('sgw_master_pw');
@@ -10405,10 +10489,10 @@ const App = () => {
         React.createElement("h1", {className: "font-heading text-2xl font-black text-white mb-2"}, "SGW Pro"),
         React.createElement("p", {className: "text-slate-500 text-sm mb-6"}, "Defina uma senha mestra de acesso ao sistema"),
         React.createElement("input", {ref: r => { if (r && !r.hasAttribute('data-focused')) { r.setAttribute('data-focused',''); setTimeout(() => r.focus(), 100); } }, type: "password", placeholder: "Senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
-          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (v.length >= 4) { LS.set('sgw_master_pw', S.sha(v)); e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } } }
+          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (v.length >= 4) { LS.set('sgw_master_pw', S.sha(v)); try { S.initCrypt(v); } catch(ex) { console.warn('[Crypto] init:', ex); } e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } } }
         }),
         React.createElement("p", {className: "text-xs text-slate-600"}, "M\xEDnimo 4 caracteres \xB7 armazenada localmente")))
-    );
+    ;
     return React.createElement("div", {className: "min-h-screen bg-sgw-950 flex items-center justify-center p-4"},
       React.createElement("div", {className: "text-center max-w-sm"},
         React.createElement("div", {className: "w-14 h-14 mx-auto mb-5 rounded-2xl bg-cy-500/15 border border-cy-500/25 flex items-center justify-center text-3xl"}, "\uD83D\uDD12"),
@@ -10416,7 +10500,7 @@ const App = () => {
         React.createElement("p", {className: "text-slate-500 text-sm mb-6"}, "Digite a senha mestra para acessar o sistema"),
         mpErr && React.createElement("p", {className: "text-red-400 text-xs mb-3"}, mpErr),
         React.createElement("input", {ref: r => { if (r && !r.hasAttribute('data-focused')) { r.setAttribute('data-focused',''); setTimeout(() => r.focus(), 100); } }, type: "password", placeholder: "Senha mestra", className: "fi w-full mb-3 text-white text-center text-lg tracking-widest",
-          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (S.sha(v) === mp) { e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } else { setMpErr('Senha incorreta'); setTimeout(() => setMpErr(''), 2000); } } }
+          onKeyDown: e => { if (e.key === 'Enter') { const v = e.target.value.trim(); if (S.sha(v) === mp) { try { S.initCrypt(v); } catch(ex) { console.warn('[Crypto] init:', ex); } e.target.value = ''; setMUnlocked(true); sessionStorage.setItem('sgw_mp_unlocked','1'); } else { setMpErr('Senha incorreta'); setTimeout(() => setMpErr(''), 2000); } } }
         }))
     );
   }
@@ -10439,11 +10523,11 @@ const App = () => {
       setView('landing');
       api.setToken(null);
       setAuth(false);
-      api.request('POST', '/auth/logout').catch(() => {});
-      caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k)))).catch(() => {});
+      api.request('POST', '/auth/logout').catch(e => console.debug('[Logout] api:', e));
+      caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('sgw')).map(k => caches.delete(k)))).catch(e => console.debug('[Logout] cache:', e));
       try {
         indexedDB.deleteDatabase('SGWPro8');
-      } catch (e) {}
+      } catch (e) { console.debug('[Logout] IDB:', e); }
     }
   }));
 };

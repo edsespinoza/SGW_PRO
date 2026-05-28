@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { query } = require('../db');
+const { query, transaction } = require('../db');
 const { authenticate } = require('../middleware/auth');
 
 const router = Router();
@@ -19,18 +19,26 @@ router.get('/', async (req, res) => {
   }
 });
 
+const ALLOWED_KEYS = ['autoBackup', 'backupDirHandle', 'setup_complete', 'app_version', 'app_build'];
+
 router.put('/', async (req, res) => {
   try {
     const entries = req.body;
     if (typeof entries !== 'object' || Array.isArray(entries)) {
       return res.status(400).json({ error: 'Body deve ser um objeto { key: value }' });
     }
-    for (const [key, value] of Object.entries(entries)) {
-      await query(
-        'INSERT INTO config (key, value, updated_at) VALUES ($1, $2::jsonb, NOW()) ON CONFLICT (key) DO UPDATE SET value = $2::jsonb, updated_at = NOW()',
-        [key, JSON.stringify(value)]
-      );
+    const invalid = Object.keys(entries).find(k => !ALLOWED_KEYS.includes(k));
+    if (invalid) {
+      return res.status(400).json({ error: 'Chave nao permitida: ' + invalid });
     }
+    await transaction(async (client) => {
+      for (const [key, value] of Object.entries(entries)) {
+        await client.query(
+          'INSERT INTO config (key, value, updated_at) VALUES ($1, $2::jsonb, NOW()) ON CONFLICT (key) DO UPDATE SET value = $2::jsonb, updated_at = NOW()',
+          [key, JSON.stringify(value)]
+        );
+      }
+    });
     res.json({ updated: Object.keys(entries) });
   } catch (err) {
     console.error('[Config] Update error:', err);

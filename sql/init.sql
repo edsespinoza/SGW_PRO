@@ -82,6 +82,19 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_ts ON audit_logs(ts);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
 
 -- ============================================================
+-- REVOKED TOKENS (JWT blacklist — SEC-013)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS revoked_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  token_hash TEXT UNIQUE NOT NULL,
+  revoked_at TIMESTAMPTZ DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_revoked_tokens_hash ON revoked_tokens(token_hash);
+CREATE INDEX IF NOT EXISTS idx_revoked_tokens_expires ON revoked_tokens(expires_at);
+
+-- ============================================================
 -- CONFIG
 -- ============================================================
 CREATE TABLE IF NOT EXISTS config (

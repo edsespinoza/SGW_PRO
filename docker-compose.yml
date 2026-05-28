@@ -59,15 +59,6 @@ services:
     networks:
       - sgw-net
 
-  ai-mock:
-    build:
-      context: ./mock-api
-      dockerfile: Dockerfile
-    container_name: sgw-ai-mock
-    restart: unless-stopped
-    networks:
-      - sgw-net
-
 volumes:
   pgdata:
 

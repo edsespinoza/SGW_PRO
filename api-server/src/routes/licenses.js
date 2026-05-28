@@ -7,7 +7,8 @@ const router = Router();
 router.use(authenticate);
 
 const SENSITIVE_FIELDS = ['cpf_cnpj', 'email', 'phone', 'sgw_login', 'sgw_password'];
-const LICENSE_COLS = 'id, license_key, validation_hash, customer_name, cpf_cnpj, email, phone, equipment, equipment_serial, region, sgw_login, sgw_password, activation_date, valid_until, technician, status, device_fingerprint, brands, observations, pdf_source, has_cert, created_at, updated_at';
+const LICENSE_COLS = 'id, license_key, customer_name, cpf_cnpj, email, phone, equipment, equipment_serial, region, sgw_login, sgw_password, activation_date, valid_until, technician, status, device_fingerprint, brands, observations, pdf_source, has_cert, created_at, updated_at';
+const LICENSE_COLS_DETAIL = 'id, license_key, validation_hash, customer_name, cpf_cnpj, email, phone, equipment, equipment_serial, region, sgw_login, sgw_password, activation_date, valid_until, technician, status, device_fingerprint, brands, observations, pdf_source, has_cert, created_at, updated_at';
 const IMAGE_COLS = 'id, license_id, screen_id, data, ts';
 
 const CAMEL_TO_SNAKE = {
@@ -174,7 +175,7 @@ router.get('/stats', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const result = await query(`SELECT ${LICENSE_COLS} FROM licenses WHERE id = $1`, [req.params.id]);
+    const result = await query(`SELECT ${LICENSE_COLS_DETAIL} FROM licenses WHERE id = $1`, [req.params.id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Licenca nao encontrada' });
     }
@@ -204,12 +205,12 @@ router.post('/', async (req, res) => {
     const cols = fields.filter(f => data[f] !== undefined);
     const vals = cols.map((_, i) => `$${i + 1}`);
     const params = cols.map(f => {
-      if (f === 'brands' && typeof data[f] === 'object') return JSON.stringify(data[f]);
+      if (f === 'brands') { if (typeof data[f] === 'string') return data[f]; return JSON.stringify(data[f]); }
       if (f === 'has_cert') return data[f] ? true : false;
       return data[f];
     });
     const result = await query(
-      `INSERT INTO licenses (${cols.join(', ')}) VALUES (${vals.join(', ')}) RETURNING *`,
+      `INSERT INTO licenses (${cols.join(', ')}) VALUES (${vals.join(', ')}) RETURNING ${LICENSE_COLS_DETAIL}`,
       params
     );
     res.status(201).json(toCamel(decryptFields(result.rows[0])));
@@ -244,14 +245,14 @@ router.put('/:id', async (req, res) => {
       return `${f} = $${i + 2}`;
     });
     const params = fields.map(f => {
-      if (f === 'brands' && typeof data[f] === 'object') return JSON.stringify(data[f]);
+      if (f === 'brands') { if (typeof data[f] === 'string') return data[f]; return JSON.stringify(data[f]); }
       if (f === 'has_cert') return data[f] ? true : false;
       if ((f === 'activation_date' || f === 'valid_until') && !data[f]) return null;
       return data[f];
     });
     params.unshift(req.params.id);
     const result = await query(
-      `UPDATE licenses SET ${sets.join(', ')}, updated_at = NOW() WHERE id = $1 RETURNING *`,
+      `UPDATE licenses SET ${sets.join(', ')}, updated_at = NOW() WHERE id = $1 RETURNING ${LICENSE_COLS_DETAIL}`,
       params
     );
     if (result.rows.length === 0) {

@@ -1,7 +1,11 @@
 {
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
   "devDependencies": {
     "@babel/cli": "^7.28.6",
     "@babel/core": "^7.29.0",
-    "@babel/preset-react": "^7.28.5"
+    "@babel/preset-react": "^7.28.5",
+    "crypto-js": "^4.2.0"
   }
 }

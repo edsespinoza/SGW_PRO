@@ -9,6 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const { query } = require('./db');
 const authRoutes = require('./routes/auth');
+const { cleanExpiredTokens } = require('./middleware/auth');
 const licensesRoutes = require('./routes/licenses');
 const auditRoutes = require('./routes/audit');
 const configRoutes = require('./routes/config');
@@ -17,6 +18,7 @@ const statsRoutes = require('./routes/stats');
 const aiRoutes = require('./routes/ai');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 app.use(helmet({
@@ -84,6 +86,20 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
+// CSP report collector (SEC-009)
+app.post('/api/v1/csp-report', (req, res) => {
+  const report = req.body?.['csp-report'] || req.body;
+  if (report) {
+    console.warn('[CSP] Violation:', JSON.stringify({
+      'blocked-uri': report['blocked-uri'] || '?',
+      'violated-directive': report['violated-directive'] || '?',
+      'script-sample': (report['script-sample'] || '').slice(0, 100),
+      'line-number': report['line-number'],
+    }));
+  }
+  res.status(204).end();
+});
+
 app.use((err, req, res, next) => {
   console.error('[API] Unhandled error:', err);
   res.status(500).json({
@@ -92,11 +108,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`SGW Pro API rodando em http://0.0.0.0:${PORT}`);
-  console.log(`Health: http://localhost:${PORT}/api/v1/health`);
-  seedAdmin();
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`SGW Pro API rodando em http://0.0.0.0:${PORT}`);
+    console.log(`Health: http://localhost:${PORT}/api/v1/health`);
+    seedAdmin();
+  });
+  setInterval(() => cleanExpiredTokens(), 3600000);
+}
+
+module.exports = app;
 
 async function seedAdmin() {
   const adminPassword = process.env.ADMIN_PASSWORD;

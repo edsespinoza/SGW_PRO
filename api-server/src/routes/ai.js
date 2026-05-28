@@ -1,11 +1,23 @@
 const { Router } = require('express');
 const https = require('https');
+const rateLimit = require('express-rate-limit');
+const { authenticate } = require('../middleware/auth');
 
 const router = Router();
 
+router.use(authenticate);
+
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: { error: 'Limite de requisicoes AI excedido (5/min). Tente novamente em breve.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-router.post('/proxy', async (req, res) => {
+router.post('/proxy', aiLimiter, async (req, res) => {
   try {
     if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY === 'sk-ant-placeholder') {
       return res.status(400).json({

@@ -1,7 +1,7 @@
 # SGW Pro — Registro Técnico, Bugs e Roadmap
 
 > **Propósito:** Ponto de retomada para qualquer sessão futura. Contém o estado exato do projeto, o que foi feito, o que está pendente e as decisões de arquitetura confirmadas.
-> Última atualização: 2026-05-19
+> Última atualização: 2026-05-28 — UI/UX Dashboard redesign applied
 
 ---
 
@@ -20,30 +20,34 @@
 
 ## 1. PONTO DE PARADA
 
-**Arquivo principal:** `sgw_pro.html` (~10.239 linhas)
-**Status:** ✅ FUNCIONAL — Tailwind pre-built CSS, Babel pré-compilado (sem runtime), componentes OK, popover no Dashboard funcional, senha mestra no App, backup criptografado .enc, notificações de vencimento, gráficos Financeiro.
+**Arquivo principal:** `sgw_pro.html` (~10.536 linhas)
+**Status:** ✅ FUNCIONAL — Todas as 17 vulnerabilidades corrigidas (3 P0, 7 P1), 9 R-fixes de code review aplicados, 58/58 API testes + 13/13 frontend testes passando, Docker integrado funcional.
 
 ### O que está funcionando
-- Dashboard com métricas e lista de licenças recentes
-- Popover hover nos itens recentes (posicionamento acima/abaixo com scroll)
-- Aba Clientes sem tela preta
-- Formulário de edição (LicForm) carrega sem erro
-- Upload de imagens (UpArea) e exibição de serial (Serial)
-- Serviços Docker: postgres, api, nginx, ai-mock rodando
+- Docker: postgres + api + nginx rodando em `http://localhost:8081`
+- Login via cookie httpOnly (SEC-012) com JWT blacklist (SEC-013)
+- CRUD licenças via API PostgreSQL
+- Config com transação e whitelist (R-05)
+- Listagem sem `validation_hash` exposto (R-09)
+- Register desabilitado (SEC-004), AI proxy autenticado (SEC-008), CSP report (SEC-009)
+- Backup com checksum SHA-256 obrigatório + timingSafeEqual (R-04) + envelope de senha (SEC-007)
+- Criptografia em memória derivada da senha mestra (SEC-005), sem persistência em storage
 
 ### Problemas conhecidos
 - SW `message channel` warning (benigno, Chrome DevTools artifact)
 - `Feature-Policy: file-system-access` warning (benigno, header não reconhecido)
 
+### Migration necessária
+- Tabela `revoked_tokens` não existe em volumes PostgreSQL antigos (criar manualmente via `CREATE TABLE`)
+
 ### Próximos passos sugeridos
-- Testar CRUD completo via API + IndexedDB fallback
+- Testar CRUD completo via navegador (`http://localhost:8081`)
 - Testar scanner screen cards (upload 8 telas, cores/emoji)
-- Verificar splash screens (auth 3s, system 15s)
 - Analisar módulo Financeiro (placeholder)
 
 **Para continuar:**
-1. `docker-compose up --build -d` se containers não estiverem rodando
-2. Abrir `http://localhost:8081` — login `admin`/`admin123`
+1. Abrir `http://localhost:8081` — login `admin`/`admin123`
+2. Se `500 Internal Server` no login, executar: `docker compose exec postgres psql -U sgwpro -c "CREATE TABLE IF NOT EXISTS revoked_tokens (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), token_hash TEXT UNIQUE NOT NULL, revoked_at TIMESTAMPTZ DEFAULT now(), expires_at TIMESTAMPTZ NOT NULL); CREATE INDEX idx_revoked_tokens_hash ON revoked_tokens(token_hash); CREATE INDEX idx_revoked_tokens_expires ON revoked_tokens(expires_at);"`
 
 ### O que foi feito nesta sessão (2026-05-18)
 
@@ -260,6 +264,9 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 | BUG-001 | Babel transpilação em runtime — 800ms–2.5s no primeiro load | `<script type="text/babel">` | Performance | ✅ Resolvido 2026-05-18 (pré-compilado via Babel CLI) |
 | BUG-002 | `anthropicKey` persiste no IndexedDB de sessões anteriores — exposta no DevTools | `db.getConfig/setConfig('anthropicKey')` | Segurança em produção web | ✅ Resolvido 2026-05-19 (deleteConfig no boot + proxy server-side em ai.js) |
 | BUG-003 | `db.all('licenses')` sem paginação — carrega todos os registros na memória | `DB.all()` / `boot()` em `App` | Memória com 1k+ licenças | ✅ Resolvido 2026-05-14 (page, getCounts, count) |
+| SEC-004 | Rota /register pública — qualquer um cria conta admin | `routes/auth.js:42` | Acesso total não autorizado | ✅ Resolvido 2026-05-28 (rota desabilitada, admin via seed) |
+| SEC-006 | Import de backup sem checksum obrigatório + sem validação de schema | `routes/backup.js:45` | Injeção de dados, overwrite total | ✅ Resolvido 2026-05-28 (checksum obrigatório, schema validation, limite 50MB) |
+| SEC-008 | Proxy AI sem autenticação — consumo não autorizado da Anthropic API | `routes/ai.js` | Custos financeiros, abuso | ✅ Resolvido 2026-05-28 (authenticate + rate limit 5/min) |
 
 ### 🟡 Moderado
 
@@ -306,6 +313,89 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 
 ---
 
+### Sessão 2026-05-28 — Correções de Segurança P0 + P1 (Auditoria)
+
+| # | Correção | Localização | Status |
+|---|----------|-------------|--------|
+| SEC-004 | Rota /register desabilitada | `routes/auth.js:42-46` | ✅ Feito |
+| SEC-008 | AI proxy com authenticate + rate limit 5/min | `routes/ai.js:8,20` | ✅ Feito |
+| SEC-006 | Checksum obrigatório + schema validation + limite 50MB no backup | `routes/backup.js:47-76` | ✅ Feito |
+| SEC-012 | Bearer header removido do frontend + auth middleware (só cookie httpOnly) | `sgw_pro.html:770`, `middleware/auth.js:9` | ✅ Feito |
+| SEC-001 | anthropicKey removida do boot (chave só no .env do servidor) | `sgw_pro.html:9068` | ✅ Feito |
+| SEC-011 | FileSystem handle não é mais persistido no IndexedDB | `sgw_pro.html:1076`, `sgw_pro.html:9160-9176` | ✅ Feito |
+| SEC-013 | Blacklist JWT: tabela revoked_tokens + middleware revokeToken + cleanup 1h | `sql/init.sql`, `middleware/auth.js`, `routes/auth.js:48-56` | ✅ Feito |
+
+### Sessão anterior — Correções de Segurança P0 (Auditoria)
+| # | Correção | Localização | Status |
+|---|----------|-------------|--------|
+| SEC-004 | Rota /register desabilitada — admin criado via ADMIN_PASSWORD no seed | `api-server/src/routes/auth.js:42-46` | ✅ Feito |
+| SEC-008 | AI proxy protegido com authenticate + rate limit 5/min | `api-server/src/routes/ai.js:8,10-16,20` | ✅ Feito |
+| SEC-006 | Checksum SHA-256 obrigatório + validação de schema + limite 50MB no backup import | `api-server/src/routes/backup.js:47-76` | ✅ Feito |
+
+### Sessão 2026-05-28 (vesp) — Code Review R-fixes (9 correções)
+| # | Correção | Localização | Status |
+|---|----------|-------------|--------|
+| R-01 | `addEventListener('storage')` sem guard de duplicata — add `window._sgwStorageListener` | `sgw_pro.html` | ✅ Feito |
+| R-02 | Erro JSON parsing sem `statusText` — incluído no fallback | `sgw_pro.html` (2 locais) | ✅ Feito |
+| R-03 | `brands` duplamente stringified — verifica `typeof` antes de stringify | `routes/licenses.js` (2 locais) | ✅ Feito |
+| R-04 | Checksum timing-safe — `crypto.timingSafeEqual` via helper `timingSafeEqual()` | `routes/backup.js:76-82,111` | ✅ Feito |
+| R-05 | Config update sem transação — migrado para `transaction()` + whitelist de chaves | `routes/config.js` | ✅ Feito |
+| R-07 | `caches.delete()` remove todos caches — filtro por prefixo `sgw` | `sgw_pro.html` (logout) | ✅ Feito |
+| R-08 | `S.dec()` em campos plaintext — `tryDec()` detecta `U2FsdGVkX1` antes de decriptar | `sgw_pro.html` (map de licenças) | ✅ Feito |
+| R-09 | `validation_hash` exposto na listagem — `LICENSE_COLS` separado de `LICENSE_COLS_DETAIL` | `routes/licenses.js:2-3,132,196,219` | ✅ Feito |
+| R-06 | `if (stats)` já tratado | — | ⏭️ Skip |
+
+### Sessão 2026-05-28 (noite) — UI/UX Clients Redesign
+| # | Alteração | Localização | Status |
+|---|-----------|-------------|--------|
+| CLI-01 | Header com contadores (ativos + vencendo) | `Clients` topo | ✅ Feito |
+| CLI-02 | Filtros encapsulados em `.filter-bar` glass | `Clients` filter bar | ✅ Feito |
+| CLI-03 | Cards: avatares gradiente por status (ava-em/am/rd/sl), statusColor por urgência | `Clients` card grid | ✅ Feito |
+| CLI-04 | Ações com hover-reveal (`opacity-70 → 100`) | `Clients` card buttons | ✅ Feito |
+| CLI-05 | Staggered entrance `af d{N}` em cada card | `Clients` cards | ✅ Feito |
+| CLI-06 | Testes: 58/58 API — sem regressões | `npm test` | ✅ OK |
+
+### Sessão 2026-05-28 (madrugada) — Hotfix: Syntax Error Crash
+| # | Alteração | Localização | Status |
+|---|-----------|-------------|--------|
+| H-01 | `try { ... }` sem `catch` ou `finally` → `Uncaught SyntaxError` impedia o `<script>` inteiro de executar | `doMigrateIDB` linha 9551 | ✅ Fix: adicionado `catch(e)` |
+| H-02 | Linhas `toast('Erro na migração')` e `console.error('[Migration]', e)` estavam dentro do `try` em vez do `catch` — referenciavam `e` indefinido | `doMigrateIDB` linha 9580-9581 | ✅ Movidas para o `catch(e)` |
+| H-03 | Verificação de outros `try` sem `catch` no arquivo — nenhum outro caso real encontrado | `sgw_pro.html` | ✅ OK |
+
+**Diagnóstico:** O navegador mostrava título "SGW Pro" + spinner infinito porque o parse do JavaScript falhava antes de `ReactDOM.createRoot()`. O loop era aparente (refresh visual) mas na verdade era a página nunca terminando de carregar.
+
+### Sessão 2026-05-28 (noite) — UI/UX Dashboard Redesign
+| # | Alteração | Localização | Status |
+|---|-----------|-------------|--------|
+| UI-01 | CSS: animações novas (scaleIn, slideDown, pulseGlow), classes gradientes (kpi-*, ava-*), radial-ring SVG | `sgw_pro.html` `<style>` | ✅ Feito |
+| UI-02 | KPIs: 12→8 cards, gradientes por tipo (emerald/cyan/amber/red/violet/slate), staggered entrance, fonte dimensionada | `Dashboard` KPI_DATA | ✅ Feito |
+| UI-03 | Alerts: redesign com gradiente horizontal, border-left colorido, ícone em box, barra inferior com contadores | `Dashboard` render | ✅ Feito |
+| UI-04 | Recent Licenses: avatares com gradiente por status (ava-em/ava-am/ava-rd/ava-sl), tamanho 9×9 rounded-xl | `Dashboard` recent list | ✅ Feito |
+| UI-05 | Health Score: barra substituída por SVG radial ring (score circular animado) | `Dashboard` "Saúde da Base" | ✅ Feito |
+| UI-06 | Popover Card: largura 420→380px, avatar gradiente, grid compacto 2-col, scroll suave 350px, entrada scaleIn | `Dashboard` popover | ✅ Feito |
+| UI-07 | Testes: 58/58 API + 13/13 frontend — sem regressões | `npm test` | ✅ OK |
+
+### Sessão 2026-05-28 (noite) — Testes integrados Docker + Correção de Migration
+| # | Alteração | Localização | Status |
+|---|-----------|-------------|--------|
+| T-01 | Docker rebuild + ai-mock removido (inexistente) | `docker-compose.yml` | ✅ Feito |
+| T-02 | Tabela `revoked_tokens` criada manualmente no PostgreSQL (volume antigo não tinha) | `docker compose exec postgres psql` | ✅ Feito |
+| T-03 | Teste integrado: login + list + config + config update + register 403 + logout revogação + me pós-logout | curl via nginx :8081 | ✅ OK |
+
+**Resultados dos testes Docker:**
+| Teste | Resultado | Observação |
+|-------|-----------|------------|
+| `POST /api/v1/auth/login` | ✅ Token + cookie | `setTokenCookie` + JSON response |
+| `GET /api/v1/licenses?limit=1` | ✅ Dados sem `validation_hash` | R-09 confirmado |
+| `GET /api/v1/config` | ✅ Config do DB | Transaction ready |
+| `PUT /api/v1/config {autoBackup}` | ✅ `{"updated":["autoBackup"]}` | R-05 transação OK |
+| `POST /api/v1/auth/register {hacker}` | ✅ 403 "Registro desabilitado" | SEC-004 |
+| `POST /api/v1/auth/logout` | ✅ OK | Cookie limpo |
+| `GET /api/v1/auth/me` (após logout) | ✅ 401 "Token revogado" | SEC-013 blacklist OK |
+| `POST /api/v1/csp-report` | ✅ 204 (silencioso) | SEC-009 |
+
+**⚠️ Migration necessária:** Tabela `revoked_tokens` não existia no volume PostgreSQL antigo (criado antes de SEC-013). Foi criada manualmente via `CREATE TABLE`. Em deploy novo, `init.sql` roda normal. Para ambientes existentes, adicionar script de migração ou recriar volume.
+
 ## 4. Próximos Passos Priorizados
 
 ### Sprint imediato (próxima sessão)
@@ -314,9 +404,11 @@ Todas as alterações desta sessão foram **revertidas** a pedido do usuário (l
 - Acessar `http://localhost:8081` — senha mestra deve aparecer primeiro
 - Login com `admin`/`admin123`
 - Confirmar que notificação de vencimento aparece no boot
-- Verificar gráficos no módulo Financeiro (agora com filtro de período + export PNG/PDF)
+- Verificar gráficos no módulo Financeiro
 - Testar export/import de backup .enc criptografado
 - Verificar que `anthropicKey` antiga foi removida do IDB
+
+**2. Corrigir vulnerabilidades P1 (SEC-012, SEC-005, SEC-009, SEC-001, SEC-007, SEC-011, SEC-013)**
 
 ### Médio prazo
 

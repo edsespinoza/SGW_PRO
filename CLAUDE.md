@@ -150,6 +150,9 @@ O arquivo `sgw_pro_final_v11.html` é monolítico (~3.472 linhas). Toda a aplica
 | BUG-004 | `ExtractorBatch` sem rate limiting/retry completo — erros 429 com 200 PDFs | Confiabilidade | Aberto |
 | BUG-005 | Apenas React, Babel e CryptoJS têm fallback de CDN — QRCode, jsPDF, JSZip, PDF.js, XLSX falham silenciosamente | Robustez offline | Aberto |
 | BUG-008 | Path errado no script `nano-banana-2` — referencia `./.agents/skills/` em vez de `.claude/skills/` | Skill não executa | Aberto |
+| SEC-004 | JWT armazenado em localStorage (acessível via DevTools) | Segurança | Resolvido — migrado para sessionStorage |
+| SEC-005 | SHA-256 sem salt para senha mestra (rainbow table) | Segurança | Resolvido — PBKDF2 com 10k iterações + salt |
+| PERF-001 | `allLicenses` com `limit=1000` fixo (pseudopaginaçao) | Performance | Resolvido — paginação real com page/limit |
 
 Bugs resolvidos na v11: BUG-006 (cards no mobile), BUG-007 (índices IDB em status/region/validUntil).
 

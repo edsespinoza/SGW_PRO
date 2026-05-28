@@ -1,7 +1,16 @@
 const { Router } = require('express');
+const crypto = require('crypto');
 const { query, transaction } = require('../db');
 const { encrypt, decrypt, hash } = require('../crypto');
 const { authenticate } = require('../middleware/auth');
+
+function timingSafeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  if (a.length !== b.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(a, 'utf8'), Buffer.from(b, 'utf8'));
+  } catch { return false; }
+}
 
 const router = Router();
 router.use(authenticate);
@@ -10,6 +19,10 @@ const LICS_COLS = 'id, license_key, validation_hash, customer_name, cpf_cnpj, em
 const IMGS_COLS = 'id, license_id, screen_id, data, ts';
 const LOGS_COLS = 'id, entity_type, entity_id, action, actor, metadata, ts';
 const LIC_FIELDS = LICS_COLS.split(', ');
+
+function derivePasswordKey(password, salt) {
+  return crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha256');
+}
 
 router.post('/export', async (req, res) => {
   try {
@@ -30,9 +43,27 @@ router.post('/export', async (req, res) => {
     };
 
     const checksum = hash(JSON.stringify(payload));
-    const encryptedData = encrypt(JSON.stringify(payload));
+    let encryptedData = encrypt(JSON.stringify(payload));
+    let format = 'encrypted';
+
+    // SEC-007: envelope opcional com senha do operador
+    const { password } = req.body;
+    if (password && password.length >= 4) {
+      const pwSalt = crypto.randomBytes(16);
+      const pwKey = derivePasswordKey(password, pwSalt);
+      const pwIv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv('aes-256-gcm', pwKey, pwIv);
+      const pwEncrypted = Buffer.concat([
+        cipher.update(encryptedData, 'utf8'),
+        cipher.final(),
+      ]);
+      const pwTag = cipher.getAuthTag();
+      encryptedData = Buffer.concat([pwSalt, pwIv, pwTag, pwEncrypted]).toString('base64');
+      format = 'encrypted+password';
+    }
+
     res.json({
-      format: 'encrypted',
+      format,
       checksum,
       data: encryptedData,
     });
@@ -44,20 +75,52 @@ router.post('/export', async (req, res) => {
 
 router.post('/import', async (req, res) => {
   try {
-    const { format, data, checksum } = req.body;
-    let payload;
+    const { format, data, checksum, password } = req.body;
 
-    if (format === 'encrypted') {
-      const decrypted = decrypt(data);
-      if (checksum) {
-        const computed = hash(decrypted);
-        if (computed !== checksum) {
-          return res.status(400).json({ error: 'Checksum invalido — dados corrompidos' });
-        }
+    if (format !== 'encrypted' && format !== 'encrypted+password') {
+      return res.status(400).json({ error: 'Formato de backup invalido. Use "encrypted" ou "encrypted+password".' });
+    }
+    if (!checksum || typeof checksum !== 'string' || checksum.length !== 64) {
+      return res.status(400).json({ error: 'Checksum SHA-256 obrigatorio (64 caracteres hex).' });
+    }
+    if (!data || typeof data !== 'string' || data.length > 50 * 1024 * 1024) {
+      return res.status(400).json({ error: 'Dados de backup invalidos ou muito grandes (max 50MB).' });
+    }
+
+    let decryptionInput = data;
+
+    // SEC-007: descriptografar envelope de senha primeiro
+    if (format === 'encrypted+password') {
+      if (!password || password.length < 4) {
+        return res.status(400).json({ error: 'Senha do operador obrigatoria para formato encrypted+password.' });
       }
+      const combined = Buffer.from(data, 'base64');
+      const SALT_SIZE = 16, IV_SIZE = 16, TAG_SIZE = 16;
+      const pwSalt = combined.subarray(0, SALT_SIZE);
+      const pwIv = combined.subarray(SALT_SIZE, SALT_SIZE + IV_SIZE);
+      const pwTag = combined.subarray(SALT_SIZE + IV_SIZE, SALT_SIZE + IV_SIZE + TAG_SIZE);
+      const pwEncrypted = combined.subarray(SALT_SIZE + IV_SIZE + TAG_SIZE);
+      const pwKey = derivePasswordKey(password, pwSalt);
+      const decipher = crypto.createDecipheriv('aes-256-gcm', pwKey, pwIv);
+      decipher.setAuthTag(pwTag);
+      decryptionInput = Buffer.concat([decipher.update(pwEncrypted), decipher.final()]).toString('utf8');
+    }
+
+    const decrypted = decrypt(decryptionInput);
+    const computed = hash(decrypted);
+    if (!timingSafeEqual(computed, checksum)) {
+      return res.status(400).json({ error: 'Checksum invalido — dados corrompidos ou adulterados.' });
+    }
+
+    let payload;
+    try {
       payload = JSON.parse(decrypted);
-    } else {
-      payload = data;
+    } catch {
+      return res.status(400).json({ error: 'Payload JSON invalido apos descriptografia.' });
+    }
+
+    if (!payload.version || !payload.data) {
+      return res.status(400).json({ error: 'Estrutura do backup invalida: campos version e data obrigatorios.' });
     }
 
     const { licenses, images, audit_logs, config: configs } = payload.data;
